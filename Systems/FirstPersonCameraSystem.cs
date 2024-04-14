@@ -11,7 +11,7 @@ namespace FirstPersonCamera.Systems
     /// <summary>
     /// The core system controlling the camera and setup
     /// </summary>
-    public class FirstPersonCameraSystem : GameSystemBase
+    public partial class FirstPersonCameraSystem : GameSystemBase
     {
         private FirstPersonCameraController Controller
         {

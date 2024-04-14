@@ -71,7 +71,7 @@ namespace FirstPersonCamera
             var action = new InputAction( "ToggleFPSController" );
             action.AddCompositeBinding( "ButtonWithOneModifier" )
                 .With( "Modifier", "<Keyboard>/alt" )
-                .With( "Button", "<Keyboard>/f" );
+                .With( "Button", "<Keyboard>/n" );
             action.performed += ( a ) => Toggle( );
             action.Enable( );
 
