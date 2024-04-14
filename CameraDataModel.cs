@@ -63,6 +63,14 @@ namespace FirstPersonCamera
             set;
         }
 
+
+        /// Configurable height offset from terrain 
+        public float HeightOffset
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// The camera target position
         /// </summary>

@@ -51,7 +51,7 @@ namespace FirstPersonCamera.Transformer.FinalTransforms
 
             var position = model.Position;
             position += direction * ( model.IsSprinting ? runSpeed : movementSpeed );
-            position.y = groundY;
+            position.y = groundY + model.HeightOffset;
             model.Position = position;
         }
 

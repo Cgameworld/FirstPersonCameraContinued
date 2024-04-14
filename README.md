@@ -1,11 +1,10 @@
-# FirstPersonCamera for Cities Skylines 2
-
-Welcome to the official repository of **FirstPersonCamera**, a mod for Cities Skylines 2 that enhances your gameplay experience by providing a smoother and more realistic first-person camera controller.
+First Person Camera Continued provides a smoother and more realistic first-person camera controller.
 
 ## Features
 - **First-Person Camera Mode**: Immerse yourself in your city like never before with a first-person view.
 - **Easy Toggle**: Activate or deactivate the camera mode with a simple shortcut - `CTRL+F`.
 - **Sprinting**: Use `LEFT SHIFT` to increase movement speed.
+- **Height Adjustment** Use `RF` keys to move height of camera up and down
 - **Follow Mode**: Hold the `right mouse button` whilst in first person, you can now see highlighted entities when you hover them. Release the right mouse button to then follow that entity. Moving with the `WASD` keys will go into manual mode.
 - **Enhanced Realism**: Experience a more realistic view compared to the standard photo mode camera in the vanilla game.
 

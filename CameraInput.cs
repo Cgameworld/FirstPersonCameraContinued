@@ -96,6 +96,30 @@ namespace FirstPersonCamera
             // We only want these actions to occur whilst the controller is active
             TemporaryActions.Add( action );
 
+            // Create the input action (offset height +)
+            action = new InputAction("FPSController_HeightUp");
+            action.AddBinding("<Keyboard>/r");
+            action.performed += ctx =>
+            {
+                _model.HeightOffset += 1.0f;
+            };
+            action.Disable();
+
+            // We only want these actions to occur whilst the controller is active
+            TemporaryActions.Add(action);
+
+            // Create the input action (offset height -)
+            action = new InputAction("FPSController_HeightDown");
+            action.AddBinding("<Keyboard>/f");
+            action.performed += ctx =>
+            {
+                _model.HeightOffset -= 1.0f;
+            };
+            action.Disable();
+
+            // We only want these actions to occur whilst the controller is active
+            TemporaryActions.Add(action);
+
             action = new InputAction( "FPSController_MousePosition", binding: "<Mouse>/delta" );
             action.performed += ctx => _model.Look = ctx.ReadValue<Vector2>( );
             action.canceled += ctx => _model.Look = float2.zero;
