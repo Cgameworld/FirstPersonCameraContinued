@@ -10,7 +10,7 @@ namespace FirstPersonCamera
     /// <summary>
     /// Translates input to events and amends the data model
     /// </summary>
-    internal class CameraInput
+    public class CameraInput
     {
         private List<InputAction> TemporaryActions
         {
@@ -125,7 +125,7 @@ namespace FirstPersonCamera
         /// <summary>
         /// Enable the camera input listeners
         /// </summary>
-        private void Enable( )
+        public void Enable( )
         {
             _model.Mode = _model.FollowEntity != Entity.Null ? CameraMode.Follow : CameraMode.Manual;
 

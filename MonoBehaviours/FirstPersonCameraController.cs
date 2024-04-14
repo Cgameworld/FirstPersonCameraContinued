@@ -27,6 +27,11 @@ namespace FirstPersonCamera.MonoBehaviours
             set;
         }
 
+        public CameraInput GetCameraInput()
+        {
+            return _input;
+        }
+
         private FirstPersonCameraSystem _firstPersonCameraSystem;
         private TerrainSystem terrainSystem;
         private RenderingSystem renderingSystem;
@@ -101,7 +106,7 @@ namespace FirstPersonCamera.MonoBehaviours
         /// <summary>
         /// Toggle the camera on or off
         /// </summary>
-        private void Toggle( )
+        public void Toggle( )
         {
             // If a transition is in progress complete it
             if ( _model.IsTransitioningIn )

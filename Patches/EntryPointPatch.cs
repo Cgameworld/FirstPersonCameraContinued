@@ -14,6 +14,7 @@ namespace FirstPersonCamera.Patches
                 return;
 
             __instance.World.GetOrCreateSystemManaged<FirstPersonCameraSystem>( );
+            __instance.World.GetOrCreateSystemManaged<FirstPersonCameraUISystem>();
         }
     }
 }
