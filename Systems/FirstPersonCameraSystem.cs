@@ -58,7 +58,7 @@ namespace FirstPersonCamera.Systems
         }
 
         /// <summary>
-        /// Create the c ontroller if needed
+        /// Create the controller if needed
         /// </summary>
         private void CreateOrGetController()
         {
@@ -77,7 +77,7 @@ namespace FirstPersonCamera.Systems
         public void ToggleUI( bool hidden )
         {
             _renderingSystem.hideOverlay = hidden;
-            //Colossal.UI.UIManager.defaultUISystem.enabled = !hidden;
+            Colossal.UI.UIManager.defaultUISystem.enabled = !hidden;
 
             if ( hidden )
             {
