@@ -16,7 +16,7 @@ To exit first person mode, press ESC
 
 # Settings
 
-Several loaded parameters can also be configured from the main game settings also, taking effect at the start of each first person session, specifically
+Several loaded parameters can also be configured from the main game settings, taking effect at the start of each first person session, specifically:
 
 - FOV
 - Walking Speed
