@@ -141,7 +141,11 @@ namespace FirstPersonCameraContinued
             TemporaryActions.Add( action );
 
             action = new InputAction( "FPSController_Escape", binding: "<Keyboard>/escape" );
-            action.performed += ctx => { Disable( ); OnToggle?.Invoke( ); };
+            action.performed += ctx => {
+                Disable( ); 
+                OnToggle?.Invoke( ); 
+                _model.HeightOffset = 0.0f;
+            };
             action.Disable( );
             TemporaryActions.Add( action );
         }
