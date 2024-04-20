@@ -151,7 +151,14 @@ namespace FirstPersonCamera
         /// </summary>
         public void Enable( )
         {
-            _model.Mode = _model.FollowEntity != Entity.Null ? CameraMode.Follow : CameraMode.Manual;
+            if (_model.FollowEntity != Entity.Null)
+            {
+                _model.Mode = CameraMode.Follow;
+            }
+            else
+            {
+                _model.Mode = CameraMode.Manual;
+            }
 
             foreach ( var action in TemporaryActions )
                 action.Enable( );
