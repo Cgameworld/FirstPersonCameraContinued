@@ -32,11 +32,11 @@ namespace FirstPersonCameraContinued
         [SettingsUISection(kSection, kSliderGroup)]
         public int FOV { get; set; }
 
-        [SettingsUISlider(min = .05f, max = 5f, step = .05f, scalarMultiplier = 1, unit = Unit.kFloatTwoFractions)]
+        [SettingsUISlider(min = .05f, max = 2f, step = .05f, scalarMultiplier = 1, unit = Unit.kFloatTwoFractions)]
         [SettingsUISection(kSection, kSliderGroup)]
         public float MovementSpeed { get; set; }
 
-        [SettingsUISlider(min = .05f, max = 5f, step = .05f, scalarMultiplier = 1, unit = Unit.kFloatTwoFractions)]
+        [SettingsUISlider(min = .05f, max = 2f, step = .05f, scalarMultiplier = 1, unit = Unit.kFloatTwoFractions)]
         [SettingsUISection(kSection, kSliderGroup)]
         public float RunSpeed { get; set; }
 
@@ -64,7 +64,7 @@ namespace FirstPersonCameraContinued
 
         public override void SetDefaults()
         {
-            FOV = 60;
+            FOV = 70;
             MovementSpeed = 0.1f;
             RunSpeed = 0.35f;
             CimHeight = 1.7f;

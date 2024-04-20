@@ -14,6 +14,7 @@ namespace FirstPersonCameraContinued
     internal class VirtualCameraRig
     {
         const float TRANSITION_DAMPEN = 3.5f;
+        private float FOV_END = 70f;
 
         /// <summary>
         /// The core transform which handles position and rotation.
@@ -108,6 +109,12 @@ namespace FirstPersonCameraContinued
         /// <param name="shouldLerp"></param>
         public void Update( bool noLerp = false )
         {
+            //change FOV transitioning to if specified in settings
+            if (Mod.FirstPersonModSettings != null)
+            {
+                FOV_END = Mod.FirstPersonModSettings.FOV;
+            }
+
             // Check if transitioning, we dampen the position more for smoothness
             if ( _model.IsTransitioningIn || _model.IsTransitioningOut )
             {
@@ -122,7 +129,7 @@ namespace FirstPersonCameraContinued
                     CameraTransform.transform.position = RigTransform.position;
                     CameraTransform.transform.rotation = RigTransform.rotation;
                     
-                    _virtualCamera.m_Lens.FieldOfView = math.lerp( _virtualCamera.m_Lens.FieldOfView, 70f, TRANSITION_DAMPEN * Time.deltaTime );
+                    _virtualCamera.m_Lens.FieldOfView = math.lerp( _virtualCamera.m_Lens.FieldOfView, FOV_END, TRANSITION_DAMPEN * Time.deltaTime );
 
                     // We've arrived
                     if ( Vector3.Distance( Parent.position, _model.Position ) <= 0.125f )
