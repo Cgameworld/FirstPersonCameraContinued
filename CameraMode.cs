@@ -1,5 +1,5 @@
 ﻿
-namespace FirstPersonCamera
+namespace FirstPersonCameraContinued
 {
     /// <summary>
     /// Represents the various camera modes

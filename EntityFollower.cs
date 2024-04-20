@@ -10,7 +10,7 @@ using Game.Simulation;
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace FirstPersonCamera
+namespace FirstPersonCameraContinued
 {
     /// <summary>
     /// Utility class to help with Entities and choosing a follow target

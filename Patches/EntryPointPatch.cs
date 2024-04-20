@@ -1,9 +1,9 @@
 ﻿using Game.Audio;
 using Game;
 using HarmonyLib;
-using FirstPersonCamera.Systems;
+using FirstPersonCameraContinued.Systems;
 
-namespace FirstPersonCamera.Patches
+namespace FirstPersonCameraContinued.Patches
 {
     [HarmonyPatch( typeof( AudioManager ), "OnGameLoadingComplete" )]
     class EntryPoint_Patch

@@ -1,4 +1,4 @@
-﻿namespace FirstPersonCamera.Transforms
+﻿namespace FirstPersonCameraContinued.Transforms
 {
     /// <summary>
     /// Interface for camera position and rotation transforms

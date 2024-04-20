@@ -4,7 +4,7 @@ using Game.Rendering;
 using Game.Tools;
 using Unity.Entities;
 
-namespace FirstPersonCamera
+namespace FirstPersonCameraContinued
 {
     /// <summary>
     /// Raycasting utility for the camera

@@ -3,7 +3,7 @@ using System;
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace FirstPersonCamera.Transformer.FinalTransforms
+namespace FirstPersonCameraContinued.Transformer.FinalTransforms
 {
     /// <summary>
     /// Handles applying manual movement to the rig from the model
@@ -12,7 +12,8 @@ namespace FirstPersonCamera.Transformer.FinalTransforms
     {
         public float movementSpeed = 0.1f;
         public float runSpeed = 0.35f;
-
+        public float cimHeight = 1.7f;
+       
         private TerrainSystem _terrainSystem;
 
         /// <summary>
@@ -22,6 +23,13 @@ namespace FirstPersonCamera.Transformer.FinalTransforms
         /// <param name="model"></param>
         public void Apply( VirtualCameraRig rig, CameraDataModel model )
         {
+            if (Mod.FirstPersonModSettings != null)
+            {
+                movementSpeed = Mod.FirstPersonModSettings.MovementSpeed;
+                runSpeed = Mod.FirstPersonModSettings.RunSpeed; 
+                cimHeight = Mod.FirstPersonModSettings.CimHeight;
+            }
+
             var groundY = GetYOffset( rig );
 
             var right = new float3( rig.RigTransform.right.x, 0f, rig.RigTransform.right.z );
@@ -67,7 +75,7 @@ namespace FirstPersonCamera.Transformer.FinalTransforms
                 _terrainSystem ??= World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TerrainSystem>();
 
                 var heightData = _terrainSystem.GetHeightData( true );
-                return TerrainUtils.SampleHeight( ref heightData, rig.Parent.position ) + 1.7f; // Offset it a little
+                return TerrainUtils.SampleHeight( ref heightData, rig.Parent.position ) + cimHeight; // Offset it a little
             }
             catch ( NullReferenceException ) // When abruptly exiting the game TerrainUtils crashes out, just safely handle this
             {

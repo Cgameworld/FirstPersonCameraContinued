@@ -5,7 +5,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace FirstPersonCamera
+namespace FirstPersonCameraContinued
 {
     /// <summary>
     /// Translates input to events and amends the data model

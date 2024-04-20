@@ -1,4 +1,4 @@
-﻿using FirstPersonCamera.MonoBehaviours;
+﻿using FirstPersonCameraContinued.MonoBehaviours;
 using Game;
 using Game.Common;
 using Game.Rendering;
@@ -6,7 +6,7 @@ using Game.Tools;
 using Unity.Entities;
 using UnityEngine;
 
-namespace FirstPersonCamera.Systems
+namespace FirstPersonCameraContinued.Systems
 {
     /// <summary>
     /// The core system controlling the camera and setup

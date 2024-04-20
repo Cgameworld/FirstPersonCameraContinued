@@ -2,7 +2,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace FirstPersonCamera.Transformer.FinalTransforms
+namespace FirstPersonCameraContinued.Transformer.FinalTransforms
 {
     /// <summary>
     /// Follows an entity

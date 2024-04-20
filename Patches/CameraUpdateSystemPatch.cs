@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
-using FirstPersonCamera.Systems;
+using FirstPersonCameraContinued.Systems;
 using Game.Rendering;
 
-namespace FirstPersonCamera.Patches
+namespace FirstPersonCameraContinued.Patches
 {
     [HarmonyPatch( typeof( CameraUpdateSystem ), "OnUpdate" )]
     class CameraUpdateSystem_Patch

@@ -1,7 +1,7 @@
-﻿using FirstPersonCamera.Transforms;
+﻿using FirstPersonCameraContinued.Transforms;
 using UnityEngine;
 
-namespace FirstPersonCamera.Transformer.Transforms
+namespace FirstPersonCameraContinued.Transformer.Transforms
 {
     /// <summary>
     /// Applies a breathing transform to the camera

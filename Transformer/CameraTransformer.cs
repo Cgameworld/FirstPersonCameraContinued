@@ -1,15 +1,15 @@
 ﻿using Colossal.Entities;
-using FirstPersonCamera.Patches;
-using FirstPersonCamera.Transformer;
-using FirstPersonCamera.Transformer.FinalTransforms;
-using FirstPersonCamera.Transformer.Transforms;
+using FirstPersonCameraContinued.Patches;
+using FirstPersonCameraContinued.Transformer;
+using FirstPersonCameraContinued.Transformer.FinalTransforms;
+using FirstPersonCameraContinued.Transformer.Transforms;
 using Game.Citizens;
 using System;
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace FirstPersonCamera.Transforms
+namespace FirstPersonCameraContinued.Transforms
 {
     /// <summary>
     /// Handles additional camera position and rotation transforms

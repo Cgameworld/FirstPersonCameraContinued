@@ -1,6 +1,6 @@
 ﻿using Colossal.IO.AssetDatabase;
 using Colossal;
-using FirstPersonCamera;
+using FirstPersonCameraContinued;
 using Game.Modding;
 using Game.Settings;
 using Game.UI.Widgets;
@@ -12,9 +12,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Unity.Entities;
 
-namespace FirstPersonCamera
+namespace FirstPersonCameraContinued
 {
-    [FileLocation(nameof(FirstPersonCamera))]
+    [FileLocation(nameof(FirstPersonCameraContinued))]
     public class Setting : ModSetting
     {
         public const string kSection = "Main";

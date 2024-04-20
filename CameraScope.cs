@@ -1,4 +1,4 @@
-﻿namespace FirstPersonCamera
+﻿namespace FirstPersonCameraContinued
 {
     /// <summary>
     /// Describes the current scope of the first

@@ -2,7 +2,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace FirstPersonCamera
+namespace FirstPersonCameraContinued
 {
     /// <summary>
     /// The core data model for the camera

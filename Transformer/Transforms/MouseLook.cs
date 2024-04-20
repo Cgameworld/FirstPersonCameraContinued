@@ -1,8 +1,8 @@
-﻿using FirstPersonCamera.Transforms;
+﻿using FirstPersonCameraContinued.Transforms;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace FirstPersonCamera.Transformer.Transforms
+namespace FirstPersonCameraContinued.Transformer.Transforms
 {
     /// <summary>
     /// Translates mouse position input into rotation

@@ -1,10 +1,10 @@
-﻿using FirstPersonCamera.Systems;
+﻿using FirstPersonCameraContinued.Systems;
 using Game;
 using HarmonyLib;
 using System;
 using Unity.Entities;
 
-namespace FirstPersonCamera.Patches
+namespace FirstPersonCameraContinued.Patches
 {
     [HarmonyPatch( typeof( OrbitCameraController ), "followedEntity", MethodType.Setter )]
     class OrbitCameraController_FollowedEntityPatch

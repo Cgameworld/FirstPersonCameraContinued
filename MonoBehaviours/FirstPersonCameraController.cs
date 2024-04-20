@@ -1,6 +1,6 @@
-﻿using FirstPersonCamera.Patches;
-using FirstPersonCamera.Systems;
-using FirstPersonCamera.Transforms;
+﻿using FirstPersonCameraContinued.Patches;
+using FirstPersonCameraContinued.Systems;
+using FirstPersonCameraContinued.Transforms;
 using Game.Audio;
 using Game.Citizens;
 using Game.Rendering;
@@ -10,7 +10,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace FirstPersonCamera.MonoBehaviours
+namespace FirstPersonCameraContinued.MonoBehaviours
 {
     /// <summary>
     /// A basic FPS controller toggled via CTRL + F.

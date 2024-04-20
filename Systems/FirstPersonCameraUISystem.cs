@@ -1,7 +1,7 @@
 ﻿using Colossal.UI.Binding;
-using FirstPersonCamera;
-using FirstPersonCamera.MonoBehaviours;
-using FirstPersonCamera.Systems;
+using FirstPersonCameraContinued;
+using FirstPersonCameraContinued.MonoBehaviours;
+using FirstPersonCameraContinued.Systems;
 using Game.UI;
 using Game.Vehicles;
 using System;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace FirstPersonCamera.Systems
+namespace FirstPersonCameraContinued.Systems
 {
     public partial class FirstPersonCameraUISystem : UISystemBase
     {

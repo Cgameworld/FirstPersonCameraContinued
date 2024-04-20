@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FirstPersonCamera
+namespace FirstPersonCameraContinued
 {
     [Flags] // Indicates that the enum can be treated as a set of flags (bitwise operations)
     internal enum VehicleType : long // Explicitly set the underlying type to long
