@@ -63,6 +63,12 @@ namespace FirstPersonCameraContinued
             set;
         }
 
+        /// Configurable camera offset in follow mode 
+        public float2 PositionFollowOffset
+        {
+            get;
+            set;
+        }
 
         /// Configurable height offset from terrain 
         public float HeightOffset
@@ -79,6 +85,8 @@ namespace FirstPersonCameraContinued
             get;
             set;
         }
+
+
 
         /// <summary>
         /// The camera target rotation

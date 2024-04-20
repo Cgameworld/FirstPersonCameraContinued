@@ -120,6 +120,28 @@ namespace FirstPersonCameraContinued
             // We only want these actions to occur whilst the controller is active
             TemporaryActions.Add(action);
 
+            // Create the input action - move follow camera offset
+            action = new InputAction("FPSController_MovementFollow", binding: "<Gamepad>/rightStick");
+            action.AddCompositeBinding("Dpad")
+                .With("Up", "<Keyboard>/upArrow")       // W key for up
+                .With("Down", "<Keyboard>/downArrow")     // S key for down
+                .With("Left", "<Keyboard>/leftArrow")     // A key for left
+                .With("Right", "<Keyboard>/rightArrow");   // D key for right
+
+            action.performed += ctx =>
+            {
+                if (_model.Mode == CameraMode.Follow)
+                {
+                    _model.PositionFollowOffset += new float2(ctx.ReadValue<Vector2>().x*0.5f, ctx.ReadValue<Vector2>().y*0.5f);
+                    Mod.log.Info("_model.PositionFollowOffset: " + _model.PositionFollowOffset);
+                }
+            };
+            action.canceled += ctx => _model.Movement = float2.zero;
+            action.Disable();
+
+            // We only want these actions to occur whilst the controller is active
+            TemporaryActions.Add(action);
+
             action = new InputAction( "FPSController_MousePosition", binding: "<Mouse>/delta" );
             action.performed += ctx => _model.Look = ctx.ReadValue<Vector2>( );
             action.canceled += ctx => _model.Look = float2.zero;
