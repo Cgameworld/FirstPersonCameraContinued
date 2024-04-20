@@ -14,6 +14,15 @@ To enter follow mode, right click on an object in free camera first person mode,
 
 To exit first person mode, press ESC
 
+# Settings
+
+Several loaded parameters can also be configured from the main game settings also, taking effect at the start of each first person session, specifically
+
+- FOV
+- Walking Speed
+- Running Speed
+- Cim Height
+
 # Notes
 
 - Hold the right mouse button but don't release while in free camera first person mode to view the highlighted object before going into follow mode
