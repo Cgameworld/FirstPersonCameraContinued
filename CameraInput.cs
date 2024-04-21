@@ -190,6 +190,12 @@ namespace FirstPersonCameraContinued
                 action.Enable( );
         }
 
+        public void EnableFollow(Entity entity)
+        {
+            _model.FollowEntity = entity;
+            Enable();
+        }
+
         /// <summary>
         /// Disable the camera input listeners
         /// </summary>

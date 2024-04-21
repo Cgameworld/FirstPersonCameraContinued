@@ -24,9 +24,14 @@ const register: ModRegistrar = (moduleRegistry) => {
                     if (element && !element.querySelector('div')) {
                         //console.log('Element .actions-section_X1x found:', element);
                         let div: HTMLDivElement = document.createElement('div');
-                        div.innerHTML = `<button class="ok button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_xGY" onClick="console.log(\`${currentEntity}\`)">
-    <img class="icon_Tdt icon_soN icon_Iwk" src="coui://uil/Colored/ArrowLeft.svg"></img>
+                        div.innerHTML = `<button class="ok button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_xGY">
+    <img class="icon_Tdt icon_soN icon_Iwk" src="coui://uil/Colored/ArrowRight.svg"></img>
 </button>`;
+                        let triggerButton = div.querySelector('button');
+                        if (triggerButton) {
+                            triggerButton.onclick = triggerFollowEntity;
+                        }
+                    
                         element.appendChild(div);
                         //console.log('New div appended:', div);
                         observer.disconnect();
@@ -42,6 +47,11 @@ const register: ModRegistrar = (moduleRegistry) => {
         if (targetNode) {
             observer.observe(targetNode, config);
         }
+    }
+        
+    const triggerFollowEntity = () => {
+        console.log("TEST BUTTON WORKS - triggerFollowEntity1")
+        trigger("fpc", "ActivateFPC")
     }
 
     moduleRegistry.append('GameTopRight', CustomMenuButton);

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Unity.Entities;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -23,6 +24,7 @@ namespace FirstPersonCameraContinued.Systems
             set;
         }
 
+        private Entity _selectedEntity;
 
         protected override void OnCreate()
         {
@@ -32,6 +34,11 @@ namespace FirstPersonCameraContinued.Systems
             Controller = existingObj.GetComponent<FirstPersonCameraController>();
 
             this.AddBinding(new TriggerBinding("fpc", "ActivateFPC", ActivateFPC));
+            AddBinding(new TriggerBinding<Entity>("fpc", "SelectedEntity", (Entity entity) =>
+            {
+                _selectedEntity = entity;
+                EnterFollow();
+            }));
         }
 
         private void ActivateFPC()
@@ -40,6 +47,14 @@ namespace FirstPersonCameraContinued.Systems
             Controller.Toggle();
             CameraInput input = Controller.GetCameraInput();
             input.Enable();
+        }
+
+        private void EnterFollow()
+        {
+            Mod.log.Info("EnterFollow activated!");
+            Controller.Toggle();
+            CameraInput input = Controller.GetCameraInput();
+            input.EnableFollow(_selectedEntity);
         }
     }
 }
