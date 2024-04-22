@@ -167,6 +167,7 @@ namespace FirstPersonCameraContinued
                 Disable( ); 
                 OnToggle?.Invoke( ); 
                 _model.HeightOffset = 0.0f;
+                _model.PositionFollowOffset = new float2(0f,0f);
             };
             action.Disable( );
             TemporaryActions.Add( action );
