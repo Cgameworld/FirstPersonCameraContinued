@@ -13,6 +13,10 @@ const register: ModRegistrar = (moduleRegistry) => {
         </div>;
     }
 
+    moduleRegistry.append('GameTopRight', CustomMenuButton);
+
+    /* not finished for now 
+
     //listen and inject the item into the DOM manually, can't figure out how to put the button in the same row in the official UI system
     const observeAndAppend = (): void => {
         const targetNode: HTMLElement | null = document.querySelector('.info-layout_BVk');
@@ -54,8 +58,6 @@ const register: ModRegistrar = (moduleRegistry) => {
         trigger("fpc", "EnterFollowFPC")
     }
 
-    moduleRegistry.append('GameTopRight', CustomMenuButton);
-
     var selectedEntity: Entity;
     selectedInfo.selectedEntity$.subscribe(SelectedEntityChanged);
     function SelectedEntityChanged(newEntity: Entity) {
@@ -81,7 +83,7 @@ const register: ModRegistrar = (moduleRegistry) => {
     })
 
 
-
+*/
 
 }
 

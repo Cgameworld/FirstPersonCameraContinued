@@ -4,30 +4,67 @@
 	<!--Name of the mod to display to players-->
 	<DisplayName Value="First Person Camera Continued" />
 	<!--Short description of the mod-->
-	<ShortDescription Value="Hello World" />
+	<ShortDescription Value="First Person Camera Continued" />
 	<!--Long description of the mod. Single line or multi line. Supports minimal markdown subset-->
-	<!--LongDescription Value="First PDX MOD test!! " /-->
 	<LongDescription>
-First PDX MOD test!! 
+# Intro
+
+First Person Camera Continued allows you to explore your city from the perspective of a cim either with a free camera near ground level or by following any cim/vehicle.
+
+This mod is a continuation of the First Person Camera mod by optimus-code (H3llb0und) with new features.
+
+# How To Use
+
+To enter first person mode, click on the video camera icon near the upper right hand corner or press Alt+F on your keyboard
+
+To move around use WASD, use SHIFT to walk faster and R/F keys to increase/decrease the camera height
+
+To enter follow mode, right click on an object in free camera first person mode
+
+To shift the camera forwards or backwards in follow mode press the UP ARROW and DOWN ARROW keys
+
+To exit follow mode press WASD, to exit first person mode, press ESC
+
+# Settings
+
+Several loaded parameters can also be configured from the main game settings, taking effect at the start of each first person session, specifically:
+
+- FOV
+- Walking Speed
+- Running Speed
+- Cim Height
+
+# Notes
+
+- Hold the right mouse button but don't release while in free camera first person mode to view the highlighted object before going into follow mode
+- Unsubscribe from the First Person Camera Temporary Reupload by Nyoko, or the original First Person Camera mod by H3llb0und to prevent compatibility issues
+
+# Conclusion
+
+If you like this mod be sure to leave an upvote! Thanks
 	</LongDescription>
 	<!--Thumbnail-->
 	<Thumbnail Value="Properties/Thumbnail.png" />
 	<!--Screenshot, can be set multiple times-->
-	<Screenshot Value="" />
+	<Screenshot Value="Properties/Gallery1.jpg" />
+  <Screenshot Value="Properties/Gallery2.jpg" />
+  <Screenshot Value="Properties/Gallery3.jpg" />
+  <Screenshot Value="Properties/Gallery4.jpg" />
 	<!--Tag, can be set multiple times-->
-	<Tag Value="" />
+	<Tag Value="Code Mod" />
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="" />
 	<!--Version of the mod-->
 	<ModVersion Value="1.0" />
 	<!--Recommended version of the base game to use the mod-->
-	<GameVersion Value="1.0.*" />
+	<GameVersion Value="1.*" />
 	<!--Dependency for the mod, can be set multiple times-->
-	<Dependency Id="" />
+	<Dependency Id="74417" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
 	<ChangeLog Value="" />
 	<!--ChangeLog>
 	</ChangeLog-->
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
-	<ExternalLink Type="" Url="" />
+  <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />
+  <ExternalLink Type="github" Url="https://github.com/Cgameworld/FirstPersonCameraContinued" />
 </Publish>
