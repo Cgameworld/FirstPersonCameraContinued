@@ -179,10 +179,12 @@ namespace FirstPersonCameraContinued
         {
             if (_model.FollowEntity != Entity.Null)
             {
+                Mod.log.Info("CameraMode.Follow");
                 _model.Mode = CameraMode.Follow;
             }
             else
             {
+                Mod.log.Info("CameraMode.Manual?");
                 _model.Mode = CameraMode.Manual;
             }
 
@@ -190,10 +192,9 @@ namespace FirstPersonCameraContinued
                 action.Enable( );
         }
 
-        public void EnableFollow(Entity entity)
+        public void SetEntity(Entity entity)
         {
             _model.FollowEntity = entity;
-            Enable();
         }
 
         /// <summary>
@@ -225,7 +226,7 @@ namespace FirstPersonCameraContinued
         /// Right click event for follow mechanics
         /// </summary>
         /// <param name="isDown"></param>
-        private void RightClick( bool isDown )
+        public void RightClick( bool isDown )
         {
             if ( !isDown && _model.Mode != CameraMode.Disabled )
                 OnFollow?.Invoke( );

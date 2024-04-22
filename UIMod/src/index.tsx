@@ -1,6 +1,6 @@
 import { ModRegistrar } from "cs2/modding";
 import { bindValue, trigger, useValue } from "cs2/api";
-import { selectedInfo } from "cs2/bindings";
+import { Entity, selectedInfo } from "cs2/bindings";
 
 const register: ModRegistrar = (moduleRegistry) => {
 
@@ -50,11 +50,18 @@ const register: ModRegistrar = (moduleRegistry) => {
     }
         
     const triggerFollowEntity = () => {
-        console.log("TEST BUTTON WORKS - triggerFollowEntity1")
-        trigger("fpc", "ActivateFPC")
+        console.log("2TEST BUTTON WORKS - triggerFollowEntity1")
+        trigger("fpc", "EnterFollowFPC")
     }
 
     moduleRegistry.append('GameTopRight', CustomMenuButton);
+
+    var selectedEntity: Entity;
+    selectedInfo.selectedEntity$.subscribe(SelectedEntityChanged);
+    function SelectedEntityChanged(newEntity: Entity) {
+        selectedEntity = newEntity;
+        trigger("fpc", "SelectedEntity", newEntity);
+    }
 
     //keep track of current selected entity - from plop the growables
     const selectedEntity$ = selectedInfo.selectedEntity$;
@@ -63,6 +70,7 @@ const register: ModRegistrar = (moduleRegistry) => {
     selectedEntity$.subscribe((entity) => {
         if (!entity.index) {
             currentEntity = null;
+            
             return entity
         }
         if (currentEntity != entity.index) {
