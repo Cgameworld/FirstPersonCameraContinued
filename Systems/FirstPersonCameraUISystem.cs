@@ -64,16 +64,10 @@ namespace FirstPersonCameraContinued.Systems
             CameraInput input = Controller.GetCameraInput();
             input.Enable();
 
-            StaticCoroutine.Start(TestTrigger(input, _selectedEntity));
-        }
-        static IEnumerator TestTrigger(CameraInput input, Entity _selectedEntity)
-        {
-            yield return new WaitForSeconds(3);
-            Mod.log.Info("delay thing ran?");
             var _cameraUpdateSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<CameraUpdateSystem>();
-            _cameraUpdateSystem.orbitCameraController.followedEntity = _selectedEntity;
+
             input.RightClick(true);
-            yield break;
+            _cameraUpdateSystem.orbitCameraController.followedEntity = _selectedEntity;
         }
 
     }
