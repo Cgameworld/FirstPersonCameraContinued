@@ -94,7 +94,7 @@ namespace FirstPersonCameraContinued
             action.Disable( );
 
             // We only want these actions to occur whilst the controller is active
-            TemporaryActions.Add( action );
+            TemporaryActions.Add(action);
 
             // Create the input action (offset height +)
             action = new InputAction("FPSController_HeightUp");
@@ -113,7 +113,10 @@ namespace FirstPersonCameraContinued
             action.AddBinding("<Keyboard>/f");
             action.performed += ctx =>
             {
-                _model.HeightOffset -= 1.0f;
+                if (!Keyboard.current.altKey.isPressed)
+                {
+                    _model.HeightOffset -= 1.0f;
+                }
             };
             action.Disable();
 
