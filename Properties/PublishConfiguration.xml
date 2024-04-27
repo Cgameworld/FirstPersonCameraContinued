@@ -62,8 +62,8 @@ If you like this mod be sure to leave an upvote! Thanks
 	<Dependency Id="74417" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
-    # v1.0.1
-    * Fix for F and ALT+F shorcut conflict
+# v1.0.1
+* Fix for F and ALT+F shortcut conflict
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />

@@ -1,4 +1,8 @@
-﻿using System;
+﻿using FirstPersonCamera.Helpers;
+using Game.Rendering;
+using Game.UI.InGame;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -16,7 +20,7 @@ namespace FirstPersonCameraContinued
         {
             get;
             set;
-        } = new List<InputAction>( );
+        } = new List<InputAction>();
 
         /// <summary>
         /// Event that occurs when the system is toggled on or off
@@ -56,42 +60,44 @@ namespace FirstPersonCameraContinued
         }
 
         private readonly CameraDataModel _model;
+        private static bool firstGameSpeedChangeEvent = true;
+        private static bool gameIsPausedState;
 
-        internal CameraInput( CameraDataModel model )
+        internal CameraInput(CameraDataModel model)
         {
             _model = model;
-            Configure( );
+            Configure();
         }
 
         /// <summary>
         /// Configure key shortcuts
         /// </summary>
-        private void Configure( )
+        private void Configure()
         {
-            var action = new InputAction( "ToggleFPSController" );
-            action.AddCompositeBinding( "ButtonWithOneModifier" )
-                .With( "Modifier", "<Keyboard>/alt" )
-                .With( "Button", "<Keyboard>/f" );
-            action.performed += ( a ) => Toggle( );
-            action.Enable( );
+            var action = new InputAction("ToggleFPSController");
+            action.AddCompositeBinding("ButtonWithOneModifier")
+                .With("Modifier", "<Keyboard>/alt")
+                .With("Button", "<Keyboard>/f");
+            action.performed += (a) => Toggle();
+            action.Enable();
 
             // Create the input action
-            action = new InputAction( "FPSController_Movement", binding: "<Gamepad>/leftStick" );
-            action.AddCompositeBinding( "Dpad" )
-                .With( "Up", "<Keyboard>/w" )       // W key for up
-                .With( "Down", "<Keyboard>/s" )     // S key for down
-                .With( "Left", "<Keyboard>/a" )     // A key for left
-                .With( "Right", "<Keyboard>/d" );   // D key for right
+            action = new InputAction("FPSController_Movement", binding: "<Gamepad>/leftStick");
+            action.AddCompositeBinding("Dpad")
+                .With("Up", "<Keyboard>/w")       // W key for up
+                .With("Down", "<Keyboard>/s")     // S key for down
+                .With("Left", "<Keyboard>/a")     // A key for left
+                .With("Right", "<Keyboard>/d");   // D key for right
 
-            action.performed += ctx => 
+            action.performed += ctx =>
             {
-                _model.Movement = ctx.ReadValue<Vector2>( );
+                _model.Movement = ctx.ReadValue<Vector2>();
 
-                if ( _model.Mode == CameraMode.Follow )
-                    OnUnfollow?.Invoke( );
+                if (_model.Mode == CameraMode.Follow)
+                    OnUnfollow?.Invoke();
             };
             action.canceled += ctx => _model.Movement = float2.zero;
-            action.Disable( );
+            action.Disable();
 
             // We only want these actions to occur whilst the controller is active
             TemporaryActions.Add(action);
@@ -135,7 +141,7 @@ namespace FirstPersonCameraContinued
             {
                 if (_model.Mode == CameraMode.Follow)
                 {
-                    _model.PositionFollowOffset += new float2(ctx.ReadValue<Vector2>().x*0.5f, ctx.ReadValue<Vector2>().y*0.5f);
+                    _model.PositionFollowOffset += new float2(ctx.ReadValue<Vector2>().x * 0.5f, ctx.ReadValue<Vector2>().y * 0.5f);
                     Mod.log.Info("_model.PositionFollowOffset: " + _model.PositionFollowOffset);
                 }
             };
@@ -145,41 +151,50 @@ namespace FirstPersonCameraContinued
             // We only want these actions to occur whilst the controller is active
             TemporaryActions.Add(action);
 
-            action = new InputAction( "FPSController_MousePosition", binding: "<Mouse>/delta" );
-            action.performed += ctx => _model.Look = ctx.ReadValue<Vector2>( );
+            action = new InputAction("FPSController_MousePosition", binding: "<Mouse>/delta");
+            action.performed += ctx => _model.Look = ctx.ReadValue<Vector2>();
             action.canceled += ctx => _model.Look = float2.zero;
-            action.Disable( );
+            action.Disable();
 
-            TemporaryActions.Add( action );
+            TemporaryActions.Add(action);
 
-            action = new InputAction( "FPSController_Sprint" );
-            action.AddBinding( "<Keyboard>/leftShift" );
+            action = new InputAction("FPSController_Sprint");
+            action.AddBinding("<Keyboard>/leftShift");
             action.performed += ctx => _model.IsSprinting = true;
             action.canceled += ctx => _model.IsSprinting = false;
-            action.Disable( );
-            TemporaryActions.Add( action );
+            action.Disable();
+            TemporaryActions.Add(action);
 
-            action = new InputAction( "FPSController_RightClick", binding: "<Mouse>/rightButton" );
-            action.performed += ctx => RightClick( true );
-            action.canceled += ctx => RightClick( false );
-            action.Disable( );
-            TemporaryActions.Add( action );
+            action = new InputAction("FPSController_RightClick", binding: "<Mouse>/rightButton");
+            action.performed += ctx => RightClick(true);
+            action.canceled += ctx => RightClick(false);
+            action.Disable();
+            TemporaryActions.Add(action);
 
-            action = new InputAction( "FPSController_Escape", binding: "<Keyboard>/escape" );
-            action.performed += ctx => {
-                Disable( ); 
-                OnToggle?.Invoke( ); 
+            // have space bar listening?
+            action = new InputAction("FPSController_Space");
+            action.AddBinding("<Keyboard>/space");
+            action.performed += (a) => ManualPauseResume();
+            action.Disable();
+            TemporaryActions.Add(action);
+
+            action = new InputAction("FPSController_Escape", binding: "<Keyboard>/escape");
+            action.performed += ctx =>
+            {
+                Disable();
+                OnToggle?.Invoke();
                 _model.HeightOffset = 0.0f;
-                _model.PositionFollowOffset = new float2(0f,0f);
+                _model.PositionFollowOffset = new float2(0f, 0f);
+                firstGameSpeedChangeEvent = true;
             };
-            action.Disable( );
-            TemporaryActions.Add( action );
+            action.Disable();
+            TemporaryActions.Add(action);
         }
 
         /// <summary>
         /// Enable the camera input listeners
         /// </summary>
-        public void Enable( )
+        public void Enable()
         {
             if (_model.FollowEntity != Entity.Null)
             {
@@ -192,8 +207,8 @@ namespace FirstPersonCameraContinued
                 _model.Mode = CameraMode.Manual;
             }
 
-            foreach ( var action in TemporaryActions )
-                action.Enable( );
+            foreach (var action in TemporaryActions)
+                action.Enable();
         }
 
         public void SetEntity(Entity entity)
@@ -204,38 +219,76 @@ namespace FirstPersonCameraContinued
         /// <summary>
         /// Disable the camera input listeners
         /// </summary>
-        private void Disable( )
+        private void Disable()
         {
-            foreach ( var action in TemporaryActions )
-                action.Disable( );
+            foreach (var action in TemporaryActions)
+                action.Disable();
         }
 
         /// <summary>
         /// Toggle the camera input listeners
         /// </summary>
-        private void Toggle( )
+        private void Toggle()
         {
-            if ( _model.IsTransitioningIn || _model.IsTransitioningOut )
+            if (_model.IsTransitioningIn || _model.IsTransitioningOut)
                 return;
 
-            if ( _model.Mode != CameraMode.Disabled )
-                Disable( );
+            if (_model.Mode != CameraMode.Disabled)
+                Disable();
             else
-                Enable( );
+                Enable();
 
-            OnToggle?.Invoke( );
+            OnToggle?.Invoke();
         }
 
         /// <summary>
         /// Right click event for follow mechanics
         /// </summary>
         /// <param name="isDown"></param>
-        public void RightClick( bool isDown )
+        public void RightClick(bool isDown)
         {
-            if ( !isDown && _model.Mode != CameraMode.Disabled )
-                OnFollow?.Invoke( );
+            if (!isDown && _model.Mode != CameraMode.Disabled)
+                OnFollow?.Invoke();
 
-            OnToggleSelectionMode?.Invoke( isDown );
+            OnToggleSelectionMode?.Invoke(isDown);
+        }
+
+        private void ManualPauseResume()
+        {
+            Mod.log.Info("space bar pressed?");
+
+            StaticCoroutine.Start(CheckIsPaused());
+        }
+
+        static IEnumerator CheckIsPaused()
+        {
+            //hacks? space bar registered before otherwise?
+            //yield return new WaitForEndOfFrame();
+            yield return new WaitForSeconds(1);
+
+            Mod.log.Info("RAN CHECKSPEED");
+
+            var _timeUISystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TimeUISystem>();
+            var setSimulationPausedMethod = typeof(TimeUISystem).GetMethod("SetSimulationPaused", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            
+            if (firstGameSpeedChangeEvent)
+            {
+                gameIsPausedState = _timeUISystem.IsPaused();
+                firstGameSpeedChangeEvent = false;
+            }
+
+            if (gameIsPausedState)
+            {
+                setSimulationPausedMethod.Invoke(_timeUISystem, new object[] { true });
+                gameIsPausedState = false;
+            }
+            else
+            {
+                setSimulationPausedMethod.Invoke(_timeUISystem, new object[] { false });
+                gameIsPausedState = true;
+            }
+
+            yield break;
         }
     }
 }
