@@ -186,6 +186,7 @@ namespace FirstPersonCameraContinued
                 _model.HeightOffset = 0.0f;
                 _model.PositionFollowOffset = new float2(0f, 0f);
                 firstGameSpeedChangeEvent = true;
+                Mod.log.Info("FPSController_Escape");
             };
             action.Disable();
             TemporaryActions.Add(action);
@@ -255,18 +256,15 @@ namespace FirstPersonCameraContinued
 
         private void ManualPauseResume()
         {
-            Mod.log.Info("space bar pressed?");
-
             StaticCoroutine.Start(CheckIsPaused());
         }
 
         static IEnumerator CheckIsPaused()
         {
             //hacks? space bar registered before otherwise?
-            //yield return new WaitForEndOfFrame();
-            yield return new WaitForSeconds(1);
+            yield return new WaitForEndOfFrame();
 
-            Mod.log.Info("RAN CHECKSPEED");
+            Mod.log.Info("ran CheckIsPaused()");
 
             var _timeUISystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TimeUISystem>();
             var setSimulationPausedMethod = typeof(TimeUISystem).GetMethod("SetSimulationPaused", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
