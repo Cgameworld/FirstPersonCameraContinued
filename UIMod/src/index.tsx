@@ -15,7 +15,7 @@ const register: ModRegistrar = (moduleRegistry) => {
 
     moduleRegistry.append('GameTopRight', CustomMenuButton);
 
-    /* not finished for now 
+  
 
     //listen and inject the item into the DOM manually, can't figure out how to put the button in the same row in the official UI system
     const observeAndAppend = (): void => {
@@ -28,8 +28,8 @@ const register: ModRegistrar = (moduleRegistry) => {
                     if (element && !element.querySelector('div')) {
                         //console.log('Element .actions-section_X1x found:', element);
                         let div: HTMLDivElement = document.createElement('div');
-                        div.innerHTML = `<button class="ok button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_xGY">
-    <img class="icon_Tdt icon_soN icon_Iwk" src="coui://uil/Colored/ArrowRight.svg"></img>
+                        div.innerHTML = `<button style="margin-left:5rem;margin-right:8rem" class="ok button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_xGY">
+    <img class="icon_Tdt icon_soN icon_Iwk" src="coui://uil/Colored/VideoCamera.svg"></img>
 </button>`;
                         let triggerButton = div.querySelector('button');
                         if (triggerButton) {
@@ -82,8 +82,6 @@ const register: ModRegistrar = (moduleRegistry) => {
         return entity;
     })
 
-
-*/
 
 }
 
