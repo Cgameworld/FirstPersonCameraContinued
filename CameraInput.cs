@@ -181,6 +181,9 @@ namespace FirstPersonCameraContinued
             action = new InputAction("FPSController_Escape", binding: "<Keyboard>/escape");
             action.performed += ctx =>
             {
+                if (_model.Mode == CameraMode.Follow)
+                    OnUnfollow?.Invoke();
+
                 Disable();
                 OnToggle?.Invoke();
                 _model.HeightOffset = 0.0f;
