@@ -5,6 +5,7 @@ using FirstPersonCameraContinued.MonoBehaviours;
 using FirstPersonCameraContinued.Systems;
 using Game.Rendering;
 using Game.UI;
+using Game.UI.InGame;
 using Game.Vehicles;
 using System;
 using System.Collections;
@@ -29,7 +30,7 @@ namespace FirstPersonCameraContinued.Systems
         }
 
         private Entity _selectedEntity;
-
+        private static bool isPausedBeforeActive;
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -60,6 +61,11 @@ namespace FirstPersonCameraContinued.Systems
         {
             Mod.log.Info("EnterFollow activated!");
             Mod.log.Info("_selectedEntity.Index" + _selectedEntity.Index);
+
+            //pause game
+            isPausedBeforeActive = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TimeUISystem>().IsPaused();
+            PauseGameFollow(true);
+
             Controller.Toggle();
             CameraInput input = Controller.GetCameraInput();
             input.Enable();
@@ -70,5 +76,13 @@ namespace FirstPersonCameraContinued.Systems
             _cameraUpdateSystem.orbitCameraController.followedEntity = _selectedEntity;
         }
 
+        public static void PauseGameFollow(bool pause)
+        {
+            if (!isPausedBeforeActive)
+            {
+                var setSimulationPausedMethod = typeof(TimeUISystem).GetMethod("SetSimulationPaused", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                setSimulationPausedMethod.Invoke(World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TimeUISystem>(), new object[] { pause });
+            }
+        }
     }
 }

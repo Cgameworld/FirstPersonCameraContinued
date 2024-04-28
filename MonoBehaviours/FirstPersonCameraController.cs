@@ -195,6 +195,14 @@ namespace FirstPersonCameraContinued.MonoBehaviours
                 IsActive = false; // Update the IsActive status to off now
                 _model.Mode = CameraMode.Disabled;
             }
+            else
+            {
+                Mod.log.Info("transition in complete?");
+                if (_model.Mode == CameraMode.Follow)
+                {
+                    FirstPersonCameraUISystem.PauseGameFollow(false);
+                }
+            }
         }
     }
 }
