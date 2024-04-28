@@ -197,7 +197,6 @@ namespace FirstPersonCameraContinued.MonoBehaviours
             }
             else
             {
-                Mod.log.Info("transition in complete?");
                 if (_model.Mode == CameraMode.Follow)
                 {
                     FirstPersonCameraUISystem.PauseGameFollow(false);

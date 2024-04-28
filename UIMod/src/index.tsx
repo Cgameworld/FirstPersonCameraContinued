@@ -31,7 +31,7 @@ const register: ModRegistrar = (moduleRegistry) => {
                             x?.__Type === "Game.UI.InGame.RoadSection" as any ||
                             x?.__Type === "Game.UI.InGame.ResidentsSection" as any
                         )) {
-                        console.log('Element .actions-section_X1x found:', element);
+                        //console.log('Element .actions-section_X1x found:', element);
                         let div: HTMLDivElement = document.createElement('div');
                         div.innerHTML = `<button style="margin-left:5rem;margin-right:8rem" class="ok button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_xGY">
     <img class="icon_Tdt icon_soN icon_Iwk" src="coui://uil/Colored/VideoCamera.svg"></img>
@@ -59,7 +59,6 @@ const register: ModRegistrar = (moduleRegistry) => {
     }
         
     const triggerFollowEntity = () => {
-        console.log("2TEST BUTTON WORKS - triggerFollowEntity1")
         trigger("fpc", "EnterFollowFPC")
     }
 
