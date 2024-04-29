@@ -200,6 +200,7 @@ namespace FirstPersonCameraContinued
         /// </summary>
         public void Enable()
         {
+            StaticCoroutine.Start(StartToast());
             if (_model.FollowEntity != Entity.Null)
             {
                 Mod.log.Info("CameraMode.Follow");
@@ -261,7 +262,6 @@ namespace FirstPersonCameraContinued
         {
             StaticCoroutine.Start(CheckIsPaused());
         }
-
         static IEnumerator CheckIsPaused()
         {
             //hacks? space bar registered before otherwise?
@@ -289,6 +289,14 @@ namespace FirstPersonCameraContinued
                 gameIsPausedState = true;
             }
 
+            yield break;
+        }
+
+        static IEnumerator StartToast()
+        {
+            yield return new WaitForEndOfFrame();
+            GameObject toastTextFPC = new GameObject("toastTextFPC");
+            toastTextFPC.AddComponent<ToastTextFPC>();
             yield break;
         }
     }

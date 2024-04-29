@@ -71,6 +71,9 @@
 		<Reference Include="Unity.Mathematics">
 			<Private>false</Private>
 		</Reference>
+		<Reference Include="UnityEngine.IMGUIModule">
+		  <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+		</Reference>
 	</ItemGroup>
 
 	<ItemGroup>
