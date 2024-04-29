@@ -250,12 +250,17 @@ namespace FirstPersonCameraContinued
         /// Right click event for follow mechanics
         /// </summary>
         /// <param name="isDown"></param>
-        public void RightClick(bool isDown)
+        private void RightClick(bool isDown)
         {
             if (!isDown && _model.Mode != CameraMode.Disabled)
                 OnFollow?.Invoke();
 
             OnToggleSelectionMode?.Invoke(isDown);
+        }
+
+        public void InvokeOnFollow()
+        {
+            OnFollow?.Invoke();
         }
 
         private void ManualPauseResume()

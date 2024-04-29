@@ -72,7 +72,7 @@ namespace FirstPersonCameraContinued.Systems
 
             var _cameraUpdateSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<CameraUpdateSystem>();
 
-            input.RightClick(true);
+            input.InvokeOnFollow();
             _cameraUpdateSystem.orbitCameraController.followedEntity = _selectedEntity;
         }
 
