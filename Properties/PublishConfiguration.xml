@@ -19,7 +19,7 @@ To enter first person mode, click on the video camera icon near the upper right 
 
 To move around use WASD, use SHIFT to walk faster and R/F keys to increase/decrease the camera height
 
-To enter follow mode, right click on an object in free camera first person mode
+To enter follow mode, right click on an object in free camera first person mode or click on the video camera button in the info panel for the object
 
 To shift the camera forwards or backwards in follow mode press the UP ARROW and DOWN ARROW keys
 
@@ -50,20 +50,24 @@ If you like this mod be sure to leave an upvote! Thanks
   <Screenshot Value="Properties/Gallery2.jpg" />
   <Screenshot Value="Properties/Gallery3.jpg" />
   <Screenshot Value="Properties/Gallery4.jpg" />
+  <Screenshot Value="Properties/Gallery5.jpg" />
 	<!--Tag, can be set multiple times-->
 	<Tag Value="Code Mod" />
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/first-person-camera-continued.1669532/" />
 	<!--Version of the mod-->
-	<ModVersion Value="1.0.2" />
+	<ModVersion Value="1.1" />
 	<!--Recommended version of the base game to use the mod-->
 	<GameVersion Value="1.*" />
 	<!--Dependency for the mod, can be set multiple times-->
 	<Dependency Id="74417" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
-# v1.0.2
-* Fix for play/pause issues while in first person mode 
+# v1.1
+* Added first person follow button in cim/vehicle info panel
+* Fixed play/pause issues while in first person mode 
+* Added "press ESC key to exit" message when entering first person mode
+* Added keyboard shortcut guide in mod settings
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />
