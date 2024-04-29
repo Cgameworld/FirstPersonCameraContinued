@@ -17,11 +17,6 @@ namespace FirstPersonCameraContinued
     [FileLocation(nameof(FirstPersonCameraContinued))]
     public class Setting : ModSetting
     {
-        public const string kSection = "Main";
-
-        public const string kButtonGroup = "Button";
-        public const string kToggleGroup = "Toggle";
-        public const string kSliderGroup = "Slider";
 
         public Setting(IMod mod) : base(mod)
         {
@@ -29,25 +24,20 @@ namespace FirstPersonCameraContinued
         }
 
         [SettingsUISlider(min = 10, max = 180, step = 1, scalarMultiplier = 1, unit = Unit.kInteger)]
-        [SettingsUISection(kSection, kSliderGroup)]
         public int FOV { get; set; }
 
         [SettingsUISlider(min = .05f, max = 2f, step = .05f, scalarMultiplier = 1, unit = Unit.kFloatTwoFractions)]
-        [SettingsUISection(kSection, kSliderGroup)]
         public float MovementSpeed { get; set; }
 
         [SettingsUISlider(min = .05f, max = 2f, step = .05f, scalarMultiplier = 1, unit = Unit.kFloatTwoFractions)]
-        [SettingsUISection(kSection, kSliderGroup)]
         public float RunSpeed { get; set; }
 
         [SettingsUISlider(min = .05f, max = 5f, step = .05f, scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
-        [SettingsUISection(kSection, kSliderGroup)]
         public float CimHeight { get; set; }
 
 
         [SettingsUIButton]
         [SettingsUIConfirmation]
-        [SettingsUISection(kSection, kButtonGroup)]
         public bool ResetModSettings
         {
             set
@@ -57,6 +47,11 @@ namespace FirstPersonCameraContinued
             }
 
         }
+
+        [SettingsUIMultilineText]
+        public string MultilineText => "List of Keyboard Shortcuts in First Person Mode\n" +
+            "To move around use WASD, use SHIFT to walk faster and R/F keys to increase/decrease the camera height";
+
         //sometimes saving doesn't happen when changing values to their default? - hack to guarantee
         [SettingsUIHidden]
         public int MakeSureSave { get; set; }
@@ -84,9 +79,6 @@ namespace FirstPersonCameraContinued
             return new Dictionary<string, string>
             {
                 { m_Setting.GetSettingsLocaleID(), "First Person Camera Continued" },
-                { m_Setting.GetOptionTabLocaleID(Setting.kSection), "Camera Speed" },
-
-                { m_Setting.GetOptionGroupLocaleID(Setting.kSliderGroup), "Sliders" },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.FOV)), "FOV" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.FOV)), $"Set the camera FOV when entering First Person Mode" },
@@ -101,11 +93,12 @@ namespace FirstPersonCameraContinued
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.CimHeight)), $"Set the default height of the cim in free mode" },
 
 
-                { m_Setting.GetOptionGroupLocaleID(Setting.kButtonGroup), "Maintenance" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetModSettings)), "Reset All Settings" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ResetModSettings)), "Reset Mod Settings to Default Values" },
                 { m_Setting.GetOptionWarningLocaleID(nameof(Setting.ResetModSettings)), "Are you sure you want to reset all mod settings?" },
 
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.MultilineText)), "Keyboard Shortcuts in First Person Mode:" +
+                "\nWASD - move around\nSHIFT - walk faster\nR/F - increase/decrease the camera height\nUP/DOWN ARROW - shift camera forwards/backwards in follow mode" },
             };
         }
 
