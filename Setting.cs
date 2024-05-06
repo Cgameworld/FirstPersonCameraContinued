@@ -35,6 +35,9 @@ namespace FirstPersonCameraContinued
         [SettingsUISlider(min = .05f, max = 5f, step = .05f, scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
         public float CimHeight { get; set; }
 
+        [SettingsUISlider(min = 0.8f, max = 3f, step = .1f, scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
+        public float TransitionSpeedFactor { get; set; }
+
 
         [SettingsUIButton]
         [SettingsUIConfirmation]
@@ -63,6 +66,7 @@ namespace FirstPersonCameraContinued
             MovementSpeed = 0.1f;
             RunSpeed = 0.35f;
             CimHeight = 1.7f;
+            TransitionSpeedFactor = 1f;
         }
 
     }
@@ -91,6 +95,9 @@ namespace FirstPersonCameraContinued
                 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.CimHeight)), "Cim Height" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.CimHeight)), $"Set the default height of the cim in free mode" },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TransitionSpeedFactor)), "Transition Speed Factor" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TransitionSpeedFactor)), $"Adjust the enter/exit transition speed" },
 
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetModSettings)), "Reset All Settings" },

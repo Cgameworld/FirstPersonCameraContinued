@@ -13,7 +13,7 @@ namespace FirstPersonCameraContinued
     /// </summary>
     internal class VirtualCameraRig
     {
-        const float TRANSITION_DAMPEN = 3.5f;
+        private float TRANSITION_DAMPEN = 3.5f;
         private float FOV_END = 70f;
 
         /// <summary>
@@ -113,6 +113,7 @@ namespace FirstPersonCameraContinued
             if (Mod.FirstPersonModSettings != null)
             {
                 FOV_END = Mod.FirstPersonModSettings.FOV;
+                TRANSITION_DAMPEN = Mod.FirstPersonModSettings.TransitionSpeedFactor * 3.5f;
             }
 
             // Check if transitioning, we dampen the position more for smoothness
