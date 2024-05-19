@@ -1,6 +1,8 @@
 import { ModRegistrar } from "cs2/modding";
 import { bindValue, trigger, useValue } from "cs2/api";
 import { Entity, selectedInfo } from "cs2/bindings";
+import { VanillaComponentsResolver } from "../types/internal";
+import ReactDOM from 'react-dom';
 
 const register: ModRegistrar = (moduleRegistry) => {
 
@@ -37,13 +39,7 @@ const register: ModRegistrar = (moduleRegistry) => {
                         if (!existingDiv) {
                             let div: HTMLDivElement = document.createElement('div');
                             div.className = 'fpc-injected-div';
-                            div.innerHTML = `<button style="margin-left:6rem;margin-right:8rem" class="ok button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_xGY">
-    <img class="icon_Tdt icon_soN icon_Iwk" src="coui://uil/Colored/VideoCamera.svg"></img>
-</button>`;
-                            let triggerButton = div.querySelector('button');
-                            if (triggerButton) {
-                                triggerButton.onclick = triggerFollowEntity;
-                            }
+                            ReactDOM.render(FPVInfoWindowButton(), div);
 
                             // Insert after the first button in the .actions-section_X1x element
                             let firstButton: HTMLButtonElement | null = element.querySelector('button');
@@ -53,7 +49,7 @@ const register: ModRegistrar = (moduleRegistry) => {
                                 element.appendChild(div);
                             }
 
-                            //console.log('New div appended:', div);
+                            console.log('New div appended:', div);
                             observer.disconnect();
                             //console.log('Observer disconnected');
                             break;
@@ -70,10 +66,18 @@ const register: ModRegistrar = (moduleRegistry) => {
         }
     }
 
-        
-    const triggerFollowEntity = () => {
-        trigger("fpc", "EnterFollowFPC")
+    const FPVInfoWindowButton = () => {
+        const { DescriptionTooltip } = VanillaComponentsResolver.instance;
+
+        return (
+            <DescriptionTooltip title="First Person Camera" description="Follow the selected item in first person camera mode."> 
+                <button style={{ marginLeft: '6rem', marginRight: '8rem' }} className="ok button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_xGY" onClick={() => trigger("fpc", "EnterFollowFPC")}>
+                    <img className="icon_Tdt icon_soN icon_Iwk" src="coui://uil/Colored/VideoCamera.svg"></img>
+                </button>
+            </DescriptionTooltip>
+        );
     }
+
 
     var selectedEntity: Entity;
     selectedInfo.selectedEntity$.subscribe(SelectedEntityChanged);
