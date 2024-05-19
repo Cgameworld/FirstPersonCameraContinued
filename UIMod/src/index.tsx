@@ -29,14 +29,15 @@ const register: ModRegistrar = (moduleRegistry) => {
                     if (element && !middleSections$.value.some(x =>
                         x?.__Type === "Game.UI.InGame.LevelSection" as any ||
                         x?.__Type === "Game.UI.InGame.RoadSection" as any ||
-                        x?.__Type === "Game.UI.InGame.ResidentsSection" as any
+                        x?.__Type === "Game.UI.InGame.ResidentsSection" as any ||
+                        x?.__Type === "Game.UI.InGame.UpkeepSection" as any
                     )) {
                         //console.log('Element .actions-section_X1x found:', element);
                         let existingDiv: HTMLDivElement | null = element.querySelector('div.fpc-injected-div');
                         if (!existingDiv) {
                             let div: HTMLDivElement = document.createElement('div');
                             div.className = 'fpc-injected-div';
-                            div.innerHTML = `<button style="margin-left:5rem;margin-right:8rem" class="ok button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_xGY">
+                            div.innerHTML = `<button style="margin-left:6rem;margin-right:8rem" class="ok button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_xGY">
     <img class="icon_Tdt icon_soN icon_Iwk" src="coui://uil/Colored/VideoCamera.svg"></img>
 </button>`;
                             let triggerButton = div.querySelector('button');
@@ -44,7 +45,14 @@ const register: ModRegistrar = (moduleRegistry) => {
                                 triggerButton.onclick = triggerFollowEntity;
                             }
 
-                            element.appendChild(div);
+                            // Insert after the first button in the .actions-section_X1x element
+                            let firstButton: HTMLButtonElement | null = element.querySelector('button');
+                            if (firstButton && firstButton.nextSibling) {
+                                element.insertBefore(div, firstButton.nextSibling);
+                            } else {
+                                element.appendChild(div);
+                            }
+
                             //console.log('New div appended:', div);
                             observer.disconnect();
                             //console.log('Observer disconnected');
