@@ -26,26 +26,30 @@ const register: ModRegistrar = (moduleRegistry) => {
             for (let mutation of mutationsList) {
                 if (mutation.type === 'childList') {
                     let element: HTMLElement | null = document.querySelector('.actions-section_X1x');
-                    if (element && !element.querySelector('div') && !middleSections$.value.some(x =>
-                            x?.__Type === "Game.UI.InGame.LevelSection" as any ||
-                            x?.__Type === "Game.UI.InGame.RoadSection" as any ||
-                            x?.__Type === "Game.UI.InGame.ResidentsSection" as any
-                        )) {
+                    if (element && !middleSections$.value.some(x =>
+                        x?.__Type === "Game.UI.InGame.LevelSection" as any ||
+                        x?.__Type === "Game.UI.InGame.RoadSection" as any ||
+                        x?.__Type === "Game.UI.InGame.ResidentsSection" as any
+                    )) {
                         //console.log('Element .actions-section_X1x found:', element);
-                        let div: HTMLDivElement = document.createElement('div');
-                        div.innerHTML = `<button style="margin-left:5rem;margin-right:8rem" class="ok button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_xGY">
+                        let existingDiv: HTMLDivElement | null = element.querySelector('div.fpc-injected-div');
+                        if (!existingDiv) {
+                            let div: HTMLDivElement = document.createElement('div');
+                            div.className = 'fpc-injected-div';
+                            div.innerHTML = `<button style="margin-left:5rem;margin-right:8rem" class="ok button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_xGY">
     <img class="icon_Tdt icon_soN icon_Iwk" src="coui://uil/Colored/VideoCamera.svg"></img>
 </button>`;
-                        let triggerButton = div.querySelector('button');
-                        if (triggerButton) {
-                            triggerButton.onclick = triggerFollowEntity;
+                            let triggerButton = div.querySelector('button');
+                            if (triggerButton) {
+                                triggerButton.onclick = triggerFollowEntity;
+                            }
+
+                            element.appendChild(div);
+                            //console.log('New div appended:', div);
+                            observer.disconnect();
+                            //console.log('Observer disconnected');
+                            break;
                         }
-                    
-                        element.appendChild(div);
-                        //console.log('New div appended:', div);
-                        observer.disconnect();
-                        //console.log('Observer disconnected');
-                        break;
                     }
                 }
             }
@@ -57,6 +61,7 @@ const register: ModRegistrar = (moduleRegistry) => {
             observer.observe(targetNode, config);
         }
     }
+
         
     const triggerFollowEntity = () => {
         trigger("fpc", "EnterFollowFPC")
