@@ -6,12 +6,16 @@ import ReactDOM from 'react-dom';
 
 const register: ModRegistrar = (moduleRegistry) => {
 
+    const { DescriptionTooltip } = VanillaComponentsResolver.instance;
+
     const CustomMenuButton = () => {
         return <div>
+            <DescriptionTooltip title="First Person Camera" description="Click to enter free camera first person mode."> 
             <button id="MapTextureReplacer-MainGameButton" className="button_ke4 button_ke4 button_h9N" onClick={() => trigger("fpc", "ActivateFPC")}>
                 <div className="tinted-icon_iKo icon_be5" style={{ backgroundImage: 'url(coui://uil/Standard/VideoCamera.svg)', backgroundPositionX: '2rem', backgroundPositionY: '2rem', backgroundColor: 'rgba(255,255,255,0)', backgroundSize: '35rem 35rem' }}>
                 </div>
-            </button>
+                </button>
+            </DescriptionTooltip>
         </div>;
     }
 
@@ -67,8 +71,6 @@ const register: ModRegistrar = (moduleRegistry) => {
     }
 
     const FPVInfoWindowButton = () => {
-        const { DescriptionTooltip } = VanillaComponentsResolver.instance;
-
         return (
             <DescriptionTooltip title="First Person Camera" description="Follow the selected item in first person camera mode."> 
                 <button style={{ marginLeft: '6rem', marginRight: '8rem' }} className="ok button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_xGY" onClick={() => trigger("fpc", "EnterFollowFPC")}>
