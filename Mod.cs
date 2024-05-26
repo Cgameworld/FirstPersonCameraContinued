@@ -5,6 +5,7 @@ using Colossal.Logging;
 using Colossal.IO.AssetDatabase;
 using Game.SceneFlow;
 using Game.Settings;
+using static Cinemachine.CinemachineTriggerAction;
 
 namespace FirstPersonCameraContinued
 {
@@ -22,7 +23,8 @@ namespace FirstPersonCameraContinued
 
             FirstPersonModSettings = new Setting(this);
             FirstPersonModSettings.RegisterInOptionsUI();
-            GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(FirstPersonModSettings));
+
+            Localization.LoadTranslations(FirstPersonModSettings, log);
 
             AssetDatabase.global.LoadSettings(nameof(FirstPersonCameraContinued), FirstPersonModSettings, new Setting(this));
         }

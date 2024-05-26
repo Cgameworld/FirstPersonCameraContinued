@@ -69,47 +69,7 @@ namespace FirstPersonCameraContinued
             TransitionSpeedFactor = 1f;
         }
 
-    }
-
-    public class LocaleEN : IDictionarySource
-    {
-        private readonly Setting m_Setting;
-        public LocaleEN(Setting setting)
-        {
-            m_Setting = setting;
-        }
-        public IEnumerable<KeyValuePair<string, string>> ReadEntries(IList<IDictionaryEntryError> errors, Dictionary<string, int> indexCounts)
-        {
-            return new Dictionary<string, string>
-            {
-                { m_Setting.GetSettingsLocaleID(), "First Person Camera Continued" },
-
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.FOV)), "FOV" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.FOV)), $"Set the camera FOV when entering First Person Mode" },
-
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.MovementSpeed)), "Walking Speed" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.MovementSpeed)), $"Set the walking speed when in free mode" },
-
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.RunSpeed)), "Running Speed" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.RunSpeed)), $"Set the running speed when in free mode, hold SHIFT to activate" },
-                
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.CimHeight)), "Cim Height" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.CimHeight)), $"Set the default height of the cim in free mode" },
-
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TransitionSpeedFactor)), "Transition Speed Factor" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TransitionSpeedFactor)), $"Adjust the enter/exit transition speed" },
-
-
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetModSettings)), "Reset All Settings" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ResetModSettings)), "Reset Mod Settings to Default Values" },
-                { m_Setting.GetOptionWarningLocaleID(nameof(Setting.ResetModSettings)), "Are you sure you want to reset all mod settings?" },
-
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.MultilineText)), "Keyboard Shortcuts in First Person Mode:" +
-                "\nWASD - move around\nSHIFT - walk faster\nR/F - increase/decrease the camera height\nUP/DOWN ARROW - shift camera forwards/backwards in follow mode" },
-            };
-        }
-
-        public void Unload()
+       public void Unload()
         {
 
         }
