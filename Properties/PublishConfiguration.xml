@@ -56,18 +56,17 @@ If you like this mod be sure to leave an upvote! Thanks
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/first-person-camera-continued.1669532/" />
 	<!--Version of the mod-->
-	<ModVersion Value="1.1" />
+	<ModVersion Value="1.2" />
 	<!--Recommended version of the base game to use the mod-->
 	<GameVersion Value="1.*" />
 	<!--Dependency for the mod, can be set multiple times-->
 	<Dependency Id="74417" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
-# v1.1
-* Added first person follow button in cim/vehicle info panel
-* Fixed play/pause issues while in first person mode 
-* Added "press ESC key to exit" message when entering first person mode
-* Added keyboard shortcut guide in mod settings
+# v1.2
+* Fixed issue with follow button in cim/vehicle info panel not appearing when Extra Detailing Tools mod is installed
+* Added transition speed adjustment in settings
+* Added tooltips to follow/free camera first person buttons
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />
