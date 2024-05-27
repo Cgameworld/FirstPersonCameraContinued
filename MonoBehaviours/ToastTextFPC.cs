@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Game.SceneFlow;
+using UnityEngine;
 
 public class ToastTextFPC : MonoBehaviour
 {
@@ -60,6 +61,7 @@ public class ToastTextFPC : MonoBehaviour
 
     private void OnGUI()
     {
-        GUI.Label(new Rect(15, 15, 10, 10), "Press ESC key to exit", style);
+        GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextEnter", out string translatedText);
+        GUI.Label(new Rect(15, 15, 10, 10), translatedText, style);
     }
 }
