@@ -1,6 +1,7 @@
 import { ModRegistrar } from "cs2/modding";
 import { bindValue, trigger, useValue } from "cs2/api";
 import { Entity, selectedInfo } from "cs2/bindings";
+import { useLocalization } from "cs2/l10n";
 import { VanillaComponentsResolver } from "../types/internal";
 import ReactDOM from 'react-dom';
 
@@ -8,9 +9,22 @@ const register: ModRegistrar = (moduleRegistry) => {
 
     const { DescriptionTooltip } = VanillaComponentsResolver.instance;
 
+    // Translation.
+    function translate(key: string) {
+        const { translate } = useLocalization();
+        return translate(key);
+    }
+
+    let tooltipDescriptionFreeCamera: string | null;
+    let tooltipDescriptionFollowCamera: string | null;
+
     const CustomMenuButton = () => {
+
+        tooltipDescriptionFreeCamera = translate("FirstPersonCameraContinued.TooltipFreeCamera");
+        tooltipDescriptionFollowCamera = translate("FirstPersonCameraContinued.TooltipFollowCamera");
+
         return <div>
-            <DescriptionTooltip title="First Person Camera" description="Click to enter free camera first person mode."> 
+            <DescriptionTooltip title="First Person Camera" description={tooltipDescriptionFreeCamera}> 
             <button id="MapTextureReplacer-MainGameButton" className="button_ke4 button_ke4 button_h9N" onClick={() => trigger("fpc", "ActivateFPC")}>
                 <div className="tinted-icon_iKo icon_be5" style={{ backgroundImage: 'url(coui://uil/Standard/VideoCamera.svg)', backgroundPositionX: '2rem', backgroundPositionY: '2rem', backgroundColor: 'rgba(255,255,255,0)', backgroundSize: '35rem 35rem' }}>
                 </div>
@@ -72,7 +86,7 @@ const register: ModRegistrar = (moduleRegistry) => {
 
     const FPVInfoWindowButton = () => {
         return (
-            <DescriptionTooltip title="First Person Camera" description="Follow the selected item in first person camera mode."> 
+            <DescriptionTooltip title="First Person Camera" description={tooltipDescriptionFollowCamera}> 
                 <button style={{ marginLeft: '6rem', marginRight: '8rem' }} className="ok button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_xGY" onClick={() => trigger("fpc", "EnterFollowFPC")}>
                     <img className="icon_Tdt icon_soN icon_Iwk" src="coui://uil/Colored/VideoCamera.svg"></img>
                 </button>
