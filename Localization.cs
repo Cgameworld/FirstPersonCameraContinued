@@ -79,7 +79,8 @@ namespace FirstPersonCameraContinued
                                     {
                                         break;
                                     }
-
+                                    // Fix multiline text issue
+                                    line = line.Replace("\\n", "\n");
                                     // Skip empty lines.
                                     if (string.IsNullOrWhiteSpace(line) || line.Length == 0)
                                     {
