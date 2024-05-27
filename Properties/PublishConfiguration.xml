@@ -35,6 +35,15 @@ Several loaded parameters can also be configured from the main game settings, ta
 - Cim Height
 - Transition Speed
 
+# Localization
+
+Currently Supported Languages:
+
+- English (100%)
+- German (57%)
+
+Help translate this mod via Crowdin, check the sidebar for the link to the translation page
+
 # Notes
 
 - Hold the right mouse button but don't release while in free camera first person mode to view the highlighted object before going into follow mode
@@ -64,12 +73,14 @@ If you like this mod be sure to leave an upvote! Thanks
 	<Dependency Id="74417" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
-# v1.2
-* Fixed issue with follow button in cim/vehicle info panel not appearing when Extra Detailing Tools mod is installed
-* Added transition speed adjustment in settings
-* Added tooltips to follow/free camera first person buttons
+    # v1.2
+    * Fixed issue with follow button in cim/vehicle info panel not appearing when Extra Detailing Tools mod is installed
+    * Added transition speed factor adjustment in settings
+    * Added localization support
+    * Added tooltips to follow/free camera first person buttons
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />
   <ExternalLink Type="github" Url="https://github.com/Cgameworld/FirstPersonCameraContinued" />
+  <ExternalLink Type="crowdin" Url="https://crowdin.com/project/cs2-first-person-camera-continued" />
 </Publish>

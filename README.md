@@ -24,6 +24,11 @@ Several loaded parameters can also be configured from the main game settings, ta
 - Walking Speed
 - Running Speed
 - Cim Height
+- Transition Speed
+
+# Translation
+
+Help translate this mod here [Crowdin](https://crowdin.com/project/cs2-first-person-camera-continued)
 
 # Notes
 

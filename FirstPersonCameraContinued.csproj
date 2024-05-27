@@ -25,9 +25,11 @@
 	<Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
 	<Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets" />
 	<ItemGroup>
+	  <None Remove="l10n\de-DE.csv" />
 	  <None Remove="l10n\en-US.csv" />
 	</ItemGroup>
 	<ItemGroup>
+	  <EmbeddedResource Include="l10n\de-DE.csv" />
 	  <EmbeddedResource Include="l10n\en-US.csv" />
 	</ItemGroup>
 
