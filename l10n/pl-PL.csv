@@ -14,5 +14,5 @@
 "Options.OPTION:ResetModSettings","Zresetuj wszystkie ustawienia"
 "Options.OPTION_DESCRIPTION:ResetModSettings","Zresetuj ustawienia moda do wartości domyślnych"
 "Options.WARNING:ResetModSettings","Czy na pewno chcesz zresetować wszystkie ustawienia moda?"
-"Options.OPTION:MultilineText","Skróty klawiszowe w trybie pierwszej osoby: \nWASD - poruszanie się, \nSHIFT - bieg, \nR/F - zwiększa/zmniejsza wysokość kamery, Strzałka w \nGórę/Dół - przesuwanie kamery do przodu/tyłu w trybie śledzenia"
+"Options.OPTION:MultilineText","Skróty klawiszowe w trybie pierwszej osoby: \nWASD - poruszanie się, \nSHIFT - bieg, \nR/F - zwiększa/zmniejsza wysokość kamery, \nStrzałka w Górę/Dół - przesuwanie kamery do przodu/tyłu w trybie śledzenia"
 "Options.SECTION:[cgameworld.FirstPersonCameraContinued","First Person Camera Continued"

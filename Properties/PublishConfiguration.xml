@@ -78,13 +78,11 @@ If you like this mod be sure to leave an upvote! Thanks
 	<Dependency Id="74417" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
-# v1.2.1
-* Added Chinese (Simplified) translation - thanks baka-gourd
-* Added French translation - thanks mtouverey/Edou24
-* Completed German translation - thanks GuysLetsPlay/Konsi
-* Added Polish translation - thanks karmel68
-* Added Russian translation (93%) - thanks slobodskoy
-* Added Spanish translation - thanks elGendo87
+# v1.2.2
+* Removed first person follow button in decal info view panel
+* Added Portugese translation - thanks brasildeluna
+* Updated German translation - thanks GuysLetsPlay
+* Update Polish translation - thanks karlmel68
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />
