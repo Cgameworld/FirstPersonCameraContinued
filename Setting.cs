@@ -11,6 +11,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unity.Entities;
+using Game.Input;
+using UnityEngine.InputSystem;
 
 namespace FirstPersonCameraContinued
 {
@@ -22,6 +24,7 @@ namespace FirstPersonCameraContinued
         {
             SetDefaults();
         }
+
 
         [SettingsUISlider(min = 10, max = 180, step = 1, scalarMultiplier = 1, unit = Unit.kInteger)]
         public int FOV { get; set; }
@@ -38,9 +41,14 @@ namespace FirstPersonCameraContinued
         [SettingsUISlider(min = 0.8f, max = 3f, step = .1f, scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
         public float TransitionSpeedFactor { get; set; }
 
+        public const string FreeModeKeybindName = "FreeModeKeybind";
+
+        [SettingsUIKeyboardBinding(Key.F, actionName: FreeModeKeybindName, alt: true)]
+        public ProxyBinding FreeModeKeybind { get; set; }
 
         [SettingsUIButton]
         [SettingsUIConfirmation]
+
         public bool ResetModSettings
         {
             set

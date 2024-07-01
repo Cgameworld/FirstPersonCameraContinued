@@ -22,6 +22,7 @@ namespace FirstPersonCameraContinued
             _harmony.PatchAll(typeof(Mod).Assembly);
 
             FirstPersonModSettings = new Setting(this);
+            FirstPersonModSettings.RegisterKeyBindings();
             FirstPersonModSettings.RegisterInOptionsUI();
 
             Localization.LoadTranslations(FirstPersonModSettings, log);
