@@ -4,9 +4,6 @@ using Game.UI.InGame;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -77,155 +74,126 @@ namespace FirstPersonCameraContinued
         /// </summary>
         private void Configure()
         {
-            //AnarchyMod.Instance.Settings.GetAction(AnarchyModSettings.ElevationActionName);
-            if (Mod.FirstPersonModSettings != null)
+            var action = new InputAction("ToggleFPSController");
+            action.AddCompositeBinding("ButtonWithOneModifier")
+                .With("Modifier", "<Keyboard>/alt")
+                .With("Button", "<Keyboard>/f");
+            action.performed += (a) => Toggle();
+            action.Enable();
+
+            // Create the input action
+            action = new InputAction("FPSController_Movement", binding: "<Gamepad>/leftStick");
+            action.AddCompositeBinding("Dpad")
+                .With("Up", "<Keyboard>/w")       // W key for up
+                .With("Down", "<Keyboard>/s")     // S key for down
+                .With("Left", "<Keyboard>/a")     // A key for left
+                .With("Right", "<Keyboard>/d");   // D key for right
+
+            action.performed += ctx =>
             {
-                var keybind = Mod.FirstPersonModSettings.GetAction(Setting.FreeModeKeybindName);
-                string modifier = "alt";
-                string button = "f";
+                _model.Movement = ctx.ReadValue<Vector2>();
 
-                foreach (var binding in keybind.bindings)
+                if (_model.Mode == CameraMode.Follow)
+                    OnUnfollow?.Invoke();
+            };
+            action.canceled += ctx => _model.Movement = float2.zero;
+            action.Disable();
+
+            // We only want these actions to occur whilst the controller is active
+            TemporaryActions.Add(action);
+
+            // Create the input action (offset height +)
+            action = new InputAction("FPSController_HeightUp");
+            action.AddBinding("<Keyboard>/r");
+            action.performed += ctx =>
+            {
+                _model.HeightOffset += 1.0f;
+            };
+            action.Disable();
+
+            // We only want these actions to occur whilst the controller is active
+            TemporaryActions.Add(action);
+
+            // Create the input action (offset height -)
+            action = new InputAction("FPSController_HeightDown");
+            action.AddBinding("<Keyboard>/f");
+            action.performed += ctx =>
+            {
+                if (!Keyboard.current.altKey.isPressed)
                 {
-                    Mod.log.Info(binding.ToString());
-                    var match = Regex.Match(binding.ToString(), "<([^>]+)>/([a-z]+) \\+ <([^>]+)>/([a-z]+)");
-
-                    if (match.Success)
-                    {
-                        modifier = match.Groups[1].Value;
-                        button = match.Groups[2].Value;
-                    }
-                    else
-                    {
-                        Mod.log.Error("Free Camera Keyboard Set Shortcut Invalid");
-                    }
+                    _model.HeightOffset -= 1.0f;
                 }
+            };
+            action.Disable();
 
-                var action = new InputAction("ToggleFPSController");
-                action.AddCompositeBinding("ButtonWithOneModifier")
-                    .With("Modifier", $"<Keyboard>/{modifier}")
-                    .With("Button", $"<Keyboard>/{button}");
-                action.performed += (a) => Toggle();
-                action.Enable();
+            // We only want these actions to occur whilst the controller is active
+            TemporaryActions.Add(action);
 
-                // Create the input action
-                action = new InputAction("FPSController_Movement", binding: "<Gamepad>/leftStick");
-                action.AddCompositeBinding("Dpad")
-                    .With("Up", "<Keyboard>/w")       // W key for up
-                    .With("Down", "<Keyboard>/s")     // S key for down
-                    .With("Left", "<Keyboard>/a")     // A key for left
-                    .With("Right", "<Keyboard>/d");   // D key for right
+            // Create the input action - move follow camera offset
+            action = new InputAction("FPSController_MovementFollow", binding: "<Gamepad>/rightStick");
+            action.AddCompositeBinding("Dpad")
+                .With("Up", "<Keyboard>/upArrow")       // W key for up
+                .With("Down", "<Keyboard>/downArrow")     // S key for down
+                .With("Left", "<Keyboard>/leftArrow")     // A key for left
+                .With("Right", "<Keyboard>/rightArrow");   // D key for right
 
-                action.performed += ctx =>
-                {
-                    _model.Movement = ctx.ReadValue<Vector2>();
-
-                    if (_model.Mode == CameraMode.Follow)
-                        OnUnfollow?.Invoke();
-                };
-                action.canceled += ctx => _model.Movement = float2.zero;
-                action.Disable();
-
-                // We only want these actions to occur whilst the controller is active
-                TemporaryActions.Add(action);
-
-                // Create the input action (offset height +)
-                action = new InputAction("FPSController_HeightUp");
-                action.AddBinding("<Keyboard>/r");
-                action.performed += ctx =>
-                {
-                    _model.HeightOffset += 1.0f;
-                };
-                action.Disable();
-
-                // We only want these actions to occur whilst the controller is active
-                TemporaryActions.Add(action);
-
-                // Create the input action (offset height -)
-                action = new InputAction("FPSController_HeightDown");
-                action.AddBinding("<Keyboard>/f");
-                action.performed += ctx =>
-                {
-                    if (!Keyboard.current.altKey.isPressed)
-                    {
-                        _model.HeightOffset -= 1.0f;
-                    }
-                };
-                action.Disable();
-
-                // We only want these actions to occur whilst the controller is active
-                TemporaryActions.Add(action);
-
-                // Create the input action - move follow camera offset
-                action = new InputAction("FPSController_MovementFollow", binding: "<Gamepad>/rightStick");
-                action.AddCompositeBinding("Dpad")
-                    .With("Up", "<Keyboard>/upArrow")       // W key for up
-                    .With("Down", "<Keyboard>/downArrow")     // S key for down
-                    .With("Left", "<Keyboard>/leftArrow")     // A key for left
-                    .With("Right", "<Keyboard>/rightArrow");   // D key for right
-
-                action.performed += ctx =>
-                {
-                    if (_model.Mode == CameraMode.Follow)
-                    {
-                        _model.PositionFollowOffset += new float2(ctx.ReadValue<Vector2>().x * 0.5f, ctx.ReadValue<Vector2>().y * 0.5f);
-                        Mod.log.Info("_model.PositionFollowOffset: " + _model.PositionFollowOffset);
-                    }
-                };
-                action.canceled += ctx => _model.Movement = float2.zero;
-                action.Disable();
-
-                // We only want these actions to occur whilst the controller is active
-                TemporaryActions.Add(action);
-
-                action = new InputAction("FPSController_MousePosition", binding: "<Mouse>/delta");
-                action.performed += ctx => _model.Look = ctx.ReadValue<Vector2>();
-                action.canceled += ctx => _model.Look = float2.zero;
-                action.Disable();
-
-                TemporaryActions.Add(action);
-
-                action = new InputAction("FPSController_Sprint");
-                action.AddBinding("<Keyboard>/leftShift");
-                action.performed += ctx => _model.IsSprinting = true;
-                action.canceled += ctx => _model.IsSprinting = false;
-                action.Disable();
-                TemporaryActions.Add(action);
-
-                action = new InputAction("FPSController_RightClick", binding: "<Mouse>/rightButton");
-                action.performed += ctx => RightClick(true);
-                action.canceled += ctx => RightClick(false);
-                action.Disable();
-                TemporaryActions.Add(action);
-
-                // have space bar listening?
-                action = new InputAction("FPSController_Space");
-                action.AddBinding("<Keyboard>/space");
-                action.performed += (a) => ManualPauseResume();
-                action.Disable();
-                TemporaryActions.Add(action);
-
-                action = new InputAction("FPSController_Escape", binding: "<Keyboard>/escape");
-                action.performed += ctx =>
-                {
-                    if (_model.Mode == CameraMode.Follow)
-                        OnUnfollow?.Invoke();
-
-                    Disable();
-                    OnToggle?.Invoke();
-                    _model.HeightOffset = 0.0f;
-                    _model.PositionFollowOffset = new float2(0f, 0f);
-                    firstGameSpeedChangeEvent = true;
-                    Mod.log.Info("FPSController_Escape");
-                };
-                action.Disable();
-                TemporaryActions.Add(action);
-            }
-            else
+            action.performed += ctx =>
             {
-                Mod.log.Error("Keyboard Keybind Not Found!");
-            }
-        }
+                if (_model.Mode == CameraMode.Follow)
+                {
+                    _model.PositionFollowOffset += new float2(ctx.ReadValue<Vector2>().x * 0.5f, ctx.ReadValue<Vector2>().y * 0.5f);
+                    Mod.log.Info("_model.PositionFollowOffset: " + _model.PositionFollowOffset);
+                }
+            };
+            action.canceled += ctx => _model.Movement = float2.zero;
+            action.Disable();
 
+            // We only want these actions to occur whilst the controller is active
+            TemporaryActions.Add(action);
+
+            action = new InputAction("FPSController_MousePosition", binding: "<Mouse>/delta");
+            action.performed += ctx => _model.Look = ctx.ReadValue<Vector2>();
+            action.canceled += ctx => _model.Look = float2.zero;
+            action.Disable();
+
+            TemporaryActions.Add(action);
+
+            action = new InputAction("FPSController_Sprint");
+            action.AddBinding("<Keyboard>/leftShift");
+            action.performed += ctx => _model.IsSprinting = true;
+            action.canceled += ctx => _model.IsSprinting = false;
+            action.Disable();
+            TemporaryActions.Add(action);
+
+            action = new InputAction("FPSController_RightClick", binding: "<Mouse>/rightButton");
+            action.performed += ctx => RightClick(true);
+            action.canceled += ctx => RightClick(false);
+            action.Disable();
+            TemporaryActions.Add(action);
+
+            // have space bar listening?
+            action = new InputAction("FPSController_Space");
+            action.AddBinding("<Keyboard>/space");
+            action.performed += (a) => ManualPauseResume();
+            action.Disable();
+            TemporaryActions.Add(action);
+
+            action = new InputAction("FPSController_Escape", binding: "<Keyboard>/escape");
+            action.performed += ctx =>
+            {
+                if (_model.Mode == CameraMode.Follow)
+                    OnUnfollow?.Invoke();
+
+                Disable();
+                OnToggle?.Invoke();
+                _model.HeightOffset = 0.0f;
+                _model.PositionFollowOffset = new float2(0f, 0f);
+                firstGameSpeedChangeEvent = true;
+                Mod.log.Info("FPSController_Escape");
+            };
+            action.Disable();
+            TemporaryActions.Add(action);
+        }
 
         /// <summary>
         /// Enable the camera input listeners
@@ -308,7 +276,7 @@ namespace FirstPersonCameraContinued
 
             var _timeUISystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TimeUISystem>();
             var setSimulationPausedMethod = typeof(TimeUISystem).GetMethod("SetSimulationPaused", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            
+
             if (firstGameSpeedChangeEvent)
             {
                 gameIsPausedState = _timeUISystem.IsPaused();
