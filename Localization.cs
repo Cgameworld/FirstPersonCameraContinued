@@ -249,8 +249,9 @@ namespace FirstPersonCameraContinued
                 "Options.GROUP" => settings.GetOptionGroupLocaleID(key),
                 "Options.OPTION" => settings.GetOptionLabelLocaleID(key),
                 "Options.OPTION_DESCRIPTION" => settings.GetOptionDescLocaleID(key),
+                "Options.BINDING" => settings.GetBindingKeyLocaleID(key),
                 "Options.WARNING" => settings.GetOptionWarningLocaleID(key),
-                _ => settings.GetSettingsLocaleID(),
+                _ => settings.GetSettingsLocaleID()
             };
         }
     }
