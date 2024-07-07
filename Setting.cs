@@ -43,7 +43,7 @@ namespace FirstPersonCameraContinued
 
         public const string FreeModeKeybindName = "FreeModeKeybind";
 
-        [SettingsUIKeyboardBinding(Key.F, actionName: FreeModeKeybindName, alt: true)]
+        [SettingsUIKeyboardBinding(BindingKeyboard.F, Mod.kButtonActionName, alt: true)]
         public ProxyBinding FreeModeKeybind { get; set; }
 
         [SettingsUIButton]
@@ -54,6 +54,7 @@ namespace FirstPersonCameraContinued
             set
             {
                 SetDefaults();
+                ResetKeyBindings();
                 MakeSureSave = new System.Random().Next();
             }
 

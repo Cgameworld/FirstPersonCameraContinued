@@ -74,15 +74,17 @@ namespace FirstPersonCameraContinued
         /// </summary>
         private void Configure()
         {
+            /* old method
             var action = new InputAction("ToggleFPSController");
             action.AddCompositeBinding("ButtonWithOneModifier")
                 .With("Modifier", "<Keyboard>/alt")
                 .With("Button", "<Keyboard>/f");
             action.performed += (a) => Toggle();
             action.Enable();
+            */
 
             // Create the input action
-            action = new InputAction("FPSController_Movement", binding: "<Gamepad>/leftStick");
+            var action = new InputAction("FPSController_Movement", binding: "<Gamepad>/leftStick");
             action.AddCompositeBinding("Dpad")
                 .With("Up", "<Keyboard>/w")       // W key for up
                 .With("Down", "<Keyboard>/s")     // S key for down
