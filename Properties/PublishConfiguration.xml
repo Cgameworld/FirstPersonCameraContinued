@@ -78,11 +78,15 @@ If you like this mod be sure to leave an upvote! Thanks
 	<Dependency Id="74417" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
-# v1.2.2
+# v1.3
+* Added customizable keybinding for toggling free camera mode
 * Removed first person follow button in decal info view panel
+* UI icon bug fixes
+* Added Japanese translation - thanks SeraTheSilly
 * Added Portugese translation - thanks brasildeluna
+* Updated Russian translation - thanks slodskoy
 * Updated German translation - thanks GuysLetsPlay
-* Update Polish translation - thanks karlmel68
+* Updated Polish translation - thanks karlmel68
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />
