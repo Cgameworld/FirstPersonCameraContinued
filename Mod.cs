@@ -7,6 +7,9 @@ using Game.SceneFlow;
 using Game.Settings;
 using static Cinemachine.CinemachineTriggerAction;
 using Game.Input;
+using FirstPersonCameraContinued.Systems;
+using Game.Rendering;
+using Unity.Entities;
 
 namespace FirstPersonCameraContinued
 {
@@ -18,7 +21,6 @@ namespace FirstPersonCameraContinued
 
         public static ILog log = LogManager.GetLogger($"{nameof(FirstPersonCameraContinued)}.{nameof(Mod)}").SetShowsErrorsInUI(true);
 
-        public static ProxyAction m_ButtonAction;
         public const string kButtonActionName = "EnterFreeModeBinding";
 
         public void OnLoad(UpdateSystem updateSystem)
@@ -32,15 +34,6 @@ namespace FirstPersonCameraContinued
             Localization.LoadTranslations(FirstPersonModSettings, log);
 
             FirstPersonModSettings.RegisterKeyBindings();
-
-            m_ButtonAction = FirstPersonModSettings.GetAction(kButtonActionName);
-
-            m_ButtonAction.shouldBeEnabled = true;
-
-            m_ButtonAction.onInteraction += (_, phase) =>
-            {
-                log.Info($"[FPC Keybind{m_ButtonAction.name}] On{phase} {m_ButtonAction.ReadValue<float>()}");
-            };
 
             AssetDatabase.global.LoadSettings(nameof(FirstPersonCameraContinued), FirstPersonModSettings, new Setting(this));
         }

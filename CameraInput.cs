@@ -235,7 +235,7 @@ namespace FirstPersonCameraContinued
         /// <summary>
         /// Toggle the camera input listeners
         /// </summary>
-        private void Toggle()
+        public void Toggle()
         {
             if (_model.IsTransitioningIn || _model.IsTransitioningOut)
                 return;

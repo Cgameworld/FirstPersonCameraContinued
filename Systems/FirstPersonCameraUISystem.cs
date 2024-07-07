@@ -3,6 +3,7 @@ using FirstPersonCamera.Helpers;
 using FirstPersonCameraContinued;
 using FirstPersonCameraContinued.MonoBehaviours;
 using FirstPersonCameraContinued.Systems;
+using Game.Input;
 using Game.Rendering;
 using Game.UI;
 using Game.UI.InGame;
@@ -31,6 +32,9 @@ namespace FirstPersonCameraContinued.Systems
 
         private Entity _selectedEntity;
         private static bool isPausedBeforeActive;
+
+        public static ProxyAction m_ButtonAction;
+
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -47,6 +51,20 @@ namespace FirstPersonCameraContinued.Systems
                     _selectedEntity = entity;
                 }
             }));
+
+            m_ButtonAction = Mod.FirstPersonModSettings.GetAction(Mod.kButtonActionName);
+
+            m_ButtonAction.shouldBeEnabled = true;
+
+            m_ButtonAction.onInteraction += (_, phase) =>
+            {
+                if (phase == InputActionPhase.Performed)
+                {
+                    CameraInput input = Controller.GetCameraInput();
+                    input.Toggle();
+                    log.Info("Free camera activated via keybind");
+                }
+            };
         }
 
         private void ActivateFPC()
