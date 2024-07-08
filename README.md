@@ -4,13 +4,17 @@ First Person Camera Continued allows you to explore your city from the perspecti
 
 This mod is a continuation of the First Person Camera mod by optimus-code (H3llb0und) with new features.
 
+# Download
+
+Download the mod here on PDXmods: https://mods.paradoxplaza.com/mods/79237/Windows
+
 # How To Use
 
-To enter first person mode click on the video camera icon near the upper right hand corner or press Alt+F on your keyboard
+To enter first person mode, click on the video camera icon near the upper right hand corner or press Alt+F on your keyboard
 
 To move around use WASD, use SHIFT to walk faster and R/F keys to increase/decrease the camera height
 
-To enter follow mode, right click on an object in free camera first person mode
+To enter follow mode, right click on an object in free camera first person mode or click on the video camera button in the info panel for the object
 
 To shift the camera forwards or backwards in follow mode press the UP ARROW and DOWN ARROW keys
 
@@ -26,9 +30,21 @@ Several loaded parameters can also be configured from the main game settings, ta
 - Cim Height
 - Transition Speed
 
-# Translation
+# Localization
 
-Help translate this mod here [Crowdin](https://crowdin.com/project/cs2-first-person-camera-continued)
+Currently Supported Languages:
+
+- English
+- Chinese (Simplified)
+- French
+- German
+- Japanese
+- Polish
+- Portuguese
+- Russian
+- Spanish
+
+Help translate this mod via Crowdin: https://crowdin.com/project/cs2-first-person-camera-continued
 
 # Notes
 

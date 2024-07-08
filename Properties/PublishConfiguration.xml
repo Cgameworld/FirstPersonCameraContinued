@@ -43,8 +43,10 @@ Currently Supported Languages:
 - Chinese (Simplified)
 - French
 - German
+- Japanese
 - Polish
-- Russian (95%)
+- Portuguese
+- Russian
 - Spanish
 
 Help translate this mod via Crowdin: https://crowdin.com/project/cs2-first-person-camera-continued
@@ -71,22 +73,22 @@ If you like this mod be sure to leave an upvote! Thanks
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/first-person-camera-continued.1669532/" />
 	<!--Version of the mod-->
-	<ModVersion Value="1.2.1" />
+	<ModVersion Value="1.2.2" />
 	<!--Recommended version of the base game to use the mod-->
 	<GameVersion Value="1.*" />
 	<!--Dependency for the mod, can be set multiple times-->
 	<Dependency Id="74417" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
-# v1.3
+# v1.2.2
 * Added customizable keybinding for toggling free camera mode
 * Removed first person follow button in decal info view panel
 * UI icon bug fixes
 * Added Japanese translation - thanks SeraTheSilly
-* Added Portugese translation - thanks brasildeluna
-* Updated Russian translation - thanks slodskoy
+* Added Portuguese translation - thanks brasildeluna
 * Updated German translation - thanks GuysLetsPlay
-* Updated Polish translation - thanks karlmel68
+* Updated Polish translation - thanks karmel68
+* Updated Russian translation - thanks slobodskoy 
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />

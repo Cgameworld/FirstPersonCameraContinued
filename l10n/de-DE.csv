@@ -16,3 +16,6 @@
 "Options.WARNING:ResetModSettings","Bist du sicher, dass du alle Mod-Einstellungen zurücksetzen möchtest?"
 "Options.OPTION:MultilineText","Tastaturkürzel im First Person-Modus:\nWASD - bewegen\nSHIFT - schneller laufen\nR/F - Kamerahöhe erhöhen/verringern\nOben/Unten Pfeil - Bewege Kamera vorwärts/rückwärts im Follow Modus"
 "Options.SECTION:[cgameworld.FirstPersonCameraContinued","First Person Camera Continued"
+"Options.OPTION:FreeModeKeybind","Free Camera Modus aktiveren"
+"Options.BINDING:EnterFreeModeBinding","Free Camera Modus aktiveren"
+"Options.OPTION_DESCRIPTION:FreeModeKeybind","Tastaturkürzel um Free Camera First Person-Modus zu aktiveren"
