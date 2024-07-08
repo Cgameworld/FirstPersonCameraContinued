@@ -29,6 +29,7 @@ Several loaded parameters can also be configured from the main game settings, ta
 - Running Speed
 - Cim Height
 - Transition Speed
+- Free Camera Toggle Keyboard Shortcut
 
 # Localization
 
