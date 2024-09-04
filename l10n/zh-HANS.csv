@@ -16,3 +16,6 @@
 "Options.WARNING:ResetModSettings","确定要重置所有模组设置吗？"
 "Options.OPTION:MultilineText","第一人称视角的键盘快捷键：\nWASD - 移动\nSHIFT - 跑步\nR/F - 增大减小镜头高度\n上/下箭头 - 跟随模式下向前/向后移动镜头"
 "Options.SECTION:[cgameworld.FirstPersonCameraContinued","第一人称视角（延续）"
+"Options.OPTION:FreeModeKeybind","进入自由模式"
+"Options.BINDING:EnterFreeModeBinding","进入自由模式"
+"Options.OPTION_DESCRIPTION:FreeModeKeybind","进入自由模式的键盘快捷键"

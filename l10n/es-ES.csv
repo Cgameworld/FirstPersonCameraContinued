@@ -16,3 +16,6 @@
 "Options.WARNING:ResetModSettings","¿Está seguro de que desea restablecer todos los ajustes del mod?"
 "Options.OPTION:MultilineText","Atajos de teclado en modo de primera persona:\nWASD - muévete alrededor\nSHIFT - camina más rápido\nR/F -incrementa/disminuye la altura de la cámara\nFLECHA ARRIBA/ABAJO - mueve la cámara hacia delante/atrás en el modo de seguimiento"
 "Options.SECTION:[cgameworld.FirstPersonCameraContinued","First Person Camera Continued"
+"Options.OPTION:FreeModeKeybind","Entrar en modo libre"
+"Options.BINDING:EnterFreeModeBinding","Entrar en modo libre"
+"Options.OPTION_DESCRIPTION:FreeModeKeybind","Atajo de teclado para entrar en modo de cámara libre en primera persona"

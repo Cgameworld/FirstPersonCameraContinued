@@ -16,3 +16,6 @@
 "Options.WARNING:ResetModSettings","Czy na pewno chcesz zresetować wszystkie ustawienia moda?"
 "Options.OPTION:MultilineText","Skróty klawiszowe w trybie pierwszej osoby: \nWASD - poruszanie się, \nSHIFT - bieg, \nR/F - zwiększa/zmniejsza wysokość kamery, \nStrzałka w Górę/Dół - przesuwanie kamery do przodu/tyłu w trybie śledzenia"
 "Options.SECTION:[cgameworld.FirstPersonCameraContinued","First Person Camera Continued"
+"Options.OPTION:FreeModeKeybind","Przejdź do tryb wolnej kamery"
+"Options.BINDING:EnterFreeModeBinding","Przejdź do tryb wolnej kamery"
+"Options.OPTION_DESCRIPTION:FreeModeKeybind","Skrót klawiszowy, aby przejść do tryb wolnej kamery pierwszej osoby"

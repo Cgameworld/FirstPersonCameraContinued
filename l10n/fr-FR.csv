@@ -16,3 +16,6 @@
 "Options.WARNING:ResetModSettings","Êtes-vous sûr de vouloir réinitialiser tous les paramètres du mod?"
 "Options.OPTION:MultilineText","Raccourcis clavier en mode première personne :\nWASD – Se déplacer.\nMaj – Marcher plus rapidement.\nR/F – Augmenter/diminuer la hauteur de la caméra.\nFlèches haut/bas – Déplacer la caméra vers l’avant et l’arrière en mode suivi"
 "Options.SECTION:[cgameworld.FirstPersonCameraContinued","First Person Camera Continued"
+"Options.OPTION:FreeModeKeybind","Entrer en mode libre"
+"Options.BINDING:EnterFreeModeBinding","Entrer en mode libre"
+"Options.OPTION_DESCRIPTION:FreeModeKeybind","Raccourci pour entrer en mode caméra libre première personne."

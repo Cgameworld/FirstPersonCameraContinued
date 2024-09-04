@@ -16,3 +16,6 @@
 "Options.WARNING:ResetModSettings","Вы уверены, что хотите сбросить все настройки мода?"
 "Options.OPTION:MultilineText","Горячие клавиши в режиме Первого лица:\nWSAD - перемещаться\n SHIFT - беr\nR/F -увеличение/уменьшение высоты камеры\nUP/DOWN ARROW - перемещение камеры вперёд/назад в режиме следования"
 "Options.SECTION:[cgameworld.FirstPersonCameraContinued","First Person Camera Continued"
+"Options.OPTION:FreeModeKeybind","Включение режима камеры от первого лица"
+"Options.BINDING:EnterFreeModeBinding","Включение режима камеры от первого лица"
+"Options.OPTION_DESCRIPTION:FreeModeKeybind","Назначьте клавиши для включения режима камеры от первого лица"
