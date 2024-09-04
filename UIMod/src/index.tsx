@@ -98,7 +98,9 @@ const register: ModRegistrar = (moduleRegistry) => {
 
 
     var selectedEntity: Entity;
-    selectedInfo.selectedEntity$.subscribe(SelectedEntityChanged);
+    if (selectedInfo && selectedInfo.selectedEntity$) {
+        selectedInfo.selectedEntity$.subscribe(SelectedEntityChanged);
+    }
     function SelectedEntityChanged(newEntity: Entity) {
         selectedEntity = newEntity;
         trigger("fpc", "SelectedEntity", newEntity);
