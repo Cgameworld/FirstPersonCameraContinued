@@ -23,6 +23,34 @@ const register: ModRegistrar = (moduleRegistry) => {
         tooltipDescriptionFreeCamera = translate("FirstPersonCameraContinued.TooltipFreeCamera");
         tooltipDescriptionFollowCamera = translate("FirstPersonCameraContinued.TooltipFollowCamera");
 
+        console.log("entity ??");
+        var selectedEntity: Entity;
+        if (selectedInfo && selectedInfo.selectedEntity$) {
+            selectedInfo.selectedEntity$.subscribe(SelectedEntityChanged);
+        }
+        function SelectedEntityChanged(newEntity: Entity) {
+            selectedEntity = newEntity;
+            trigger("fpc", "SelectedEntity", newEntity);
+        }
+
+        //keep track of current selected entity - from plop the growables
+        const selectedEntity$ = selectedInfo.selectedEntity$;
+        let currentEntity: any = null;
+
+        selectedEntity$.subscribe((entity) => {
+            if (!entity.index) {
+                currentEntity = null;
+
+                return entity
+            }
+            if (currentEntity != entity.index) {
+                currentEntity = entity.index
+            }
+            observeAndAppend();
+            return entity;
+        })
+
+
         return <div>
             <DescriptionTooltip title="First Person Camera" description={tooltipDescriptionFreeCamera}> 
             <button id="MapTextureReplacer-MainGameButton" className="button_ke4 button_ke4 button_h9N" onClick={() => trigger("fpc", "ActivateFPC")}>
@@ -95,34 +123,6 @@ const register: ModRegistrar = (moduleRegistry) => {
             </DescriptionTooltip>
         );
     }
-
-
-    var selectedEntity: Entity;
-    if (selectedInfo && selectedInfo.selectedEntity$) {
-        selectedInfo.selectedEntity$.subscribe(SelectedEntityChanged);
-    }
-    function SelectedEntityChanged(newEntity: Entity) {
-        selectedEntity = newEntity;
-        trigger("fpc", "SelectedEntity", newEntity);
-    }
-
-    //keep track of current selected entity - from plop the growables
-    const selectedEntity$ = selectedInfo.selectedEntity$;
-    let currentEntity: any = null;
-
-    selectedEntity$.subscribe((entity) => {
-        if (!entity.index) {
-            currentEntity = null;
-            
-            return entity
-        }
-        if (currentEntity != entity.index) {
-            currentEntity = entity.index
-        }
-        observeAndAppend();
-        return entity;
-    })
-
 
 }
 
