@@ -19,6 +19,8 @@
 		
 		<!--The file where mod information which is required for publishing mod on PDX mods are stored-->
 		<PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
+		<Version>1.2.3</Version>
+		<Title>FirstPersonCameraContinued</Title>
 	</PropertyGroup>
 	
 	<!--Imports must be after PropertyGroup block-->
@@ -34,6 +36,7 @@
 	  <None Remove="l10n\pt-BR.csv" />
 	  <None Remove="l10n\ru-RU.csv" />
 	  <None Remove="l10n\zh-HANS.csv" />
+	  <None Remove="l10n\zh-HANT.csv" />
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Include="l10n\de-DE.csv" />
@@ -45,6 +48,7 @@
 	  <EmbeddedResource Include="l10n\pt-BR.csv" />
 	  <EmbeddedResource Include="l10n\ru-RU.csv" />
 	  <EmbeddedResource Include="l10n\zh-HANS.csv" />
+	  <EmbeddedResource Include="l10n\zh-HANT.csv" />
 	</ItemGroup>
 
 	<ItemGroup>

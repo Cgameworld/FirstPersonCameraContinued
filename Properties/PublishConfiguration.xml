@@ -42,6 +42,7 @@ Currently Supported Languages:
 
 - English
 - Chinese (Simplified)
+- Chinese (Traditional)
 - French
 - German
 - Japanese
@@ -74,22 +75,17 @@ If you like this mod be sure to leave an upvote! Thanks
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/first-person-camera-continued.1669532/" />
 	<!--Version of the mod-->
-	<ModVersion Value="1.2.2" />
+	<ModVersion Value="1.2.3" />
 	<!--Recommended version of the base game to use the mod-->
 	<GameVersion Value="1.*" />
 	<!--Dependency for the mod, can be set multiple times-->
 	<Dependency Id="74417" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
-# v1.2.2
-* Added customizable keybinding for toggling free camera mode
-* Removed first person follow button in decal info view panel
-* UI icon bug fixes
-* Added Japanese translation - thanks SeraTheSilly
-* Added Portuguese translation - thanks brasildeluna
-* Updated German translation - thanks GuysLetsPlay
-* Updated Polish translation - thanks karmel68
-* Updated Russian translation - thanks slobodskoy 
+# v1.2.3
+* Fixed UI binding issue
+* Added Chinese (Traditional) translation (thanks kai0211)
+* Updated Spanish, French, Polish, Russian, Chinese (Simplified) Translations (thanks elGendo87, mtouerey, karmel68, slobodskoy, CBEdwin) 
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />

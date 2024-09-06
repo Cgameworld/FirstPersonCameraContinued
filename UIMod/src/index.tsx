@@ -23,7 +23,6 @@ const register: ModRegistrar = (moduleRegistry) => {
         tooltipDescriptionFreeCamera = translate("FirstPersonCameraContinued.TooltipFreeCamera");
         tooltipDescriptionFollowCamera = translate("FirstPersonCameraContinued.TooltipFollowCamera");
 
-        console.log("entity ??");
         var selectedEntity: Entity;
         if (selectedInfo && selectedInfo.selectedEntity$) {
             selectedInfo.selectedEntity$.subscribe(SelectedEntityChanged);
