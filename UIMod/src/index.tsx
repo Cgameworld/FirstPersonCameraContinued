@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { ModRegistrar } from "cs2/modding";
 import { bindValue, trigger, useValue } from "cs2/api";
 import { Entity, selectedInfo } from "cs2/bindings";
@@ -19,6 +20,12 @@ const register: ModRegistrar = (moduleRegistry) => {
     let tooltipDescriptionFollowCamera: string | null;
 
     const CustomMenuButton = () => {
+
+        const [showSettings, setShowSettings] = useState(false);
+
+        const toggleSettings = () => {
+            setShowSettings(!showSettings);
+        };
 
         tooltipDescriptionFreeCamera = translate("FirstPersonCameraContinued.TooltipFreeCamera");
         tooltipDescriptionFollowCamera = translate("FirstPersonCameraContinued.TooltipFollowCamera");
@@ -49,10 +56,31 @@ const register: ModRegistrar = (moduleRegistry) => {
             return entity;
         })
 
+        useEffect(() => {
+            if (showSettings) {
+                const mainGameButton = document.querySelector('#FPC-MainGameButton');
+                if (mainGameButton && mainGameButton.parentNode) {
+                    const settingsRoot = document.createElement('div');
+                    settingsRoot.id = 'top-right-layout_sSC';
+
+                    // Insert the new div before #FPC-MainGameButton
+                    mainGameButton.parentNode.appendChild(settingsRoot);
+
+                    ReactDOM.render(<SettingsWindow onClose={toggleSettings} />, settingsRoot);
+
+                    return () => {
+                        ReactDOM.unmountComponentAtNode(settingsRoot);
+                        if (settingsRoot.parentNode) {
+                            settingsRoot.parentNode.removeChild(settingsRoot);
+                        }
+                    };
+                }
+            }
+        }, [showSettings]);
 
         return <div>
             <DescriptionTooltip title="First Person Camera" description={tooltipDescriptionFreeCamera}> 
-            <button id="MapTextureReplacer-MainGameButton" className="button_ke4 button_ke4 button_h9N" onClick={() => trigger("fpc", "ActivateFPC")}>
+                <button id="FPC-MainGameButton" className="button_ke4 button_ke4 button_h9N" onClick={toggleSettings}>
                 <div className="tinted-icon_iKo icon_be5" style={{ backgroundImage: 'url(coui://uil/Standard/VideoCamera.svg)', backgroundPositionX: '1rem', backgroundPositionY: '1rem', backgroundColor: 'rgba(255,255,255,0)', backgroundSize: '35rem 35rem' }}>
                 </div>
                 </button>
@@ -122,6 +150,28 @@ const register: ModRegistrar = (moduleRegistry) => {
             </DescriptionTooltip>
         );
     }
+
+    const SettingsWindow: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+        return (
+            <div className="panel_YqS expanded collapsible advisor-panel_dXi advisor-panel_mrr top-right-panel_A2r" style={{
+                position: 'absolute',
+                top: '50rem',
+                right: '-7rem',
+                display: 'flex',
+                width: '200rem',
+                height: '400rem'
+            }}>
+                <div className="header_H_U header_Bpo child-opacity-transition_nkS">
+                    <div className="title-bar_PF4">
+                        <div className="icon-space_h_f"></div>
+                        <div className="title_SVH title_zQN">Setting T</div>
+                    </div>
+                </div>
+
+            </div>
+        );
+    };
+
 
 }
 
