@@ -108,9 +108,35 @@ namespace FirstPersonCameraContinued.Systems
                 setSimulationPausedMethod.Invoke(World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TimeUISystem>(), new object[] { pause });
             }
         }
+
         private void FollowRandomCim()
         {
-            
+            EntityQuery query = GetEntityQuery(new EntityQueryDesc()
+            {
+                All = new ComponentType[1] { ComponentType.ReadOnly<HumanCurrentLane>() },
+                None = new ComponentType[2] {
+        ComponentType.ReadOnly<Deleted>(),
+        ComponentType.ReadOnly<Temp>()
+    }
+            });
+
+            Entity randomEntity = GetRandomEntityFromQuery(query);
+            if (randomEntity != Entity.Null)
+            {
+                ComponentLookup<HumanCurrentLane> humanLaneFromEntity = GetComponentLookup<HumanCurrentLane>(true);
+                if (humanLaneFromEntity.HasComponent(randomEntity))
+                {
+                    HumanCurrentLane humanLane = humanLaneFromEntity[randomEntity];
+                    CreatureLaneFlags flags = humanLane.m_Flags;
+
+                    Mod.log.Info(flags.ToString());
+                    if ((flags & (CreatureLaneFlags.EndReached | CreatureLaneFlags.Hangaround)) == 0)
+                    {
+                        _selectedEntity = randomEntity;
+                        EnterFollow();
+                    }
+                }
+            }        
         }
 
         private void FollowRandomVehicle()
