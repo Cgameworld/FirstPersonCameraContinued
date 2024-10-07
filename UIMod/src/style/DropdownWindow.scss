@@ -1,0 +1,27 @@
+.fpc-dropdownpanel {
+    position: absolute;
+    top: 50rem;
+    right: -7rem;
+    display: flex;
+    width: 230rem;
+}
+.fpc-right-row {
+    font-size: 17px;
+    padding-top: 10rem;
+    padding-bottom: 10rem;
+    padding-right: 15rem;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+        background-color: rgba(128, 128, 128, 0.5);
+    }
+}
+
+.focusable_GEc {
+    
+   
+}
+
+.item-focused_FuT {
+   
+}
