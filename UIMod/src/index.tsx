@@ -21,10 +21,10 @@ const register: ModRegistrar = (moduleRegistry) => {
 
     const CustomMenuButton = () => {
 
-        const [showSettings, setShowSettings] = useState(false);
+        const [showButtonDropdown, setShowButtonDropdown] = useState(false);
 
-        const toggleSettings = () => {
-            setShowSettings(!showSettings);
+        const toggleButtonDropdown = () => {
+            setShowButtonDropdown(!showButtonDropdown);
         };
 
         tooltipDescriptionFreeCamera = translate("FirstPersonCameraContinued.TooltipFreeCamera");
@@ -57,30 +57,29 @@ const register: ModRegistrar = (moduleRegistry) => {
         })
 
         useEffect(() => {
-            if (showSettings) {
+            if (showButtonDropdown) {
                 const mainGameButton = document.querySelector('#FPC-MainGameButton');
                 if (mainGameButton && mainGameButton.parentNode) {
-                    const settingsRoot = document.createElement('div');
-                    settingsRoot.id = 'top-right-layout_sSC';
+                    const dropdownRoot = document.createElement('div');
+                    dropdownRoot.id = 'top-right-layout_sSC';
 
-                    // Insert the new div before #FPC-MainGameButton
-                    mainGameButton.parentNode.appendChild(settingsRoot);
+                    mainGameButton.parentNode.appendChild(dropdownRoot);
 
-                    ReactDOM.render(<SettingsWindow onClose={toggleSettings} />, settingsRoot);
+                    ReactDOM.render(<DropdownWindow onClose={toggleButtonDropdown} />, dropdownRoot);
 
                     return () => {
-                        ReactDOM.unmountComponentAtNode(settingsRoot);
-                        if (settingsRoot.parentNode) {
-                            settingsRoot.parentNode.removeChild(settingsRoot);
+                        ReactDOM.unmountComponentAtNode(dropdownRoot);
+                        if (dropdownRoot.parentNode) {
+                            dropdownRoot.parentNode.removeChild(dropdownRoot);
                         }
                     };
                 }
             }
-        }, [showSettings]);
+        }, [showButtonDropdown]);
 
         return <div>
             <DescriptionTooltip title="First Person Camera" description={tooltipDescriptionFreeCamera}> 
-                <button id="FPC-MainGameButton" className="button_ke4 button_ke4 button_h9N" onClick={toggleSettings}>
+                <button id="FPC-MainGameButton" className="button_ke4 button_ke4 button_h9N" onClick={toggleButtonDropdown}>
                 <div className="tinted-icon_iKo icon_be5" style={{ backgroundImage: 'url(coui://uil/Standard/VideoCamera.svg)', backgroundPositionX: '1rem', backgroundPositionY: '1rem', backgroundColor: 'rgba(255,255,255,0)', backgroundSize: '35rem 35rem' }}>
                 </div>
                 </button>
@@ -151,23 +150,29 @@ const register: ModRegistrar = (moduleRegistry) => {
         );
     }
 
-    const SettingsWindow: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+    const DropdownWindow: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         return (
             <div className="panel_YqS expanded collapsible advisor-panel_dXi advisor-panel_mrr top-right-panel_A2r" style={{
                 position: 'absolute',
                 top: '50rem',
                 right: '-7rem',
                 display: 'flex',
-                width: '200rem',
-                height: '400rem'
+                width: '275rem',
+                height: '200rem'
             }}>
-                <div className="header_H_U header_Bpo child-opacity-transition_nkS">
-                    <div className="title-bar_PF4">
-                        <div className="icon-space_h_f"></div>
-                        <div className="title_SVH title_zQN">Setting T</div>
+                <div className="content_XD5 content_AD7 child-opacity-transition_nkS">
+                    <div className="scrollable_DXr y_SMM scrollable_wt8">
+                        <div className="content_gqa">
+                            <div className="infoview-panel-section_RXJ">
+                                <div className="content_1xS focusable_GEc item-focused_FuT">
+                                    <div className="row_S2v" style={{ paddingBottom: '10rem' }}>
+                                        <div className="right_k3O row_S2v" style={{ fontSize: '18rem'}}>Enter Free Camera</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
             </div>
         );
     };
