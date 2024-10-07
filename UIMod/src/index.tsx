@@ -171,10 +171,10 @@ const register: ModRegistrar = (moduleRegistry) => {
                                     <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("ActivateFPC")}>
                                         <div className="right_k3O row_S2v">Enter Free Camera</div>
                                     </div>
-                                    <div className="row_S2v fpc-right-row">
+                                    <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("RandomCimFPC")}>
                                         <div className="right_k3O row_S2v">Follow Random Cim</div>
                                     </div>
-                                    <div className="row_S2v fpc-right-row">
+                                    <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("RandomVehicleFPC")}>
                                         <div className="right_k3O row_S2v">Follow Random Vehicle</div>
                                     </div>
                                 </div>

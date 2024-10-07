@@ -3,8 +3,11 @@ using FirstPersonCamera.Helpers;
 using FirstPersonCameraContinued;
 using FirstPersonCameraContinued.MonoBehaviours;
 using FirstPersonCameraContinued.Systems;
+using Game.Common;
+using Game.Creatures;
 using Game.Input;
 using Game.Rendering;
+using Game.Tools;
 using Game.UI;
 using Game.UI.InGame;
 using Game.Vehicles;
@@ -14,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -51,6 +55,8 @@ namespace FirstPersonCameraContinued.Systems
                     _selectedEntity = entity;
                 }
             }));
+            this.AddBinding(new TriggerBinding("fpc", "RandomCimFPC", FollowRandomCim));
+            this.AddBinding(new TriggerBinding("fpc", "RandomVehicleFPC", FollowRandomVehicle));
 
             m_ButtonAction = Mod.FirstPersonModSettings.GetAction(Mod.kButtonActionName);
 
@@ -100,6 +106,42 @@ namespace FirstPersonCameraContinued.Systems
             {
                 var setSimulationPausedMethod = typeof(TimeUISystem).GetMethod("SetSimulationPaused", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                 setSimulationPausedMethod.Invoke(World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TimeUISystem>(), new object[] { pause });
+            }
+        }
+        private void FollowRandomCim()
+        {
+            
+        }
+
+        private void FollowRandomVehicle()
+        {
+            EntityQuery query = GetEntityQuery(new EntityQueryDesc()
+            {
+                All = new ComponentType[1] { ComponentType.ReadOnly<CarCurrentLane>() },
+                None = new ComponentType[2] {
+        ComponentType.ReadOnly<Deleted>(),
+        ComponentType.ReadOnly<Temp>()
+    }
+            });
+
+            Entity randomEntity = GetRandomEntityFromQuery(query);
+
+            _selectedEntity = randomEntity;
+            EnterFollow();
+        }
+
+        public Entity GetRandomEntityFromQuery(EntityQuery query)
+        {
+            int entityCount = query.CalculateEntityCount();
+
+            if (entityCount == 0)
+                return Entity.Null;
+
+            int randomIndex = UnityEngine.Random.Range(0, entityCount);
+
+            using (NativeArray<Entity> entities = query.ToEntityArray(Allocator.TempJob))
+            {
+                return entities[randomIndex];
             }
         }
     }
