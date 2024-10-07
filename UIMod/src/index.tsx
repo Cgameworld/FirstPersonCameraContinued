@@ -6,6 +6,7 @@ import { useLocalization } from "cs2/l10n";
 import { VanillaComponentsResolver } from "../types/internal";
 import ReactDOM from 'react-dom';
 import 'style/DropdownWindow.scss';
+import engine from 'cohtml/cohtml';
 
 const register: ModRegistrar = (moduleRegistry) => {
 
@@ -152,6 +153,14 @@ const register: ModRegistrar = (moduleRegistry) => {
     }
 
     const DropdownWindow: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+
+        const clickedDropdownItem = (item: string) => {
+            onClose();
+            engine.trigger("audio.playSound", "select-item", 1);
+            trigger("fpc", item);
+        };
+
+
         return (
             <div className="fpc-dropdownpanel panel_YqS expanded collapsible advisor-panel_dXi advisor-panel_mrr top-right-panel_A2r">
                 <div className="content_XD5 content_AD7 child-opacity-transition_nkS">
@@ -159,7 +168,7 @@ const register: ModRegistrar = (moduleRegistry) => {
                         <div className="content_gqa" style={{ padding: '0' }} >
                             <div className="infoview-panel-section_RXJ" style={{ padding: '0' }}>
                                 <div className="content_1xS focusable_GEc item-focused_FuT" style={{ padding: '0' }}>
-                                    <div className="row_S2v fpc-right-row">
+                                    <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("ActivateFPC")}>
                                         <div className="right_k3O row_S2v">Enter Free Camera</div>
                                     </div>
                                     <div className="row_S2v fpc-right-row">
