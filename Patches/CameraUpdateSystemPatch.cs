@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using FirstPersonCameraContinued.Systems;
 using Game.Rendering;
+using UnityEngine.Rendering.HighDefinition;
 
 namespace FirstPersonCameraContinued.Patches
 {
@@ -15,6 +16,13 @@ namespace FirstPersonCameraContinued.Patches
                 return;
 
             camera.UpdateCamera();
+        }
+
+        static void Postfix(CameraUpdateSystem __instance, ref DepthOfField ___m_DepthOfField)
+        {
+
+            ___m_DepthOfField.focusMode.Override(UnityEngine.Rendering.HighDefinition.DepthOfFieldMode.Off);
+            
         }
     }
 }

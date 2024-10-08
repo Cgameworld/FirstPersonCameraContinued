@@ -82,6 +82,12 @@
 		<Reference Include="Unity.InputSystem">
 		  <Private>false</Private>
 		</Reference>
+		<Reference Include="Unity.RenderPipelines.Core.Runtime">
+		  <Private>false</Private>
+		</Reference>
+		<Reference Include="Unity.RenderPipelines.HighDefinition.Runtime">
+		  <Private>false</Private>
+		</Reference>
 		<Reference Include="UnityEngine.CoreModule">
 			<Private>false</Private>
 		</Reference>
