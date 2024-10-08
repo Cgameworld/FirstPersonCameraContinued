@@ -13,6 +13,8 @@ namespace FirstPersonCameraContinued.Systems
     /// </summary>
     public partial class FirstPersonCameraSystem : GameSystemBase
     {
+
+        public bool Activated = false;
         private FirstPersonCameraController Controller
         {
             get;

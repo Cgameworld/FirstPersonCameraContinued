@@ -2,27 +2,28 @@
 using FirstPersonCameraContinued.Systems;
 using Game.Rendering;
 using UnityEngine.Rendering.HighDefinition;
+using FirstPersonCameraContinued.MonoBehaviours;
+using Game.Vehicles;
+using UnityEngine;
 
 namespace FirstPersonCameraContinued.Patches
 {
-    [HarmonyPatch( typeof( CameraUpdateSystem ), "OnUpdate" )]
+    [HarmonyPatch(typeof(CameraUpdateSystem), "OnUpdate")]
     class CameraUpdateSystem_Patch
     {
-        static void Prefix( CameraUpdateSystem __instance )
+        static void Prefix(CameraUpdateSystem __instance)
         {
-            var camera = __instance.World.GetExistingSystemManaged<FirstPersonCameraSystem>( );
-
-            if ( camera == null )
-                return;
-
-            camera.UpdateCamera();
+            var camera = __instance.World.GetExistingSystemManaged<FirstPersonCameraSystem>();
+            camera?.UpdateCamera();
         }
 
         static void Postfix(CameraUpdateSystem __instance, ref DepthOfField ___m_DepthOfField)
         {
-
-            ___m_DepthOfField.focusMode.Override(UnityEngine.Rendering.HighDefinition.DepthOfFieldMode.Off);
-            
+            var camera = __instance.World.GetExistingSystemManaged<FirstPersonCameraSystem>();
+            if (camera != null && camera.Activated)
+            {
+                ___m_DepthOfField.focusMode.Override(DepthOfFieldMode.Off);
+            }
         }
     }
 }

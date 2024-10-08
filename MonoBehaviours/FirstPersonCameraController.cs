@@ -120,8 +120,11 @@ namespace FirstPersonCameraContinued.MonoBehaviours
 
             // As we need to do transition we're always active when we begin a
             // transition in
-            if ( _model.IsTransitioningIn )
+            if (_model.IsTransitioningIn)
+            {
                 IsActive = true;
+                _firstPersonCameraSystem.Activated = true;
+            }
 
             if ( _model.IsTransitioningIn )
                 Debug.Log( "IsTransitioningIn" );
@@ -193,6 +196,7 @@ namespace FirstPersonCameraContinued.MonoBehaviours
                 _cameraUpdateSystem.orbitCameraController.inputEnabled = true;
                 _firstPersonCameraSystem.ToggleUI( false );
                 IsActive = false; // Update the IsActive status to off now
+                _firstPersonCameraSystem.Activated = false;
                 _model.Mode = CameraMode.Disabled;
             }
             else
