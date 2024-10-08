@@ -109,36 +109,6 @@ namespace FirstPersonCameraContinued.Systems
             }
         }
 
-        private void FollowRandomCim()
-        {
-            EntityQuery query = GetEntityQuery(new EntityQueryDesc()
-            {
-                All = new ComponentType[1] { ComponentType.ReadOnly<HumanCurrentLane>() },
-                None = new ComponentType[2] {
-        ComponentType.ReadOnly<Deleted>(),
-        ComponentType.ReadOnly<Temp>()
-    }
-            });
-
-            Entity randomEntity = GetRandomEntityFromQuery(query);
-            if (randomEntity != Entity.Null)
-            {
-                ComponentLookup<HumanCurrentLane> humanLaneFromEntity = GetComponentLookup<HumanCurrentLane>(true);
-                if (humanLaneFromEntity.HasComponent(randomEntity))
-                {
-                    HumanCurrentLane humanLane = humanLaneFromEntity[randomEntity];
-                    CreatureLaneFlags flags = humanLane.m_Flags;
-
-                    Mod.log.Info(flags.ToString());
-                    if ((flags & (CreatureLaneFlags.EndReached | CreatureLaneFlags.Hangaround)) == 0)
-                    {
-                        _selectedEntity = randomEntity;
-                        EnterFollow();
-                    }
-                }
-            }        
-        }
-
         private void FollowRandomVehicle()
         {
             EntityQuery query = GetEntityQuery(new EntityQueryDesc()
@@ -156,6 +126,45 @@ namespace FirstPersonCameraContinued.Systems
             EnterFollow();
         }
 
+        private void FollowRandomCim()
+        {
+            EntityQuery query = GetEntityQuery(new EntityQueryDesc()
+            {
+                All = new ComponentType[1] { ComponentType.ReadOnly<HumanCurrentLane>() },
+                None = new ComponentType[2] {
+        ComponentType.ReadOnly<Deleted>(),
+        ComponentType.ReadOnly<Temp>()
+    }
+            });
+
+            int tries = 0;
+            while (tries < 100)
+            {
+                Entity randomEntity = GetRandomEntityFromQuery(query);
+                if (randomEntity != Entity.Null)
+                {
+                    ComponentLookup<HumanCurrentLane> humanLaneFromEntity = GetComponentLookup<HumanCurrentLane>(true);
+                    if (humanLaneFromEntity.HasComponent(randomEntity))
+                    {
+                        HumanCurrentLane humanLane = humanLaneFromEntity[randomEntity];
+                        CreatureLaneFlags flags = humanLane.m_Flags;
+
+                        if ((flags & (CreatureLaneFlags.EndReached | CreatureLaneFlags.Hangaround)) == 0)
+                        {
+                            _selectedEntity = randomEntity;
+                            EnterFollow();
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    Mod.log.Info("No valid entities found to follow.");
+                    break;
+                }
+                tries++;
+            }
+        }
         public Entity GetRandomEntityFromQuery(EntityQuery query)
         {
             int entityCount = query.CalculateEntityCount();
