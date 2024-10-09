@@ -2,9 +2,11 @@
 using Game;
 using Game.Common;
 using Game.Rendering;
+using Game.SceneFlow;
 using Game.Tools;
 using Unity.Entities;
 using UnityEngine;
+using cohtml.Net;
 
 namespace FirstPersonCameraContinued.Systems
 {
@@ -79,15 +81,22 @@ namespace FirstPersonCameraContinued.Systems
         public void ToggleUI( bool hidden )
         {
             _renderingSystem.hideOverlay = hidden;
-            Colossal.UI.UIManager.defaultUISystem.enabled = !hidden;
+            //Colossal.UI.UIManager.defaultUISystem.enabled = !hidden;
 
-            if ( hidden )
+            View? m_UIView;
+            m_UIView = GameManager.instance.userInterface.view.View;
+
+            if (hidden)
             {
                 _toolRaycastSystem.raycastFlags |= RaycastFlags.FreeCameraDisable;
-                _toolSystem.activeTool = World.GetExistingSystemManaged<DefaultToolSystem>( );
+                _toolSystem.activeTool = World.GetExistingSystemManaged<DefaultToolSystem>();
+                m_UIView.ExecuteScript("document.querySelector('.app-container_Y5l').style.visibility = 'hidden';");
             }
             else
+            {
                 _toolRaycastSystem.raycastFlags &= ~RaycastFlags.FreeCameraDisable;
+                m_UIView.ExecuteScript("document.querySelector('.app-container_Y5l').style.visibility = 'visible';");
+            }
         }
 
         /// <summary>

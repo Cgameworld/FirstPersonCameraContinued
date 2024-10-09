@@ -55,6 +55,9 @@
 		<Reference Include="Cinemachine">
 		  <Private>false</Private>
 		</Reference>
+		<Reference Include="cohtml.Net">
+		  <Private>false</Private>
+		</Reference>
 		<Reference Include="Colossal.Mathematics">
 		  <Private>false</Private>
 		</Reference>
