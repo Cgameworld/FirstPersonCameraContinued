@@ -85,6 +85,7 @@ If you like this mod be sure to leave an upvote! Thanks
 # v1.3
 * Added random follow modes
 * Fixed follow mode blurring issue 
+* Fixed issue where main game UI reappears in first person view after autosave
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />
