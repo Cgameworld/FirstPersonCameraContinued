@@ -12,11 +12,19 @@ public class ToastTextFPC : MonoBehaviour
     private bool fadingOut = false;
 
     private GUIStyle style;
+    private string displayedText;
+    private Vector2 textSize;
+
+    public void Initialize(string text)
+    {
+        displayedText = text;
+    }
 
     private void Start()
     {
         style = new GUIStyle();
         style.normal.textColor = Color.white;
+        style.wordWrap = true;
 
         float screenHeight = Screen.height;
 
@@ -25,6 +33,8 @@ public class ToastTextFPC : MonoBehaviour
         // Calculate the scaling factor for font size
         float fontSizeScale = screenHeight / 1080f;
         style.fontSize = Mathf.RoundToInt(referenceFontSize * fontSizeScale);
+
+        textSize = style.CalcSize(new GUIContent(displayedText));
     }
 
     private void Update()
@@ -61,7 +71,6 @@ public class ToastTextFPC : MonoBehaviour
 
     private void OnGUI()
     {
-        GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextEnter", out string translatedText);
-        GUI.Label(new Rect(15, 15, 10, 10), translatedText, style);
+        GUI.Label(new Rect(15, 15, textSize.x + 10, textSize.y + 10), displayedText, style);
     }
 }

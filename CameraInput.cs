@@ -1,5 +1,6 @@
 ﻿using FirstPersonCamera.Helpers;
 using Game.Rendering;
+using Game.SceneFlow;
 using Game.UI.InGame;
 using System;
 using System.Collections;
@@ -303,7 +304,9 @@ namespace FirstPersonCameraContinued
         {
             yield return new WaitForEndOfFrame();
             GameObject toastTextFPC = new GameObject("toastTextFPC");
-            toastTextFPC.AddComponent<ToastTextFPC>();
+            ToastTextFPC toastComponent = toastTextFPC.AddComponent<ToastTextFPC>();
+            GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextEnter", out string translatedText);
+            toastComponent.Initialize(translatedText + "- test\nPress R to (test compoundstring)");
             yield break;
         }
     }
