@@ -20,7 +20,7 @@ namespace FirstPersonCameraContinued.Patches
         static void Postfix(CameraUpdateSystem __instance, ref DepthOfField ___m_DepthOfField)
         {
             var camera = __instance.World.GetExistingSystemManaged<FirstPersonCameraSystem>();
-            if (camera != null && camera.EntryInfo.Activated)
+            if (camera != null && camera.EntryInfo != null && camera.EntryInfo.Activated)
             {
                 ___m_DepthOfField.focusMode.Override(DepthOfFieldMode.Off);
             }

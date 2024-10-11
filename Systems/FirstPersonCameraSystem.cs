@@ -8,6 +8,7 @@ using Game.Tools;
 using Unity.Entities;
 using UnityEngine;
 using cohtml.Net;
+using FirstPersonCameraContinued.Enums;
 
 namespace FirstPersonCameraContinued.Systems
 {
@@ -41,6 +42,13 @@ namespace FirstPersonCameraContinued.Systems
         protected override void OnCreate( )
         {
             base.OnCreate( );
+
+            EntryInfo = new EntryInfo
+            {
+                Activated = false,
+                RandomFollow = false,
+                RandomMode = RandomMode.None
+            };
 
             UnityEngine.Debug.Log( "FirstPersonCamera loaded!" );
 
