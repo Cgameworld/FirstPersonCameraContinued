@@ -55,12 +55,12 @@ namespace FirstPersonCameraContinued.Systems
             var existingObj = GameObject.Find(nameof(FirstPersonCameraController));
             Controller = existingObj.GetComponent<FirstPersonCameraController>();
 
-            this.AddBinding(new TriggerBinding("fpc", "ActivateFPC", ActivateFPC));
-            this.AddBinding(new TriggerBinding("fpc", "EnterFollowFPC", () =>
+            this.AddBinding(new TriggerBinding("fpc", "ActivateFPC", () =>
             {
                 _firstPersonCameraSystem.EntryInfo.RandomFollow = false;
-                EnterFollow();
+                ActivateFPC();
             }));
+            this.AddBinding(new TriggerBinding("fpc", "EnterFollowFPC", () => EnterFollow()));
             AddBinding(new TriggerBinding<Entity>("fpc", "SelectedEntity", (Entity entity) =>
             {
                 if (entity != null)
