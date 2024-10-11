@@ -1,5 +1,6 @@
 ﻿using Colossal.UI.Binding;
 using FirstPersonCamera.Helpers;
+using FirstPersonCameraContinued.Enums;
 using FirstPersonCameraContinued.MonoBehaviours;
 using FirstPersonCameraContinued.Systems;
 using Game.Common;
@@ -38,18 +39,24 @@ namespace FirstPersonCameraContinued.Systems
 
         public static ProxyAction m_ButtonAction;
         private FirstPersonCameraSystem _firstPersonCameraSystem;
+        private CameraUpdateSystem _cameraUpdateSystem;
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
             _firstPersonCameraSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraSystem>();
+            _cameraUpdateSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<CameraUpdateSystem>();
 
             var existingObj = GameObject.Find(nameof(FirstPersonCameraController));
             Controller = existingObj.GetComponent<FirstPersonCameraController>();
 
             this.AddBinding(new TriggerBinding("fpc", "ActivateFPC", ActivateFPC));
-            this.AddBinding(new TriggerBinding("fpc", "EnterFollowFPC", EnterFollow));
+            this.AddBinding(new TriggerBinding("fpc", "EnterFollowFPC", () =>
+            {
+                _firstPersonCameraSystem.EntryInfo.RandomFollow = false;
+                EnterFollow();
+            }));
             AddBinding(new TriggerBinding<Entity>("fpc", "SelectedEntity", (Entity entity) =>
             {
                 if (entity != null)
@@ -96,8 +103,6 @@ namespace FirstPersonCameraContinued.Systems
             CameraInput input = Controller.GetCameraInput();
             input.Enable();
 
-            var _cameraUpdateSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<CameraUpdateSystem>();
-
             input.InvokeOnFollow();
             _cameraUpdateSystem.orbitCameraController.followedEntity = _selectedEntity;
         }
@@ -124,14 +129,9 @@ namespace FirstPersonCameraContinued.Systems
 
             Entity randomEntity = GetRandomEntityFromQuery(query);
 
-            _selectedEntity = randomEntity;
-            if (firstTimeEntry)
-            {
-                _firstPersonCameraSystem.EntryInfo.RandomFollow = true;
-                EnterFollow();
-            }
+            ConfigureRandomEnterFollow(firstTimeEntry, RandomMode.Vehicle, randomEntity);
         }
-
+       
         public void EnterFollowRandomCim(bool firstTimeEntry = true)
         {
             EntityQuery query = GetEntityQuery(new EntityQueryDesc()
@@ -157,12 +157,7 @@ namespace FirstPersonCameraContinued.Systems
 
                         if ((flags & (CreatureLaneFlags.EndReached | CreatureLaneFlags.Hangaround)) == 0)
                         {
-                            _selectedEntity = randomEntity;
-                            if (firstTimeEntry)
-                            {
-                                _firstPersonCameraSystem.EntryInfo.RandomFollow = true;
-                                EnterFollow();
-                            }
+                            ConfigureRandomEnterFollow(firstTimeEntry, RandomMode.Cim, randomEntity);
                             break;
                         }
                     }
@@ -175,6 +170,21 @@ namespace FirstPersonCameraContinued.Systems
                 tries++;
             }
         }
+        private void ConfigureRandomEnterFollow(bool firstTimeEntry, RandomMode randomMode, Entity randomEntity)
+        {
+            _selectedEntity = randomEntity;
+            _firstPersonCameraSystem.EntryInfo.RandomFollow = true;
+            _firstPersonCameraSystem.EntryInfo.RandomMode = randomMode;
+            if (firstTimeEntry)
+            {
+                EnterFollow();
+            }
+            else
+            {
+                _cameraUpdateSystem.orbitCameraController.followedEntity = _selectedEntity;
+            }
+        }
+
         public Entity GetRandomEntityFromQuery(EntityQuery query)
         {
             int entityCount = query.CalculateEntityCount();
