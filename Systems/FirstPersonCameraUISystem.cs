@@ -57,8 +57,8 @@ namespace FirstPersonCameraContinued.Systems
                     _selectedEntity = entity;
                 }
             }));
-            this.AddBinding(new TriggerBinding("fpc", "RandomCimFPC", FollowRandomCim));
-            this.AddBinding(new TriggerBinding("fpc", "RandomVehicleFPC", FollowRandomVehicle));
+            this.AddBinding(new TriggerBinding("fpc", "RandomCimFPC", () => EnterFollowRandomCim()));
+            this.AddBinding(new TriggerBinding("fpc", "RandomVehicleFPC", () => EnterFollowRandomVehicle()));
 
             m_ButtonAction = Mod.FirstPersonModSettings.GetAction(Mod.kButtonActionName);
 
@@ -111,7 +111,7 @@ namespace FirstPersonCameraContinued.Systems
             }
         }
 
-        private void FollowRandomVehicle()
+        public void EnterFollowRandomVehicle(bool firstTimeEntry = true)
         {
             EntityQuery query = GetEntityQuery(new EntityQueryDesc()
             {
@@ -125,11 +125,14 @@ namespace FirstPersonCameraContinued.Systems
             Entity randomEntity = GetRandomEntityFromQuery(query);
 
             _selectedEntity = randomEntity;
-            _firstPersonCameraSystem.EntryInfo.RandomFollow = true;
-            EnterFollow();
+            if (firstTimeEntry)
+            {
+                _firstPersonCameraSystem.EntryInfo.RandomFollow = true;
+                EnterFollow();
+            }
         }
 
-        private void FollowRandomCim()
+        public void EnterFollowRandomCim(bool firstTimeEntry = true)
         {
             EntityQuery query = GetEntityQuery(new EntityQueryDesc()
             {
@@ -155,8 +158,11 @@ namespace FirstPersonCameraContinued.Systems
                         if ((flags & (CreatureLaneFlags.EndReached | CreatureLaneFlags.Hangaround)) == 0)
                         {
                             _selectedEntity = randomEntity;
-                            _firstPersonCameraSystem.EntryInfo.RandomFollow = true;
-                            EnterFollow();
+                            if (firstTimeEntry)
+                            {
+                                _firstPersonCameraSystem.EntryInfo.RandomFollow = true;
+                                EnterFollow();
+                            }
                             break;
                         }
                     }

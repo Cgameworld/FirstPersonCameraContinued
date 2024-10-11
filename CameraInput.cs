@@ -1,6 +1,7 @@
 ﻿using FirstPersonCamera.Helpers;
 using FirstPersonCameraContinued.DataModels;
 using FirstPersonCameraContinued.Enums;
+using FirstPersonCameraContinued.Systems;
 using Game.Rendering;
 using Game.SceneFlow;
 using Game.UI.InGame;
@@ -140,7 +141,20 @@ namespace FirstPersonCameraContinued
             action.AddBinding("<Keyboard>/enter");
             action.performed += ctx =>
             {
-                Mod.log.Info("ENTER PRESSED!!");
+                EntryInfo entryInfo = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraSystem>().EntryInfo;
+                FirstPersonCameraUISystem firstPersonCameraUISystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraUISystem>();
+
+                if (entryInfo.RandomFollow)
+                {
+                    if (entryInfo.RandomMode == RandomMode.Cim)
+                    {                     
+                        firstPersonCameraUISystem.EnterFollowRandomCim(false);
+                    }
+                    else if (entryInfo.RandomMode == RandomMode.Vehicle)
+                    {
+                        firstPersonCameraUISystem.EnterFollowRandomVehicle(false);
+                    }
+                }
             };
             action.Disable();
 
@@ -320,8 +334,22 @@ namespace FirstPersonCameraContinued
             yield return new WaitForEndOfFrame();
             GameObject toastTextFPC = new GameObject("toastTextFPC");
             ToastTextFPC toastComponent = toastTextFPC.AddComponent<ToastTextFPC>();
-            GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextEnter", out string translatedText);
-            toastComponent.Initialize(translatedText + "- test\nPress R to (test compoundstring)");
+
+            GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextEnter", out string entryText);
+
+
+            EntryInfo entryInfo = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraSystem>().EntryInfo;
+
+            if (entryInfo.RandomFollow)
+            {
+                string randomRandomModeText = "Press ENTER to follow another random " + entryInfo.RandomMode.ToString();
+                toastComponent.Initialize(entryText + randomRandomModeText);
+            }
+            else
+            {
+                toastComponent.Initialize(entryText);
+            }
+
             yield break;
         }
     }
