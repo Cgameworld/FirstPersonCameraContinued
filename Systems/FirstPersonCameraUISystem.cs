@@ -7,6 +7,7 @@ using Game.Audio;
 using Game.Common;
 using Game.Creatures;
 using Game.Input;
+using Game.Objects;
 using Game.Prefabs;
 using Game.Rendering;
 using Game.Tools;
@@ -125,10 +126,11 @@ namespace FirstPersonCameraContinued.Systems
             EntityQuery query = GetEntityQuery(new EntityQueryDesc()
             {
                 All = new ComponentType[1] { ComponentType.ReadOnly<CarCurrentLane>() },
-                None = new ComponentType[2] {
-        ComponentType.ReadOnly<Deleted>(),
-        ComponentType.ReadOnly<Temp>()
-    }
+                None = new ComponentType[3] {
+                    ComponentType.ReadOnly<Deleted>(),
+                    ComponentType.ReadOnly<Temp>(),
+                    ComponentType.ReadOnly<TripSource>()
+                }
             });
 
             Entity randomEntity = GetRandomEntityFromQuery(query);
@@ -141,10 +143,11 @@ namespace FirstPersonCameraContinued.Systems
             EntityQuery query = GetEntityQuery(new EntityQueryDesc()
             {
                 All = new ComponentType[1] { ComponentType.ReadOnly<HumanCurrentLane>() },
-                None = new ComponentType[2] {
-        ComponentType.ReadOnly<Deleted>(),
-        ComponentType.ReadOnly<Temp>()
-    }
+                None = new ComponentType[3] {
+                    ComponentType.ReadOnly<Deleted>(),
+                    ComponentType.ReadOnly<Temp>(),
+                    ComponentType.ReadOnly<TripSource>()
+                }
             });
 
             int tries = 0;
@@ -187,6 +190,12 @@ namespace FirstPersonCameraContinued.Systems
             {
                 _cameraUpdateSystem.orbitCameraController.followedEntity = _selectedEntity;
                 audioManager.PlayUISound(GetEntityQuery(ComponentType.ReadOnly<ToolUXSoundSettingsData>()).GetSingleton<ToolUXSoundSettingsData>().m_SelectEntitySound);
+                
+                /* Debug 
+                GameObject toastTextFPC = new GameObject("toastTextFPC");
+                ToastTextFPC toastComponent = toastTextFPC.AddComponent<ToastTextFPC>();
+                toastComponent.Initialize("Selected entity id: " + _selectedEntity.Index + "." + _selectedEntity.Version);
+                */
             }
 
         }
