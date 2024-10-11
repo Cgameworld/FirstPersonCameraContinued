@@ -1,4 +1,6 @@
 ﻿using Colossal.Entities;
+using FirstPersonCameraContinued.DataModels;
+using FirstPersonCameraContinued.Enums;
 using FirstPersonCameraContinued.Patches;
 using FirstPersonCameraContinued.Transformer;
 using FirstPersonCameraContinued.Transformer.FinalTransforms;

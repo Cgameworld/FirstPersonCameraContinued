@@ -1,4 +1,5 @@
 ﻿using Cinemachine;
+using FirstPersonCameraContinued.DataModels;
 using Game.Rendering;
 using Game.Simulation;
 using System;

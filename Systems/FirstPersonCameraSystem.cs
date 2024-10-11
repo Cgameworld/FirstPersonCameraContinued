@@ -1,4 +1,5 @@
 ﻿using FirstPersonCameraContinued.MonoBehaviours;
+using FirstPersonCameraContinued.DataModels;
 using Game;
 using Game.Common;
 using Game.Rendering;
@@ -16,7 +17,11 @@ namespace FirstPersonCameraContinued.Systems
     public partial class FirstPersonCameraSystem : GameSystemBase
     {
 
-        public bool Activated = false;
+        public EntryInfo EntryInfo
+        {
+            get;
+            set;
+        }
         private FirstPersonCameraController Controller
         {
             get;

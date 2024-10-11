@@ -1,5 +1,6 @@
 ﻿using Colossal.Entities;
 using Colossal.Mathematics;
+using FirstPersonCameraContinued.DataModels;
 using Game.Citizens;
 using Game.Common;
 using Game.Creatures;

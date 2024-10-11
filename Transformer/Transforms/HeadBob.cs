@@ -1,4 +1,5 @@
-﻿using FirstPersonCameraContinued.Transforms;
+﻿using FirstPersonCameraContinued.DataModels;
+using FirstPersonCameraContinued.Transforms;
 using UnityEngine;
 
 namespace FirstPersonCameraContinued.Transformer.Transforms

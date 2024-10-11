@@ -1,5 +1,4 @@
-﻿
-namespace FirstPersonCameraContinued
+﻿namespace FirstPersonCameraContinued.Enums
 {
     /// <summary>
     /// Represents the various camera modes

@@ -1,4 +1,6 @@
-﻿using FirstPersonCameraContinued.Patches;
+﻿using FirstPersonCameraContinued.DataModels;
+using FirstPersonCameraContinued.Enums;
+using FirstPersonCameraContinued.Patches;
 using FirstPersonCameraContinued.Systems;
 using FirstPersonCameraContinued.Transforms;
 using Game.Audio;
@@ -123,7 +125,7 @@ namespace FirstPersonCameraContinued.MonoBehaviours
             if (_model.IsTransitioningIn)
             {
                 IsActive = true;
-                _firstPersonCameraSystem.Activated = true;
+                _firstPersonCameraSystem.EntryInfo.Activated = true;
             }
 
             if ( _model.IsTransitioningIn )
@@ -196,7 +198,7 @@ namespace FirstPersonCameraContinued.MonoBehaviours
                 _cameraUpdateSystem.orbitCameraController.inputEnabled = true;
                 _firstPersonCameraSystem.ToggleUI( false );
                 IsActive = false; // Update the IsActive status to off now
-                _firstPersonCameraSystem.Activated = false;
+                _firstPersonCameraSystem.EntryInfo.Activated = false;
                 _model.Mode = CameraMode.Disabled;
             }
             else

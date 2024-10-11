@@ -1,4 +1,6 @@
 ﻿using FirstPersonCamera.Helpers;
+using FirstPersonCameraContinued.DataModels;
+using FirstPersonCameraContinued.Enums;
 using Game.Rendering;
 using Game.SceneFlow;
 using Game.UI.InGame;
@@ -126,6 +128,19 @@ namespace FirstPersonCameraContinued
                 {
                     _model.HeightOffset -= 1.0f;
                 }
+            };
+            action.Disable();
+
+            // We only want these actions to occur whilst the controller is active
+            TemporaryActions.Add(action);
+
+
+            // Create the input action (offset height +)
+            action = new InputAction("FPSController_NextRandom");
+            action.AddBinding("<Keyboard>/enter");
+            action.performed += ctx =>
+            {
+                Mod.log.Info("ENTER PRESSED!!");
             };
             action.Disable();
 

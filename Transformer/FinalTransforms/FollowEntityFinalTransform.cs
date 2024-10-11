@@ -1,4 +1,6 @@
-﻿using Game.Citizens;
+﻿using FirstPersonCameraContinued.DataModels;
+using FirstPersonCameraContinued.Enums;
+using Game.Citizens;
 using Unity.Entities;
 using Unity.Mathematics;
 

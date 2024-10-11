@@ -1,4 +1,6 @@
-﻿namespace FirstPersonCameraContinued.Transformer
+﻿using FirstPersonCameraContinued.DataModels;
+
+namespace FirstPersonCameraContinued.Transformer
 {
     /// <summary>
     /// Transforms to apply the model to the rig

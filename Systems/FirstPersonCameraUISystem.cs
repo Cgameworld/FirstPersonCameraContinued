@@ -1,6 +1,5 @@
 ﻿using Colossal.UI.Binding;
 using FirstPersonCamera.Helpers;
-using FirstPersonCameraContinued;
 using FirstPersonCameraContinued.MonoBehaviours;
 using FirstPersonCameraContinued.Systems;
 using Game.Common;
@@ -38,10 +37,13 @@ namespace FirstPersonCameraContinued.Systems
         private static bool isPausedBeforeActive;
 
         public static ProxyAction m_ButtonAction;
+        private FirstPersonCameraSystem _firstPersonCameraSystem;
 
         protected override void OnCreate()
         {
             base.OnCreate();
+
+            _firstPersonCameraSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraSystem>();
 
             var existingObj = GameObject.Find(nameof(FirstPersonCameraController));
             Controller = existingObj.GetComponent<FirstPersonCameraController>();
@@ -123,6 +125,7 @@ namespace FirstPersonCameraContinued.Systems
             Entity randomEntity = GetRandomEntityFromQuery(query);
 
             _selectedEntity = randomEntity;
+            _firstPersonCameraSystem.EntryInfo.RandomFollow = true;
             EnterFollow();
         }
 
@@ -152,6 +155,7 @@ namespace FirstPersonCameraContinued.Systems
                         if ((flags & (CreatureLaneFlags.EndReached | CreatureLaneFlags.Hangaround)) == 0)
                         {
                             _selectedEntity = randomEntity;
+                            _firstPersonCameraSystem.EntryInfo.RandomFollow = true;
                             EnterFollow();
                             break;
                         }

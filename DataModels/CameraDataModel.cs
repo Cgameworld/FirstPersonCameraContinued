@@ -1,8 +1,9 @@
-﻿using Game.Citizens;
+﻿using FirstPersonCameraContinued.Enums;
+using Game.Citizens;
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace FirstPersonCameraContinued
+namespace FirstPersonCameraContinued.DataModels
 {
     /// <summary>
     /// The core data model for the camera

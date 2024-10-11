@@ -1,4 +1,5 @@
-﻿using Game.Simulation;
+﻿using FirstPersonCameraContinued.DataModels;
+using Game.Simulation;
 using System;
 using Unity.Entities;
 using Unity.Mathematics;

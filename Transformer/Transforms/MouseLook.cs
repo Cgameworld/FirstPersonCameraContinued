@@ -1,4 +1,5 @@
-﻿using FirstPersonCameraContinued.Transforms;
+﻿using FirstPersonCameraContinued.DataModels;
+using FirstPersonCameraContinued.Transforms;
 using Unity.Mathematics;
 using UnityEngine;
 

@@ -1,4 +1,4 @@
-﻿namespace FirstPersonCameraContinued
+﻿namespace FirstPersonCameraContinued.Enums
 {
     /// <summary>
     /// Describes the current scope of the first

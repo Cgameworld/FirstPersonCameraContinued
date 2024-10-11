@@ -1,4 +1,6 @@
-﻿namespace FirstPersonCameraContinued.Transforms
+﻿using FirstPersonCameraContinued.DataModels;
+
+namespace FirstPersonCameraContinued.Transforms
 {
     /// <summary>
     /// Interface for camera position and rotation transforms
