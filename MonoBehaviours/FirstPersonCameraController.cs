@@ -199,6 +199,7 @@ namespace FirstPersonCameraContinued.MonoBehaviours
                 _firstPersonCameraSystem.ToggleUI( false );
                 IsActive = false; // Update the IsActive status to off now
                 _firstPersonCameraSystem.EntryInfo.Activated = false;
+                _firstPersonCameraSystem.EntryInfo.RandomFollow = false;
                 _model.Mode = CameraMode.Disabled;
             }
             else

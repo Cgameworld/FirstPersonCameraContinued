@@ -81,7 +81,10 @@ const register: ModRegistrar = (moduleRegistry) => {
 
         return <div>
             <DescriptionTooltip title="First Person Camera" description={tooltipDescriptionFreeCamera}> 
-                <button id="FPC-MainGameButton" className="button_ke4 button_ke4 button_h9N" onClick={toggleButtonDropdown}>
+                <button id="FPC-MainGameButton" className="button_ke4 button_ke4 button_h9N" onClick={() => {
+                    engine.trigger("audio.playSound", "select-item", 1);
+                    toggleButtonDropdown();
+                }}>
                 <div className="tinted-icon_iKo icon_be5" style={{ backgroundImage: 'url(coui://uil/Standard/VideoCamera.svg)', backgroundPositionX: '1rem', backgroundPositionY: '1rem', backgroundColor: 'rgba(255,255,255,0)', backgroundSize: '35rem 35rem' }}>
                 </div>
                 </button>
