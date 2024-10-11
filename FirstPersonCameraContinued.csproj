@@ -91,6 +91,9 @@
 		<Reference Include="Unity.RenderPipelines.HighDefinition.Runtime">
 		  <Private>false</Private>
 		</Reference>
+		<Reference Include="UnityEngine.AudioModule">
+		  <Private>false</Private>
+		</Reference>
 		<Reference Include="UnityEngine.CoreModule">
 			<Private>false</Private>
 		</Reference>

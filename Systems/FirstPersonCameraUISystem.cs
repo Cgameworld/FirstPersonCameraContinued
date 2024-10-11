@@ -3,9 +3,11 @@ using FirstPersonCamera.Helpers;
 using FirstPersonCameraContinued.Enums;
 using FirstPersonCameraContinued.MonoBehaviours;
 using FirstPersonCameraContinued.Systems;
+using Game.Audio;
 using Game.Common;
 using Game.Creatures;
 using Game.Input;
+using Game.Prefabs;
 using Game.Rendering;
 using Game.Tools;
 using Game.UI;
@@ -40,6 +42,7 @@ namespace FirstPersonCameraContinued.Systems
         public static ProxyAction m_ButtonAction;
         private FirstPersonCameraSystem _firstPersonCameraSystem;
         private CameraUpdateSystem _cameraUpdateSystem;
+        private AudioManager audioManager;
 
         protected override void OnCreate()
         {
@@ -47,6 +50,7 @@ namespace FirstPersonCameraContinued.Systems
 
             _firstPersonCameraSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraSystem>();
             _cameraUpdateSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<CameraUpdateSystem>();
+            audioManager = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<AudioManager>();
 
             var existingObj = GameObject.Find(nameof(FirstPersonCameraController));
             Controller = existingObj.GetComponent<FirstPersonCameraController>();
@@ -182,7 +186,9 @@ namespace FirstPersonCameraContinued.Systems
             else
             {
                 _cameraUpdateSystem.orbitCameraController.followedEntity = _selectedEntity;
+                audioManager.PlayUISound(GetEntityQuery(ComponentType.ReadOnly<ToolUXSoundSettingsData>()).GetSingleton<ToolUXSoundSettingsData>().m_SelectEntitySound);
             }
+
         }
 
         public Entity GetRandomEntityFromQuery(EntityQuery query)
