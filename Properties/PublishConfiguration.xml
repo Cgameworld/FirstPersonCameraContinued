@@ -83,9 +83,12 @@ If you like this mod be sure to leave an upvote! Thanks
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
 # v1.3
-* Added random follow modes
-* Fixed follow mode blurring issue 
-* Fixed issue where main game UI reappears in first person view after autosave
+* Added "Follow Random Cim" and "Follow Random Vehicle" modes
+* Added UI when clicking the main mod icon to select general modes
+* Fixed issue where ambient sound was not following the camera
+* Fixed issue where main game UI was reappearing after an autosave
+* Fixed intermittent unwanted DOF blurring (most often occuring when following a cim)
+* Updated [translations]
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />
