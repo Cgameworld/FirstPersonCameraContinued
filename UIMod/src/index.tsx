@@ -18,8 +18,12 @@ const register: ModRegistrar = (moduleRegistry) => {
         return translate(key);
     }
 
-    let tooltipDescriptionFreeCamera: string | null;
+    let tooltipDescriptionMainCameraIcon: string | null;
     let tooltipDescriptionFollowCamera: string | null;
+
+    let uiTextEnterFreeCamera: string | null;
+    let uiTextFollowRandomCim: string | null;
+    let uiTextFollowRandomVehicle: string | null;
 
     const CustomMenuButton = () => {
 
@@ -29,8 +33,12 @@ const register: ModRegistrar = (moduleRegistry) => {
             setShowButtonDropdown(!showButtonDropdown);
         };
 
-        tooltipDescriptionFreeCamera = translate("FirstPersonCameraContinued.TooltipFreeCamera");
+        tooltipDescriptionMainCameraIcon = translate("FirstPersonCameraContinued.TooltipMainCameraIcon");
         tooltipDescriptionFollowCamera = translate("FirstPersonCameraContinued.TooltipFollowCamera");
+
+        uiTextEnterFreeCamera = translate("FirstPersonCameraContinued.EnterFreeCamera");
+        uiTextFollowRandomCim = translate("FirstPersonCameraContinued.FollowRandomCim");
+        uiTextFollowRandomVehicle = translate("FirstPersonCameraContinued.FollowRandomVehicle");
 
         var selectedEntity: Entity;
         if (selectedInfo && selectedInfo.selectedEntity$) {
@@ -80,7 +88,7 @@ const register: ModRegistrar = (moduleRegistry) => {
         }, [showButtonDropdown]);
 
         return <div>
-            <DescriptionTooltip title="First Person Camera" description={tooltipDescriptionFreeCamera}> 
+            <DescriptionTooltip title="First Person Camera" description={tooltipDescriptionMainCameraIcon}> 
                 <button id="FPC-MainGameButton" className="button_ke4 button_ke4 button_h9N" onClick={() => {
                     engine.trigger("audio.playSound", "select-item", 1);
                     toggleButtonDropdown();
@@ -172,13 +180,13 @@ const register: ModRegistrar = (moduleRegistry) => {
                             <div className="infoview-panel-section_RXJ" style={{ padding: '0' }}>
                                 <div className="content_1xS focusable_GEc item-focused_FuT" style={{ padding: '0' }}>
                                     <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("ActivateFPC")}>
-                                        <div className="right_k3O row_S2v">Enter Free Camera</div>
+                                        <div className="right_k3O row_S2v">{uiTextEnterFreeCamera}</div>
                                     </div>
                                     <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("RandomCimFPC")}>
-                                        <div className="right_k3O row_S2v">Follow Random Cim</div>
+                                        <div className="right_k3O row_S2v">{uiTextFollowRandomCim}</div>
                                     </div>
                                     <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("RandomVehicleFPC")}>
-                                        <div className="right_k3O row_S2v">Follow Random Vehicle</div>
+                                        <div className="right_k3O row_S2v">{uiTextFollowRandomVehicle}</div>
                                     </div>
                                 </div>
                             </div>

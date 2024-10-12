@@ -342,8 +342,8 @@ namespace FirstPersonCameraContinued
 
             if (entryInfo.RandomFollow)
             {
-                string randomRandomModeText = "Press ENTER to follow another random " + entryInfo.RandomMode.ToString().ToLower();
-                toastComponent.Initialize(entryText + "\n" + randomRandomModeText);
+                GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextRandomModeEnter", out string randomModeText);
+                toastComponent.Initialize(entryText + "\n" + randomModeText + " " + entryInfo.RandomMode.ToString().ToLower());
             }
             else
             {
