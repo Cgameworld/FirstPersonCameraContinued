@@ -3,6 +3,7 @@ using FirstPersonCamera.Helpers;
 using FirstPersonCameraContinued.Enums;
 using FirstPersonCameraContinued.MonoBehaviours;
 using FirstPersonCameraContinued.Systems;
+using Game;
 using Game.Audio;
 using Game.Common;
 using Game.Creatures;
@@ -44,6 +45,7 @@ namespace FirstPersonCameraContinued.Systems
         private FirstPersonCameraSystem _firstPersonCameraSystem;
         private CameraUpdateSystem _cameraUpdateSystem;
         private AudioManager audioManager;
+        private OrbitCameraController s_CameraController;
 
         protected override void OnCreate()
         {
@@ -105,7 +107,13 @@ namespace FirstPersonCameraContinued.Systems
             input.Enable();
 
             input.InvokeOnFollow();
+
             _cameraUpdateSystem.orbitCameraController.followedEntity = _selectedEntity;
+
+            s_CameraController = _cameraUpdateSystem.orbitCameraController;
+            s_CameraController.TryMatchPosition(_cameraUpdateSystem.activeCameraController);
+            _cameraUpdateSystem.activeCameraController = s_CameraController;
+
         }
 
         public static void PauseGameFollow(bool pause)
