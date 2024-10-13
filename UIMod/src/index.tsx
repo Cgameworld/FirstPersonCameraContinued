@@ -171,9 +171,26 @@ const register: ModRegistrar = (moduleRegistry) => {
             trigger("fpc", item);
         };
 
+        //dynamically change width of dropdown window based on locale
+        const [dropdownWidth, setDropdownWidth] = useState<string>('220rem');
+
+        useEffect(() => {
+            const calculateWidth = () => {
+                const longestText = Math.max(
+                    uiTextEnterFreeCamera?.length || 0,
+                    uiTextFollowRandomCim?.length || 0,
+                    uiTextFollowRandomVehicle?.length || 0
+                );
+
+                const calculatedWidth = longestText * 10 + 15;
+                setDropdownWidth(`${calculatedWidth}rem`);
+            };
+
+            calculateWidth();
+        }, [uiTextEnterFreeCamera, uiTextFollowRandomCim, uiTextFollowRandomVehicle]);
 
         return (
-            <div className="fpc-dropdownpanel panel_YqS expanded collapsible advisor-panel_dXi advisor-panel_mrr top-right-panel_A2r">
+            <div style={{ width: dropdownWidth }} className="fpc-dropdownpanel panel_YqS expanded collapsible advisor-panel_dXi advisor-panel_mrr top-right-panel_A2r">
                 <div className="content_XD5 content_AD7 child-opacity-transition_nkS">
                     <div className="scrollable_DXr y_SMM scrollable_wt8">
                         <div className="content_gqa" style={{ padding: '0' }} >
