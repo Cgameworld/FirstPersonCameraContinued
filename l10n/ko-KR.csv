@@ -1,5 +1,5 @@
 "FirstPersonCameraContinued.ToastTextEnter","ESC를 눌러서 종료"
-"FirstPersonCameraContinued.ToastTextRandomModeEnter","Press ENTER to follow another random"
+"FirstPersonCameraContinued.ToastTextRandomModeEnter","Press ENTER to follow another random [item]"
 "FirstPersonCameraContinued.TooltipMainCameraIcon","Click to select a first person mode"
 "FirstPersonCameraContinued.EnterFreeCamera","Enter Free Camera"
 "FirstPersonCameraContinued.FollowRandomCim","Follow Random Cim"
