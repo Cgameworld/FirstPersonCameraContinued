@@ -175,15 +175,19 @@ const register: ModRegistrar = (moduleRegistry) => {
         const [dropdownWidth, setDropdownWidth] = useState<string>('220rem');
 
         useEffect(() => {
-            const calculateWidth = () => {
-                const longestText = Math.max(
-                    uiTextEnterFreeCamera?.length || 0,
-                    uiTextFollowRandomCim?.length || 0,
-                    uiTextFollowRandomVehicle?.length || 0
-                );
+            const texts = [uiTextEnterFreeCamera, uiTextFollowRandomCim, uiTextFollowRandomVehicle];
 
-                const calculatedWidth = longestText * 10 + 15;
-                setDropdownWidth(`${calculatedWidth}rem`);
+            const calculateWidth = () => {
+
+                //check if text has zh-HANS, zh-HANT, ko, jp characters
+                if (!texts.some(text =>
+                    text && /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/.test(text))){
+                    const longestText = Math.max(
+                        ...(texts.map(text => text?.length || 0))
+                    );
+                    const calculatedWidth = longestText * 10 + 15;
+                    setDropdownWidth(`${calculatedWidth}rem`);
+                }
             };
 
             calculateWidth();
