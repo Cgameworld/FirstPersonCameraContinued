@@ -1,5 +1,6 @@
 "FirstPersonCameraContinued.ToastTextEnter","Appuyez sur Échap pour quitter"
-"FirstPersonCameraContinued.ToastTextRandomModeEnter","Appuyez sur ENTRER pour suivre un autre aléatoire [item]"
+"FirstPersonCameraContinued.ToastTextRandomModeCimEnter","Appuyez sur ENTRER pour suivre un autre Cim aléatoire"
+"FirstPersonCameraContinued.ToastTextRandomModeVehicleEnter","Appuyez sur ENTRER pour suivre un autre véhicule aléatoire"
 "FirstPersonCameraContinued.TooltipMainCameraIcon","Cliquez pour sélectionner le mode en première personne"
 "FirstPersonCameraContinued.EnterFreeCamera","Entrer en mode caméra libre"
 "FirstPersonCameraContinued.FollowRandomCim","Suivre un Cim aléatoire"

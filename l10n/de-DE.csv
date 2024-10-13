@@ -1,5 +1,6 @@
 "FirstPersonCameraContinued.ToastTextEnter","Beenden mit ESC-Taste"
-"FirstPersonCameraContinued.ToastTextRandomModeEnter","Folge einem anderen [item] mit ENTER-Taste"
+"FirstPersonCameraContinued.ToastTextRandomModeCimEnter","Folge einem anderen Cim mit ENTER-Taste"
+"FirstPersonCameraContinued.ToastTextRandomModeVehicleEnter","Folge einem anderen Fahrzeug mit ENTER-Taste"
 "FirstPersonCameraContinued.TooltipMainCameraIcon","Klick hier um einen First Person Modus zu wählen"
 "FirstPersonCameraContinued.EnterFreeCamera","Free Camera starten"
 "FirstPersonCameraContinued.FollowRandomCim","Zufälligem Cim folgen"

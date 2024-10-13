@@ -1,5 +1,6 @@
 "FirstPersonCameraContinued.ToastTextEnter","按 ESC 退出"
-"FirstPersonCameraContinued.ToastTextRandomModeEnter","Press ENTER to follow another random [item]"
+"FirstPersonCameraContinued.ToastTextRandomModeCimEnter","Press ENTER to follow another random cim"
+"FirstPersonCameraContinued.ToastTextRandomModeVehicleEnter","Press ENTER to follow another random vehicle"
 "FirstPersonCameraContinued.TooltipMainCameraIcon","单击以选择第一人称模式"
 "FirstPersonCameraContinued.EnterFreeCamera","进入自由模式"
 "FirstPersonCameraContinued.FollowRandomCim","跟随随机市民"

@@ -342,8 +342,16 @@ namespace FirstPersonCameraContinued
 
             if (entryInfo.RandomFollow)
             {
-                GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextRandomModeEnter", out string randomModeText);
-                toastComponent.Initialize(entryText + "\n" + randomModeText + " " + entryInfo.RandomMode.ToString().ToLower());
+                if (entryInfo.RandomMode == RandomMode.Cim)
+                {
+                    GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextRandomModeCimEnter", out string randomModeText);
+                    toastComponent.Initialize(entryText + "\n" + randomModeText);
+                }
+                else if (entryInfo.RandomMode == RandomMode.Vehicle) {
+                    GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextRandomModeVehicleEnter", out string randomModeText);
+                    toastComponent.Initialize(entryText + "\n" + randomModeText);
+                }
+
             }
             else
             {
