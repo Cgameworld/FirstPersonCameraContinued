@@ -10,15 +10,15 @@ Download the mod here on PDXmods: https://mods.paradoxplaza.com/mods/79237/Windo
 
 # How To Use
 
-To enter first person mode, click on the video camera icon near the upper right hand corner or press Alt+F on your keyboard
+To enter free camera first person mode, click on the video camera icon near the upper right hand corner and click "Enter Free Camera" from the dropdown or press Alt+F on your keyboard.
 
-To move around use WASD, use SHIFT to walk faster and R/F keys to increase/decrease the camera height
+To move around use WASD, use SHIFT to walk faster and R/F keys to increase/decrease the camera height.
 
-To enter follow mode, right click on an object in free camera first person mode or click on the video camera button in the info panel for the object
+To enter follow mode, right click on an object in free camera first person mode or click on the video camera button in the info panel for the object. Alternatively, choose the "Follow Random Cim" or "Follow Random Vehicle" options in the dropdown that appears after clicking the main mod button to find a random cim/vehicle in your city to follow.
 
 To shift the camera forwards or backwards in follow mode press the UP ARROW and DOWN ARROW keys
 
-To exit follow mode press WASD, to exit first person mode, press ESC
+To exit follow mode press WASD, to exit first person mode, press ESC or ALT+F.
 
 # Settings
 
@@ -37,9 +37,11 @@ Currently Supported Languages:
 
 - English
 - Chinese (Simplified)
+- Chinese (Traditional)
 - French
 - German
 - Japanese
+- Korean
 - Polish
 - Portuguese
 - Russian
@@ -54,4 +56,4 @@ Help translate this mod via Crowdin: https://crowdin.com/project/cs2-first-perso
 
 # Conclusion
 
-If you like this mod be sure to leave an upvote! Thanks
+If you like this mod be sure to leave an star! Thanks
