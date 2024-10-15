@@ -68,7 +68,8 @@ const register: ModRegistrar = (moduleRegistry) => {
 
         useEffect(() => {
             if (showButtonDropdown) {
-                const mainGameButton = document.querySelector('#FPC-MainGameButton');
+                //const mainGameButton = document.querySelector('#FPC-MainGameButton');
+                const mainGameButton = document.querySelector('.tutorial-renderer_wve.tutorials-renderer_uj6');
                 if (mainGameButton && mainGameButton.parentNode) {
                     const dropdownRoot = document.createElement('div');
                     dropdownRoot.id = 'top-right-layout_sSC';
@@ -173,6 +174,7 @@ const register: ModRegistrar = (moduleRegistry) => {
 
         //dynamically change width of dropdown window based on locale
         const [dropdownWidth, setDropdownWidth] = useState<string>('220rem');
+        const [rightOffset, setRightOffset] = useState<string>('0rem');
 
         useEffect(() => {
             const texts = [uiTextEnterFreeCamera, uiTextFollowRandomCim, uiTextFollowRandomVehicle];
@@ -190,11 +192,22 @@ const register: ModRegistrar = (moduleRegistry) => {
                 }
             };
 
+            const updateRightOffset = () => {
+                const button = document.querySelector('#FPC-MainGameButton');
+                if (button) {
+                    const rect = button.getBoundingClientRect();
+                    const offset = window.innerWidth - rect.left;
+                    const offsetAdjusted = offset / (window.innerWidth / 1920) - 40;                   
+                    setRightOffset(`${offsetAdjusted}rem`);
+                }
+            };
+
             calculateWidth();
+            updateRightOffset();
         }, [uiTextEnterFreeCamera, uiTextFollowRandomCim, uiTextFollowRandomVehicle]);
 
         return (
-            <div style={{ width: dropdownWidth }} className="fpc-dropdownpanel panel_YqS expanded collapsible advisor-panel_dXi advisor-panel_mrr top-right-panel_A2r">
+            <div style={{ width: dropdownWidth, right: rightOffset }} className="fpc-dropdownpanel panel_YqS expanded collapsible advisor-panel_dXi advisor-panel_mrr top-right-panel_A2r">
                 <div className="content_XD5 content_AD7 child-opacity-transition_nkS">
                     <div className="scrollable_DXr y_SMM scrollable_wt8">
                         <div className="content_gqa" style={{ padding: '0' }} >

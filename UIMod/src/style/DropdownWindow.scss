@@ -1,11 +1,10 @@
 .fpc-dropdownpanel {
     position: absolute;
-    top: 50rem;
-    right: -7rem;
+    top: 60rem;
     display: flex;
 }
 .fpc-right-row {
-    font-size: 17px;
+    font-size: 17rem;
     padding-top: 10rem;
     padding-bottom: 10rem;
     padding-right: 15rem;
@@ -13,6 +12,7 @@
 
     &:hover {
         background-color: rgba(128, 128, 128, 0.5);
+        border-radius: 3rem;
     }
 }
 

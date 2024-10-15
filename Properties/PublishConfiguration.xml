@@ -89,7 +89,7 @@ If you like this mod be sure to leave an upvote! Thanks
 * Fixed issue where ambient sound was not following the camera
 * Fixed issue where main game UI was reappearing after an autosave
 * Fixed issue with intermittent unwanted DOF blurring
-* Added Korean and updated Chinese Simplified, French, German, Polish, Portuguese and Spanish translations (thanks BarkNMeow, will258012, RilkeXS, Edou24, karmel68, ruidias and elGendo87 for their contributions)
+* Added Korean and updated Chinese (Simplified), French, German, Polish, Portuguese and Spanish translations (thanks BarkNMeow, will258012, RilkeXS, Edou24, karmel68, ruidias and elGendo87 for their contributions)
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />
