@@ -6,11 +6,14 @@ import { useLocalization } from "cs2/l10n";
 import { VanillaComponentsResolver } from "../types/internal";
 import ReactDOM from 'react-dom';
 import 'style/DropdownWindow.scss';
+import 'style/Crosshair.scss';
 import engine from 'cohtml/cohtml';
 
 const register: ModRegistrar = (moduleRegistry) => {
 
     const { DescriptionTooltip } = VanillaComponentsResolver.instance;
+
+    //const ShowCrosshair$ = bindValue<boolean>('fpc', 'ShowCrosshair');
 
     // Translation.
     function translate(key: string) {
@@ -32,6 +35,8 @@ const register: ModRegistrar = (moduleRegistry) => {
         const toggleButtonDropdown = () => {
             setShowButtonDropdown(!showButtonDropdown);
         };
+
+        //const showCrosshair = useValue(ShowCrosshair$);
 
         tooltipDescriptionMainCameraIcon = translate("FirstPersonCameraContinued.TooltipMainCameraIcon");
         tooltipDescriptionFollowCamera = translate("FirstPersonCameraContinued.TooltipFollowCamera");
@@ -87,6 +92,28 @@ const register: ModRegistrar = (moduleRegistry) => {
                 }
             }
         }, [showButtonDropdown]);
+
+
+        const showCrosshair = true;
+        
+        useEffect(() => {
+            if (showCrosshair) {
+                console.log("showcrosshair triggered!");
+
+                const div = document.querySelector('.game-main-screen_TRK.child-opacity-transition_nkS');
+
+                const crosshairX = document.createElement('div');
+                crosshairX.id = "crosshairX-fpc";
+
+                const crosshairY = document.createElement('div');
+                crosshairY.id = "crosshairY-fpc";
+
+                div?.appendChild(crosshairX);
+                div?.appendChild(crosshairY);
+            }
+
+        }, [showCrosshair]);
+        
 
         return <div>
             <DescriptionTooltip title="First Person Camera" description={tooltipDescriptionMainCameraIcon}> 
@@ -230,8 +257,6 @@ const register: ModRegistrar = (moduleRegistry) => {
             </div>
         );
     };
-
-
 }
 
 export default register;
