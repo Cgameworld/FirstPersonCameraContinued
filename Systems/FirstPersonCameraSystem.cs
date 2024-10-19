@@ -9,6 +9,7 @@ using Unity.Entities;
 using UnityEngine;
 using cohtml.Net;
 using FirstPersonCameraContinued.Enums;
+using Colossal.UI;
 
 namespace FirstPersonCameraContinued.Systems
 {
@@ -123,10 +124,13 @@ namespace FirstPersonCameraContinued.Systems
         {
             IsRaycastingOverridden = !isEnabled;
 
-            if ( isEnabled )
-                _toolRaycastSystem.raycastFlags &= ~RaycastFlags.FreeCameraDisable;
-            else
-            _toolRaycastSystem.raycastFlags |= RaycastFlags.FreeCameraDisable;
+            if (Mod.FirstPersonModSettings?.ShowGameUI == false)
+            {
+                if (isEnabled)
+                    _toolRaycastSystem.raycastFlags &= ~RaycastFlags.FreeCameraDisable;
+                else
+                    _toolRaycastSystem.raycastFlags |= RaycastFlags.FreeCameraDisable;
+            }
         }
 
         protected override void OnDestroy( )
