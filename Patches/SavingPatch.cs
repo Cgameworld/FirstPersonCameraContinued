@@ -27,7 +27,7 @@ namespace FirstPersonCameraContinued.Patches
         public static void Postfix()
         {
             var camera = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraSystem>();
-            if (camera != null && camera.EntryInfo.Activated)
+            if (camera != null && camera.EntryInfo.Activated && Mod.FirstPersonModSettings?.ShowGameUI == false)
             {
                 World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<RenderingSystem>().hideOverlay = true;
             }

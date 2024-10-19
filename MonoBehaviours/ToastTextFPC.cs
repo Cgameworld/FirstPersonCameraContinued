@@ -1,4 +1,5 @@
-﻿using Game.SceneFlow;
+﻿using FirstPersonCameraContinued;
+using Game.SceneFlow;
 using UnityEngine;
 
 public class ToastTextFPC : MonoBehaviour
@@ -81,14 +82,17 @@ public class ToastTextFPC : MonoBehaviour
 
     private void OnGUI()
     {
-        float currentY = 15;
-        string[] lines = displayedText.Split('\n');
-
-        foreach (string line in lines)
+        if (Mod.FirstPersonModSettings != null)
         {
-            Vector2 lineSize = style.CalcSize(new GUIContent(line));
-            GUI.Label(new Rect(15, currentY, lineSize.x, lineSize.y), line, style);
-            currentY += lineSize.y * lineSpacingMultiplier;
+            float currentY = Mod.FirstPersonModSettings.ShowGameUI ? 60 : 15;
+            string[] lines = displayedText.Split('\n');
+
+            foreach (string line in lines)
+            {
+                Vector2 lineSize = style.CalcSize(new GUIContent(line));
+                GUI.Label(new Rect(15, currentY, lineSize.x, lineSize.y), line, style);
+                currentY += lineSize.y * lineSpacingMultiplier;
+            }
         }
     }
 }

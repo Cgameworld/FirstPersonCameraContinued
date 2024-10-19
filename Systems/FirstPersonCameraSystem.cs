@@ -93,22 +93,25 @@ namespace FirstPersonCameraContinued.Systems
         /// <param name="hidden"></param>
         public void ToggleUI( bool hidden )
         {
-            _renderingSystem.hideOverlay = hidden;
-            //Colossal.UI.UIManager.defaultUISystem.enabled = !hidden;
-
-            View? m_UIView;
-            m_UIView = GameManager.instance.userInterface.view.View;
-
-            if (hidden)
+            if (Mod.FirstPersonModSettings?.ShowGameUI == false)
             {
-                _toolRaycastSystem.raycastFlags |= RaycastFlags.FreeCameraDisable;
-                _toolSystem.activeTool = World.GetExistingSystemManaged<DefaultToolSystem>();
-                m_UIView.ExecuteScript("document.querySelector('.app-container_Y5l').style.visibility = 'hidden';");
-            }
-            else
-            {
-                _toolRaycastSystem.raycastFlags &= ~RaycastFlags.FreeCameraDisable;
-                m_UIView.ExecuteScript("document.querySelector('.app-container_Y5l').style.visibility = 'visible';");
+                _renderingSystem.hideOverlay = hidden;
+                //Colossal.UI.UIManager.defaultUISystem.enabled = !hidden;
+
+                View? m_UIView;
+                m_UIView = GameManager.instance.userInterface.view.View;
+
+                if (hidden)
+                {
+                    _toolRaycastSystem.raycastFlags |= RaycastFlags.FreeCameraDisable;
+                    _toolSystem.activeTool = World.GetExistingSystemManaged<DefaultToolSystem>();
+                    m_UIView.ExecuteScript("document.querySelector('.app-container_Y5l').style.visibility = 'hidden';");
+                }
+                else
+                {
+                    _toolRaycastSystem.raycastFlags &= ~RaycastFlags.FreeCameraDisable;
+                    m_UIView.ExecuteScript("document.querySelector('.app-container_Y5l').style.visibility = 'visible';");
+                }
             }
         }
 

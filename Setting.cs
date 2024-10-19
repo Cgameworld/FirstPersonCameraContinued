@@ -37,6 +37,7 @@ namespace FirstPersonCameraContinued
 
         [SettingsUISlider(min = .05f, max = 5f, step = .05f, scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
         public float CimHeight { get; set; }
+        public bool ShowGameUI { get; set; }
 
         [SettingsUISlider(min = 0.8f, max = 3f, step = .1f, scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
         public float TransitionSpeedFactor { get; set; }
@@ -75,6 +76,7 @@ namespace FirstPersonCameraContinued
             MovementSpeed = 0.1f;
             RunSpeed = 0.35f;
             CimHeight = 1.7f;
+            ShowGameUI = false;
             TransitionSpeedFactor = 1f;
         }
 
