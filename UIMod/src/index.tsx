@@ -13,8 +13,6 @@ const register: ModRegistrar = (moduleRegistry) => {
 
     const { DescriptionTooltip } = VanillaComponentsResolver.instance;
 
-    //const ShowCrosshair$ = bindValue<boolean>('fpc', 'ShowCrosshair');
-
     // Translation.
     function translate(key: string) {
         const { translate } = useLocalization();
@@ -28,6 +26,8 @@ const register: ModRegistrar = (moduleRegistry) => {
     let uiTextFollowRandomCim: string | null;
     let uiTextFollowRandomVehicle: string | null;
 
+    const ShowCrosshair$ = bindValue<boolean>('fpc', 'ShowCrosshair');
+
     const CustomMenuButton = () => {
 
         const [showButtonDropdown, setShowButtonDropdown] = useState(false);
@@ -36,7 +36,10 @@ const register: ModRegistrar = (moduleRegistry) => {
             setShowButtonDropdown(!showButtonDropdown);
         };
 
-        //const showCrosshair = useValue(ShowCrosshair$);
+
+        const showCrosshair = useValue(ShowCrosshair$);
+
+        //const showCrosshair: boolean = true;
 
         tooltipDescriptionMainCameraIcon = translate("FirstPersonCameraContinued.TooltipMainCameraIcon");
         tooltipDescriptionFollowCamera = translate("FirstPersonCameraContinued.TooltipFollowCamera");
@@ -93,13 +96,9 @@ const register: ModRegistrar = (moduleRegistry) => {
             }
         }, [showButtonDropdown]);
 
-
-        const showCrosshair = true;
         
         useEffect(() => {
             if (showCrosshair) {
-                console.log("showcrosshair triggered!");
-
                 const div = document.querySelector('.game-main-screen_TRK.child-opacity-transition_nkS');
 
                 const crosshairX = document.createElement('div');
@@ -110,6 +109,10 @@ const register: ModRegistrar = (moduleRegistry) => {
 
                 div?.appendChild(crosshairX);
                 div?.appendChild(crosshairY);
+            }
+            else {
+                document.getElementById('crosshairX-fpc')?.remove();
+                document.getElementById('crosshairY-fpc')?.remove();
             }
 
         }, [showCrosshair]);

@@ -28,6 +28,8 @@ namespace FirstPersonCameraContinued
             _harmony = new($"{nameof(FirstPersonCameraContinued)}.{nameof(Mod)}");
             _harmony.PatchAll(typeof(Mod).Assembly);
 
+            updateSystem.UpdateBefore<FirstPersonCameraActivatedUISystem>(SystemUpdatePhase.UIUpdate);
+
             FirstPersonModSettings = new Setting(this);
             FirstPersonModSettings.RegisterInOptionsUI();
 
