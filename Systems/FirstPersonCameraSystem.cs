@@ -10,6 +10,7 @@ using UnityEngine;
 using cohtml.Net;
 using FirstPersonCameraContinued.Enums;
 using Colossal.UI;
+using System.Net;
 
 namespace FirstPersonCameraContinued.Systems
 {
@@ -24,6 +25,8 @@ namespace FirstPersonCameraContinued.Systems
             get;
             set;
         }
+
+        private FirstPersonCameraActivatedUISystem _firstPersonCameraActivatedUISystem;
         private FirstPersonCameraController Controller
         {
             get;
@@ -50,6 +53,8 @@ namespace FirstPersonCameraContinued.Systems
                 RandomFollow = false,
                 RandomMode = RandomMode.None
             };
+
+            _firstPersonCameraActivatedUISystem = World.GetExistingSystemManaged<FirstPersonCameraActivatedUISystem>();
 
             UnityEngine.Debug.Log( "FirstPersonCamera loaded!" );
 
@@ -112,6 +117,17 @@ namespace FirstPersonCameraContinued.Systems
                 {
                     _toolRaycastSystem.raycastFlags &= ~RaycastFlags.FreeCameraDisable;
                     m_UIView.ExecuteScript("document.querySelector('.app-container_Y5l').style.visibility = 'visible';");
+                }
+            }
+            else
+            {
+                if (hidden)
+                {
+                    _firstPersonCameraActivatedUISystem.EnableCrosshair();
+                }
+                else
+                {
+                    _firstPersonCameraActivatedUISystem.DisableCrosshair();
                 }
             }
         }

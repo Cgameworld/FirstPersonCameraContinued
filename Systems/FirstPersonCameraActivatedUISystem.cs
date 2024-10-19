@@ -9,6 +9,7 @@ namespace FirstPersonCameraContinued.Systems
     public partial class FirstPersonCameraActivatedUISystem : UISystemBase
     {
         //toast tips in corner are rendered with unity ui - MonoBehaviours/ToastTextFPC.cs 
+
         private GetterValueBinding<bool> showCrosshairBinding;
         private bool showCrosshair;
 
@@ -17,20 +18,17 @@ namespace FirstPersonCameraContinued.Systems
             base.OnCreate();
             this.showCrosshairBinding = new GetterValueBinding<bool>("fpc", "ShowCrosshair", () => showCrosshair);
             AddBinding(this.showCrosshairBinding);
-            StaticCoroutine.Start(ToggleCrosshair());
         }
 
-        private IEnumerator ToggleCrosshair()
+        public void EnableCrosshair()
         {
-            while (true)
-            {
-                showCrosshair = true;
-                showCrosshairBinding.Update();
-                yield return new WaitForSeconds(2);
-                showCrosshair = false;
-                showCrosshairBinding.Update();
-                yield return new WaitForSeconds(2);
-            }
+            showCrosshair = true;
+            showCrosshairBinding.Update();
+        }
+        public void DisableCrosshair()
+        {
+            showCrosshair = false;
+            showCrosshairBinding.Update();
         }
     }
 }

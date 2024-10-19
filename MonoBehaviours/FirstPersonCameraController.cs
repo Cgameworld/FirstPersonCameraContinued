@@ -103,6 +103,7 @@ namespace FirstPersonCameraContinued.MonoBehaviours
             _rig.Update( _model.Mode == CameraMode.Follow );
 
             AudioManager.instance?.UpdateAudioListener( transform.position, _rig.RigTransform.rotation );
+            _cameraUpdateSystem.activeCameraController.rotation = _rig.RigTransform.rotation.eulerAngles;
         }
 
         /// <summary>
