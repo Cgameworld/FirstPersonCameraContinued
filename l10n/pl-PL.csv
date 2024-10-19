@@ -16,6 +16,8 @@
 "Options.OPTION_DESCRIPTION:CimHeight","Ustaw domyślny wzrost mieszkańca w trybie wolnej kamery"
 "Options.OPTION:TransitionSpeedFactor","Szybkość przejścia"
 "Options.OPTION_DESCRIPTION:TransitionSpeedFactor","Dostosuj szybkość przejścia wejścia/wyjścia z trybu"
+"Options.OPTION:ShowGameUI","Show Game UI"
+"Options.OPTION_DESCRIPTION:ShowGameUI","Show the Game UI while in first person mode"
 "Options.OPTION:ResetModSettings","Zresetuj wszystkie ustawienia"
 "Options.OPTION_DESCRIPTION:ResetModSettings","Zresetuj ustawienia moda do wartości domyślnych"
 "Options.WARNING:ResetModSettings","Czy na pewno chcesz zresetować wszystkie ustawienia moda?"

@@ -16,6 +16,8 @@
 "Options.OPTION_DESCRIPTION:CimHeight","Изменение высоты камеры"
 "Options.OPTION:TransitionSpeedFactor","Скорость анимации включения камеры"
 "Options.OPTION_DESCRIPTION:TransitionSpeedFactor","Изменение скорости анимации включения камеры"
+"Options.OPTION:ShowGameUI","Show Game UI"
+"Options.OPTION_DESCRIPTION:ShowGameUI","Show the Game UI while in first person mode"
 "Options.OPTION:ResetModSettings","Сбросить все настройки"
 "Options.OPTION_DESCRIPTION:ResetModSettings","Сбросить настройки мода по умолчанию"
 "Options.WARNING:ResetModSettings","Вы уверены, что хотите сбросить все настройки мода?"

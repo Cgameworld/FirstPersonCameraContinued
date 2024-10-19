@@ -16,6 +16,8 @@
 "Options.OPTION_DESCRIPTION:CimHeight","Establecer la altura por defecto del cim en modo libre"
 "Options.OPTION:TransitionSpeedFactor","Factor de velocidad de transición"
 "Options.OPTION_DESCRIPTION:TransitionSpeedFactor","Ajustar la velocidad de transición de entrada/salida"
+"Options.OPTION:ShowGameUI","Show Game UI"
+"Options.OPTION_DESCRIPTION:ShowGameUI","Show the Game UI while in first person mode"
 "Options.OPTION:ResetModSettings","Restablecer todos los ajustes"
 "Options.OPTION_DESCRIPTION:ResetModSettings","Restablecer ajustes del Mod a valores por defecto"
 "Options.WARNING:ResetModSettings","¿Está seguro de que desea restablecer todos los ajustes del mod?"

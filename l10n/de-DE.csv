@@ -16,6 +16,8 @@
 "Options.OPTION_DESCRIPTION:CimHeight","Standardhöhe des Sims im freien Modus festlegen"
 "Options.OPTION:TransitionSpeedFactor","Übergangstempofaktor"
 "Options.OPTION_DESCRIPTION:TransitionSpeedFactor","Übergangsgeschwindigkeit anpassen"
+"Options.OPTION:ShowGameUI","Spiel-UI anzeigen"
+"Options.OPTION_DESCRIPTION:ShowGameUI","Spiel-UI im First Person Modus anzeigen"
 "Options.OPTION:ResetModSettings","Einstellungen zurücksetzen"
 "Options.OPTION_DESCRIPTION:ResetModSettings","Mod Einstellungen auf Standardwerte zurücksetzen"
 "Options.WARNING:ResetModSettings","Bist du sicher, dass du alle Mod-Einstellungen zurücksetzen möchtest?"

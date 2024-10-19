@@ -16,6 +16,8 @@
 "Options.OPTION_DESCRIPTION:CimHeight","設定Cims視角的預設高度"
 "Options.OPTION:TransitionSpeedFactor","動畫切換速度的參數"
 "Options.OPTION_DESCRIPTION:TransitionSpeedFactor","調整進入／退出視角的速度"
+"Options.OPTION:ShowGameUI","Show Game UI"
+"Options.OPTION_DESCRIPTION:ShowGameUI","Show the Game UI while in first person mode"
 "Options.OPTION:ResetModSettings","重設全部"
 "Options.OPTION_DESCRIPTION:ResetModSettings","重設模組設定為預設值"
 "Options.WARNING:ResetModSettings","您確定要重設此模組的所有設定嗎?"

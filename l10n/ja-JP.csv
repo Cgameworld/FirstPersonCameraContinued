@@ -16,6 +16,8 @@
 "Options.OPTION_DESCRIPTION:CimHeight","フリーモードでのシムのデフォルトの高さを設定する。"
 "Options.OPTION:TransitionSpeedFactor","移行速度係数"
 "Options.OPTION_DESCRIPTION:TransitionSpeedFactor","入退場のトランジションスピードを調整する"
+"Options.OPTION:ShowGameUI","Show Game UI"
+"Options.OPTION_DESCRIPTION:ShowGameUI","Show the Game UI while in first person mode"
 "Options.OPTION:ResetModSettings","すべての設定をリセットする"
 "Options.OPTION_DESCRIPTION:ResetModSettings","MOD設定をデフォルト値にリセットする"
 "Options.WARNING:ResetModSettings","本当にすべてのMOD設定をリセットしたいのですか？"

@@ -35,6 +35,7 @@
 	  <None Remove="l10n\ko-KR.csv" />
 	  <None Remove="l10n\pl-PL.csv" />
 	  <None Remove="l10n\pt-BR.csv" />
+	  <None Remove="l10n\pt-PT.csv" />
 	  <None Remove="l10n\ru-RU.csv" />
 	  <None Remove="l10n\zh-HANS.csv" />
 	  <None Remove="l10n\zh-HANT.csv" />
@@ -48,6 +49,7 @@
 	  <EmbeddedResource Include="l10n\ko-KR.csv" />
 	  <EmbeddedResource Include="l10n\pl-PL.csv" />
 	  <EmbeddedResource Include="l10n\pt-BR.csv" />
+	  <EmbeddedResource Include="l10n\pt-PT.csv" />
 	  <EmbeddedResource Include="l10n\ru-RU.csv" />
 	  <EmbeddedResource Include="l10n\zh-HANS.csv" />
 	  <EmbeddedResource Include="l10n\zh-HANT.csv" />

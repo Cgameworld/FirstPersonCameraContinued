@@ -34,6 +34,7 @@ Several loaded parameters can also be configured from the main game settings, ta
 - Running Speed
 - Cim Height
 - Transition Speed
+- Show Game UI
 - Free Camera Toggle Keyboard Shortcut
 
 # Localization
@@ -48,7 +49,8 @@ Currently Supported Languages:
 - Japanese
 - Korean
 - Polish
-- Portuguese
+- Portuguese (European) 
+- Portuguese (Brazilian)
 - Russian
 - Spanish
 
@@ -85,7 +87,7 @@ If you like this mod be sure to leave an upvote! Thanks
   <ChangeLog>
 # v1.3.1
 * Added option to show game UI while in first person mode
-* Updated translation
+* Added European Portuguese (thanks ti4go) and updated Chinese (Simplified) (thanks RilkeXS) and German translations
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />
