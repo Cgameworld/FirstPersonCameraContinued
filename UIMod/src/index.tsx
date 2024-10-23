@@ -77,7 +77,7 @@ const register: ModRegistrar = (moduleRegistry) => {
         useEffect(() => {
             if (showButtonDropdown) {
                 //const mainGameButton = document.querySelector('#FPC-MainGameButton');
-                const mainGameButton = document.querySelector('.tutorial-renderer_wve.tutorials-renderer_uj6');
+                const mainGameButton = document.querySelector('.main-container__E2');
                 if (mainGameButton && mainGameButton.parentNode) {
                     const dropdownRoot = document.createElement('div');
                     dropdownRoot.id = 'top-right-layout_sSC';
