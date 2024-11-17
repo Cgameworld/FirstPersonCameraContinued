@@ -27,6 +27,7 @@ const register: ModRegistrar = (moduleRegistry) => {
     let uiTextFollowRandomVehicle: string | null;
 
     const ShowCrosshair$ = bindValue<boolean>('fpc', 'ShowCrosshair');
+    const FollowedEntityInfo$ = bindValue<string>('fpc', 'FollowedEntityInfo');
 
     const CustomMenuButton = () => {
 
@@ -38,6 +39,7 @@ const register: ModRegistrar = (moduleRegistry) => {
 
 
         const showCrosshair = useValue(ShowCrosshair$);
+        const followedEntityInfo = useValue(FollowedEntityInfo$);
 
         //const showCrosshair: boolean = true;
 
@@ -116,8 +118,9 @@ const register: ModRegistrar = (moduleRegistry) => {
             }
 
         }, [showCrosshair]);
-        
 
+        const realSpeed: number = JSON.parse(followedEntityInfo).currentSpeed * 1.8;
+        const formattedSpeed = `RealSpeed? ${realSpeed.toFixed(1)} km/h`;
         return <div>
             <DescriptionTooltip title="First Person Camera" description={tooltipDescriptionMainCameraIcon}> 
                 <button id="FPC-MainGameButton" className="button_ke4 button_ke4 button_h9N" onClick={() => {
@@ -128,6 +131,10 @@ const register: ModRegistrar = (moduleRegistry) => {
                 </div>
                 </button>
             </DescriptionTooltip>
+            <div style={{ backgroundColor: 'rgba(255,255,255,0.7)' }}>
+                <div>{followedEntityInfo}</div>
+                <div>{formattedSpeed}</div>
+            </div>
         </div>;
     }
 

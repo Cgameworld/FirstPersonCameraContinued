@@ -38,7 +38,7 @@ namespace FirstPersonCameraContinued.Systems
             set;
         }
 
-        private Entity _selectedEntity;
+        public Entity _selectedEntity;
         private static bool isPausedBeforeActive;
 
         public static ProxyAction m_ButtonAction;
