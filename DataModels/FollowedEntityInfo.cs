@@ -9,6 +9,6 @@ namespace FirstPersonCameraContinued.DataModels
     public class FollowedEntityInfo
     {
         public float currentSpeed;
-        public string? unitsSystem;
+        public int unitsSystem;
     }
 }

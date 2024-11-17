@@ -119,8 +119,18 @@ const register: ModRegistrar = (moduleRegistry) => {
 
         }, [showCrosshair]);
 
-        const realSpeed: number = JSON.parse(followedEntityInfo).currentSpeed * 1.8;
-        const formattedSpeed = `RealSpeed? ${realSpeed.toFixed(1)} km/h`;
+        const parsedSpeed: number = JSON.parse(followedEntityInfo).currentSpeed
+        const parsedUnits: number = JSON.parse(followedEntityInfo).unitsSystem;
+       
+        let formattedSpeed: string;
+
+        if (parsedUnits == 1) {
+            formattedSpeed = (parsedSpeed * 1.26).toFixed(1) + "mph";
+        }
+        else {
+            formattedSpeed = (parsedSpeed * 1.8).toFixed(1) + "km/h";
+        }
+
         return <div>
             <DescriptionTooltip title="First Person Camera" description={tooltipDescriptionMainCameraIcon}> 
                 <button id="FPC-MainGameButton" className="button_ke4 button_ke4 button_h9N" onClick={() => {

@@ -33,7 +33,7 @@ namespace FirstPersonCameraContinued.Systems
             followedEntityInfo = JsonConvert.SerializeObject(new FollowedEntityInfo()
             {
                 currentSpeed = -1,
-                unitsSystem = "none",
+                unitsSystem = -1,
             }
             );
         }
@@ -52,7 +52,7 @@ namespace FirstPersonCameraContinued.Systems
                     {
                         followedEntityInfo.currentSpeed = carNavigationComponent.m_MaxSpeed;
                     }
-                    followedEntityInfo.unitsSystem = GameManager.instance.settings.userInterface.unitSystem.ToString();
+                    followedEntityInfo.unitsSystem = (int)GameManager.instance.settings.userInterface.unitSystem;
 
                     this.followedEntityInfo = JsonConvert.SerializeObject(followedEntityInfo);
                     followedEntityInfoBinding.Update();
