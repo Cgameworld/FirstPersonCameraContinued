@@ -7,6 +7,7 @@ using Game.Vehicles;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
@@ -21,6 +22,7 @@ namespace FirstPersonCameraContinued.Systems
 
         private GetterValueBinding<string> followedEntityInfoBinding;
         private string followedEntityInfo = "none?";
+        private float3 previousPosition;
 
         protected override void OnCreate()
         {
@@ -47,21 +49,35 @@ namespace FirstPersonCameraContinued.Systems
             if (_firstPersonUISystem != null && showCrosshair)
             {
                 Entity currentEntity = _firstPersonUISystem._selectedEntity;
+                float deltaTime = SystemAPI.Time.DeltaTime;
+
                 if (currentEntity != Entity.Null)
                 {
                     FollowedEntityInfo followedEntityInfo = new FollowedEntityInfo();
-                    if (EntityManager.TryGetComponent<Game.Objects.Moving>(currentEntity, out var movingComponent))
+                    if (EntityManager.TryGetComponent<Game.Rendering.InterpolatedTransform>(currentEntity, out var interpolatedTransformComponent))
                     {
-                        followedEntityInfo.currentSpeed = new Vector3(movingComponent.m_Velocity.x, movingComponent.m_Velocity.y, movingComponent.m_Velocity.z).magnitude;
+                        float3 currentPosition = interpolatedTransformComponent.m_Position;
+
+                        if (deltaTime > 0)
+                        {
+                            float3 displacement = currentPosition - previousPosition;
+                            float instantaneousSpeed = math.length(displacement) / deltaTime;
+
+                            followedEntityInfo.currentSpeed = instantaneousSpeed;
+                        }
+
+                        previousPosition = currentPosition;
                     }
-                    followedEntityInfo.unitsSystem = (int) GameManager.instance.settings.userInterface.unitSystem;
+
+                    followedEntityInfo.unitsSystem = (int)GameManager.instance.settings.userInterface.unitSystem;
 
                     this.followedEntityInfo = JsonConvert.SerializeObject(followedEntityInfo);
                     followedEntityInfoBinding.Update();
                 }
-            }
 
+            }
         }
+       
 
         public void EnableCrosshair()
         {

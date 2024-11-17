@@ -142,7 +142,6 @@ const register: ModRegistrar = (moduleRegistry) => {
                 </button>
             </DescriptionTooltip>
             <div style={{ backgroundColor: 'rgba(255,255,255,0.7)' }}>
-                <div>{followedEntityInfo}</div>
                 <div>{formattedSpeed}</div>
             </div>
         </div>;
