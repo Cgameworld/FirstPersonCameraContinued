@@ -7,6 +7,8 @@ using Game.Vehicles;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using Unity.Entities;
+using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 namespace FirstPersonCameraContinued.Systems
 {
@@ -48,11 +50,11 @@ namespace FirstPersonCameraContinued.Systems
                 if (currentEntity != Entity.Null)
                 {
                     FollowedEntityInfo followedEntityInfo = new FollowedEntityInfo();
-                    if (EntityManager.TryGetComponent<Game.Vehicles.CarNavigation>(currentEntity, out var carNavigationComponent))
+                    if (EntityManager.TryGetComponent<Game.Objects.Moving>(currentEntity, out var movingComponent))
                     {
-                        followedEntityInfo.currentSpeed = carNavigationComponent.m_MaxSpeed;
+                        followedEntityInfo.currentSpeed = new Vector3(movingComponent.m_Velocity.x, movingComponent.m_Velocity.y, movingComponent.m_Velocity.z).magnitude;
                     }
-                    followedEntityInfo.unitsSystem = (int)GameManager.instance.settings.userInterface.unitSystem;
+                    followedEntityInfo.unitsSystem = (int) GameManager.instance.settings.userInterface.unitSystem;
 
                     this.followedEntityInfo = JsonConvert.SerializeObject(followedEntityInfo);
                     followedEntityInfoBinding.Update();
