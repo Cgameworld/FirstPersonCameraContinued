@@ -119,16 +119,28 @@ const register: ModRegistrar = (moduleRegistry) => {
 
         }, [showCrosshair]);
 
+        const [smoothedSpeed, setSmoothedSpeed] = useState(0);
+        const [lastUpdated, setLastUpdated] = useState(0);
+
         const parsedSpeed: number = JSON.parse(followedEntityInfo).currentSpeed
         const parsedUnits: number = JSON.parse(followedEntityInfo).unitsSystem;
-       
+
+        useEffect(() => {
+            const now = Date.now();
+            // Only update every 50ms - prevent flickering?
+            if (now - lastUpdated > 50) {
+                setSmoothedSpeed(parsedSpeed-0.1);
+                setLastUpdated(now);
+            }
+        }, [parsedSpeed]);
+
         let formattedSpeed: string;
 
         if (parsedUnits == 1) {
-            formattedSpeed = (parsedSpeed * 1.26).toFixed(1) + "mph";
+            formattedSpeed = Math.round(smoothedSpeed * 1.26) + " mph";
         }
         else {
-            formattedSpeed = (parsedSpeed * 1.8).toFixed(1) + "km/h";
+            formattedSpeed = Math.round((smoothedSpeed) * 1.8) + " km/h";
         }
 
         return <div>
@@ -279,3 +291,7 @@ const register: ModRegistrar = (moduleRegistry) => {
 }
 
 export default register;
+
+function setSmoothedSpeed(parsedSpeed: number) {
+    throw new Error('Function not implemented.');
+}
