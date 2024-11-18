@@ -121,14 +121,15 @@ const register: ModRegistrar = (moduleRegistry) => {
 
         const parsedSpeed: number = JSON.parse(followedEntityInfo).currentSpeed
         const parsedUnits: number = JSON.parse(followedEntityInfo).unitsSystem;
-       
+        const parsedPassengers: number = JSON.parse(followedEntityInfo).passengers;
+
         let formattedSpeed: string;
 
         if (parsedUnits == 1) {
-            formattedSpeed = (parsedSpeed * 1.26).toFixed(1) + "mph";
+            formattedSpeed = Math.round(parsedSpeed * 1.26) + " mph";
         }
         else {
-            formattedSpeed = (parsedSpeed * 1.8).toFixed(1) + "km/h";
+            formattedSpeed = Math.round(parsedSpeed * 1.8) + " km/h";
         }
 
         return <div>
@@ -142,8 +143,8 @@ const register: ModRegistrar = (moduleRegistry) => {
                 </button>
             </DescriptionTooltip>
             <div style={{ backgroundColor: 'rgba(255,255,255,0.7)' }}>
-                <div>{followedEntityInfo}</div>
-                <div>{formattedSpeed}</div>
+                <div>Speed: {formattedSpeed}</div>
+                <div>Passengers: {parsedPassengers}</div>
             </div>
         </div>;
     }

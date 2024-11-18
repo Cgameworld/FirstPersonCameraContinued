@@ -36,6 +36,7 @@ namespace FirstPersonCameraContinued.Systems
             {
                 currentSpeed = -1,
                 unitsSystem = -1,
+                passengers = -1,
             }
             );
         }
@@ -54,6 +55,23 @@ namespace FirstPersonCameraContinued.Systems
                     {
                         followedEntityInfo.currentSpeed = new Vector3(movingComponent.m_Velocity.x, movingComponent.m_Velocity.y, movingComponent.m_Velocity.z).magnitude;
                     }
+
+                    if (EntityManager.TryGetComponent<Game.Vehicles.Controller>(currentEntity, out var controllerComponent))
+                    {
+                        if (EntityManager.TryGetBuffer<Game.Vehicles.LayoutElement>(controllerComponent.m_Controller, false, out var layoutElementBuffer))
+                        {
+                            int totalPassengers = 0;
+                            for (int i = 0; i < layoutElementBuffer.Length; i++)
+                            {
+                                if (EntityManager.TryGetBuffer<Game.Vehicles.Passenger>(layoutElementBuffer[i].m_Vehicle, false, out var passengerBuffer))
+                                {
+                                    totalPassengers += passengerBuffer.Length;
+                                }
+                            }
+                            followedEntityInfo.passengers = totalPassengers;
+                        }
+                    }
+
                     followedEntityInfo.unitsSystem = (int) GameManager.instance.settings.userInterface.unitSystem;
 
                     this.followedEntityInfo = JsonConvert.SerializeObject(followedEntityInfo);
