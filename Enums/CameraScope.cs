@@ -4,7 +4,7 @@
     /// Describes the current scope of the first
     /// person camera. Used for effects and positioning.
     /// </summary>
-    internal enum CameraScope
+    public enum CameraScope
     {
         Default,
         Citizen,

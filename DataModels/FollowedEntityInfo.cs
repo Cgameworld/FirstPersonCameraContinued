@@ -11,5 +11,6 @@ namespace FirstPersonCameraContinued.DataModels
         public float currentSpeed;
         public int unitsSystem;
         public int passengers;
+        public string? vehicleType;
     }
 }

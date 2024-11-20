@@ -16,7 +16,7 @@ namespace FirstPersonCameraContinued.Transforms
     /// <summary>
     /// Handles additional camera position and rotation transforms
     /// </summary>
-    internal class CameraTransformer
+    public class CameraTransformer
     {
         private List<ICameraTransform> Transforms
         {
@@ -133,7 +133,7 @@ namespace FirstPersonCameraContinued.Transforms
         /// Determines camera scope from entity type
         /// </summary>
         /// <returns></returns>
-        private CameraScope DetermineScope( )
+        public CameraScope DetermineScope( )
         {
             if ( _model.FollowEntity == Entity.Null )
                 return CameraScope.Default;

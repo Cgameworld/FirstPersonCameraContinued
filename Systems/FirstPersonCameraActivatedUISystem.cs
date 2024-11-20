@@ -1,6 +1,8 @@
 ﻿using Colossal.Entities;
 using Colossal.UI.Binding;
 using FirstPersonCameraContinued.DataModels;
+using FirstPersonCameraContinued.MonoBehaviours;
+using FirstPersonCameraContinued.Transforms;
 using Game.SceneFlow;
 using Game.UI;
 using Game.Vehicles;
@@ -9,18 +11,26 @@ using System.ComponentModel;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
+using static Game.UI.InGame.VehiclesSection;
 
 namespace FirstPersonCameraContinued.Systems
 {
     public partial class FirstPersonCameraActivatedUISystem : UISystemBase
     {
         //toast tips in corner are rendered with unity ui - MonoBehaviours/ToastTextFPC.cs 
+        private FirstPersonCameraController CameraController
+        {
+            get;
+            set;
+        }
 
         private GetterValueBinding<bool> showCrosshairBinding;
         private bool showCrosshair;
 
         private GetterValueBinding<string> followedEntityInfoBinding;
         private string followedEntityInfo = "none?";
+        private FirstPersonCameraUISystem _firstPersonUISystem;
+        private bool isObjectsSystemsInitalized;
 
         protected override void OnCreate()
         {
@@ -37,16 +47,41 @@ namespace FirstPersonCameraContinued.Systems
                 currentSpeed = -1,
                 unitsSystem = -1,
                 passengers = -1,
+                vehicleType = "none",
             }
             );
+
+            isObjectsSystemsInitalized = false;
+        }
+
+        private bool InitializeObjectsSystems()
+        {
+            if (isObjectsSystemsInitalized)
+            {
+                return true;
+            }
+
+            var cameraControllerObj = GameObject.Find(nameof(FirstPersonCameraController));
+            if (cameraControllerObj != null)
+            {
+                CameraController = cameraControllerObj.GetComponent<FirstPersonCameraController>();
+            }
+
+            _firstPersonUISystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraUISystem>();
+
+            isObjectsSystemsInitalized = CameraController != null && _firstPersonUISystem != null;
+            return isObjectsSystemsInitalized;
         }
 
         protected override void OnUpdate()
         {
-            FirstPersonCameraUISystem _firstPersonUISystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraUISystem>();
-
-            if (_firstPersonUISystem != null && showCrosshair)
+            if (showCrosshair)
             {
+                if (!InitializeObjectsSystems())
+                {
+                    return;
+                }
+
                 Entity currentEntity = _firstPersonUISystem._selectedEntity;
                 if (currentEntity != Entity.Null)
                 {
@@ -72,13 +107,15 @@ namespace FirstPersonCameraContinued.Systems
                         }
                     }
 
-                    followedEntityInfo.unitsSystem = (int) GameManager.instance.settings.userInterface.unitSystem;
+                    Mod.log.Info("CameraController.GetTransformer().DetermineScope()" + CameraController.GetTransformer().DetermineScope());
+                    followedEntityInfo.vehicleType = CameraController.GetTransformer().DetermineScope().ToString();
+
+                    followedEntityInfo.unitsSystem = (int)GameManager.instance.settings.userInterface.unitSystem;
 
                     this.followedEntityInfo = JsonConvert.SerializeObject(followedEntityInfo);
                     followedEntityInfoBinding.Update();
                 }
             }
-
         }
 
         public void EnableCrosshair()

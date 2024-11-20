@@ -29,6 +29,11 @@ namespace FirstPersonCameraContinued.MonoBehaviours
             set;
         }
 
+        public CameraTransformer GetTransformer()
+        {
+            return _transformer;
+        }
+
         public CameraInput GetCameraInput()
         {
             return _input;

@@ -122,6 +122,7 @@ const register: ModRegistrar = (moduleRegistry) => {
         const parsedSpeed: number = JSON.parse(followedEntityInfo).currentSpeed
         const parsedUnits: number = JSON.parse(followedEntityInfo).unitsSystem;
         const parsedPassengers: number = JSON.parse(followedEntityInfo).passengers;
+        const vehicleType: string = JSON.parse(followedEntityInfo).vehicleType;
 
         let formattedSpeed: string;
 
@@ -145,6 +146,7 @@ const register: ModRegistrar = (moduleRegistry) => {
             <div style={{ backgroundColor: 'rgba(255,255,255,0.7)' }}>
                 <div>Speed: {formattedSpeed}</div>
                 <div>Passengers: {parsedPassengers}</div>
+                <div>Vehicle Type: {vehicleType}</div>
             </div>
         </div>;
     }
