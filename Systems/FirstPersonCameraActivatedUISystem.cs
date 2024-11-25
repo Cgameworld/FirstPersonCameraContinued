@@ -30,7 +30,7 @@ namespace FirstPersonCameraContinued.Systems
         private bool showCrosshair;
 
         private GetterValueBinding<string> followedEntityInfoBinding;
-        private string followedEntityInfo = "none?";
+        public string followedEntityInfo = "none?";
         private FirstPersonCameraUISystem _firstPersonUISystem;
         private bool isObjectsSystemsInitalized;
 
@@ -114,7 +114,7 @@ namespace FirstPersonCameraContinued.Systems
                     }
                     else
                     {
-                        SetFollowedEntityDefaults();
+                        followedEntityInfo.passengers = -1;
                     }
 
                     followedEntityInfo.vehicleType = CameraController.GetTransformer().DetermineScope().ToString();
@@ -127,7 +127,7 @@ namespace FirstPersonCameraContinued.Systems
             }
 
         }
-        private static string SetFollowedEntityDefaults()
+        public string SetFollowedEntityDefaults()
         {
             return JsonConvert.SerializeObject(new FollowedEntityInfo()
             {
