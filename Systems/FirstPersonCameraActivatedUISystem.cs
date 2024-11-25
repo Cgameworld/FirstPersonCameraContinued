@@ -7,6 +7,7 @@ using Game.SceneFlow;
 using Game.UI;
 using Game.Vehicles;
 using Newtonsoft.Json;
+using System;
 using System.ComponentModel;
 using Unity.Entities;
 using UnityEngine;
@@ -18,6 +19,7 @@ namespace FirstPersonCameraContinued.Systems
     public partial class FirstPersonCameraActivatedUISystem : UISystemBase
     {
         //toast tips in corner are rendered with unity ui - MonoBehaviours/ToastTextFPC.cs 
+
         private FirstPersonCameraController CameraController
         {
             get;
@@ -42,14 +44,7 @@ namespace FirstPersonCameraContinued.Systems
             this.followedEntityInfoBinding = new GetterValueBinding<string>("fpc", "FollowedEntityInfo", () => followedEntityInfo);
             AddBinding(this.followedEntityInfoBinding);
 
-            followedEntityInfo = JsonConvert.SerializeObject(new FollowedEntityInfo()
-            {
-                currentSpeed = -1,
-                unitsSystem = -1,
-                passengers = -1,
-                vehicleType = "none",
-            }
-            );
+            followedEntityInfo = SetFollowedEntityDefaults();
 
             isObjectsSystemsInitalized = false;
         }
@@ -91,23 +86,37 @@ namespace FirstPersonCameraContinued.Systems
                         followedEntityInfo.currentSpeed = new Vector3(movingComponent.m_Velocity.x, movingComponent.m_Velocity.y, movingComponent.m_Velocity.z).magnitude;
                     }
 
-                    if (EntityManager.TryGetComponent<Game.Vehicles.Controller>(currentEntity, out var controllerComponent))
+                    //get passenger numbers if bus, tram, metro, etc
+                    if (EntityManager.HasComponent<Game.Vehicles.PassengerTransport>(currentEntity))
                     {
-                        if (EntityManager.TryGetBuffer<Game.Vehicles.LayoutElement>(controllerComponent.m_Controller, false, out var layoutElementBuffer))
+                        if (EntityManager.TryGetComponent<Game.Vehicles.Controller>(currentEntity, out var controllerComponent))
                         {
-                            int totalPassengers = 0;
-                            for (int i = 0; i < layoutElementBuffer.Length; i++)
+                            if (EntityManager.TryGetBuffer<Game.Vehicles.LayoutElement>(controllerComponent.m_Controller, false, out var layoutElementBuffer))
                             {
-                                if (EntityManager.TryGetBuffer<Game.Vehicles.Passenger>(layoutElementBuffer[i].m_Vehicle, false, out var passengerBuffer))
+                                int totalPassengers = 0;
+                                for (int i = 0; i < layoutElementBuffer.Length; i++)
                                 {
-                                    totalPassengers += passengerBuffer.Length;
+                                    if (EntityManager.TryGetBuffer<Game.Vehicles.Passenger>(layoutElementBuffer[i].m_Vehicle, false, out var passengerBuffer))
+                                    {
+                                        totalPassengers += passengerBuffer.Length;
+                                    }
                                 }
+                                followedEntityInfo.passengers = totalPassengers;
                             }
-                            followedEntityInfo.passengers = totalPassengers;
+                        }
+                        else
+                        {
+                            if (EntityManager.TryGetBuffer<Game.Vehicles.Passenger>(currentEntity, false, out var passengerBuffer))
+                            {
+                                followedEntityInfo.passengers = passengerBuffer.Length;
+                            }
                         }
                     }
+                    else
+                    {
+                        SetFollowedEntityDefaults();
+                    }
 
-                    Mod.log.Info("CameraController.GetTransformer().DetermineScope()" + CameraController.GetTransformer().DetermineScope());
                     followedEntityInfo.vehicleType = CameraController.GetTransformer().DetermineScope().ToString();
 
                     followedEntityInfo.unitsSystem = (int)GameManager.instance.settings.userInterface.unitSystem;
@@ -116,6 +125,17 @@ namespace FirstPersonCameraContinued.Systems
                     followedEntityInfoBinding.Update();
                 }
             }
+
+        }
+        private static string SetFollowedEntityDefaults()
+        {
+            return JsonConvert.SerializeObject(new FollowedEntityInfo()
+            {
+                currentSpeed = -1,
+                unitsSystem = -1,
+                passengers = -1,
+                vehicleType = "none",
+            });
         }
 
         public void EnableCrosshair()
