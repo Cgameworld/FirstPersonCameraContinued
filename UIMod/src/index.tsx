@@ -98,7 +98,7 @@ const register: ModRegistrar = (moduleRegistry) => {
             }
         }, [showButtonDropdown]);
 
-        
+
         useEffect(() => {
             if (showCrosshair) {
                 const div = document.querySelector('.game-main-screen_TRK.child-opacity-transition_nkS');
@@ -134,25 +134,25 @@ const register: ModRegistrar = (moduleRegistry) => {
         }
 
         return <div>
-            <DescriptionTooltip title="First Person Camera" description={tooltipDescriptionMainCameraIcon}> 
+            <DescriptionTooltip title="First Person Camera" description={tooltipDescriptionMainCameraIcon}>
                 <button id="FPC-MainGameButton" className="button_ke4 button_ke4 button_h9N" onClick={() => {
                     engine.trigger("audio.playSound", "select-item", 1);
                     toggleButtonDropdown();
                 }}>
-                <div className="tinted-icon_iKo icon_be5" style={{ backgroundImage: 'url(coui://uil/Standard/VideoCamera.svg)', backgroundPositionX: '1rem', backgroundPositionY: '1rem', backgroundColor: 'rgba(255,255,255,0)', backgroundSize: '35rem 35rem' }}>
-                </div>
+                    <div className="tinted-icon_iKo icon_be5" style={{ backgroundImage: 'url(coui://uil/Standard/VideoCamera.svg)', backgroundPositionX: '1rem', backgroundPositionY: '1rem', backgroundColor: 'rgba(255,255,255,0)', backgroundSize: '35rem 35rem' }}>
+                    </div>
                 </button>
             </DescriptionTooltip>
             <div style={{ backgroundColor: 'rgba(255,255,255,0.7)' }}>
-                <div>Speed: {formattedSpeed}</div>
-                <div>Passengers: {parsedPassengers}</div>
+                {parsedSpeed !== -1 && <div>Speed: {formattedSpeed}</div>}
+                {parsedPassengers !== -1 && <div>Passengers: {parsedPassengers}</div>}
                 <div>Vehicle Type: {vehicleType}</div>
             </div>
         </div>;
     }
 
     moduleRegistry.append('GameTopRight', CustomMenuButton);
- 
+
     const middleSections$ = selectedInfo.middleSections$;
     const titleSection$ = selectedInfo.titleSection$;
 
@@ -206,7 +206,7 @@ const register: ModRegistrar = (moduleRegistry) => {
 
     const FPVInfoWindowButton = () => {
         return (
-            <DescriptionTooltip title="First Person Camera" description={tooltipDescriptionFollowCamera}> 
+            <DescriptionTooltip title="First Person Camera" description={tooltipDescriptionFollowCamera}>
                 <button style={{ marginLeft: '6rem', marginRight: '8rem' }} className="ok button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_Z9O button_ECf item_It6 item-mouse-states_Fmi item-selected_tAM item-focused_FuT button_xGY" onClick={() => trigger("fpc", "EnterFollowFPC")}>
                     <img className="icon_Tdt icon_soN icon_Iwk" src="coui://uil/Colored/VideoCamera.svg"></img>
                 </button>
@@ -233,7 +233,7 @@ const register: ModRegistrar = (moduleRegistry) => {
 
                 //check if text has zh-HANS, zh-HANT, ko, jp characters
                 if (!texts.some(text =>
-                    text && /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/.test(text))){
+                    text && /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/.test(text))) {
                     const longestText = Math.max(
                         ...(texts.map(text => text?.length || 0))
                     );
@@ -247,7 +247,7 @@ const register: ModRegistrar = (moduleRegistry) => {
                 if (button) {
                     const rect = button.getBoundingClientRect();
                     const offset = window.innerWidth - rect.left;
-                    const offsetAdjusted = offset / (window.innerWidth / 1920) - 40;                   
+                    const offsetAdjusted = offset / (window.innerWidth / 1920) - 40;
                     setRightOffset(`${offsetAdjusted}rem`);
                 }
             };
