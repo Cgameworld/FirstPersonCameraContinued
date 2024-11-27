@@ -189,28 +189,38 @@ namespace FirstPersonCameraContinued
             rotation = default;
 
             Filter();
-
-            if ( _entityManager.TryGetBuffer<Game.Objects.TransformFrame>( _model.FollowEntity, true, out var buffer1 ) )
+            if (_entityManager.TryGetComponent<Game.Vehicles.TrainNavigation>(_model.FollowEntity, out var trainNavigationComponent))
             {
-                var interpolatedPosition = GetInterpolatedPosition( _model.FollowEntity, buffer1, out bounds );
-                position = interpolatedPosition.m_Position;
-                rotation = interpolatedPosition.m_Rotation;
+                if (_entityManager.TryGetComponent<Game.Rendering.InterpolatedTransform>(_model.FollowEntity, out var interpolatedTransformComponent))
+                {
+                    position = interpolatedTransformComponent.m_Position + new float3(0f, 2f, 0f);
+                    rotation = interpolatedTransformComponent.m_Rotation;
+                }
             }
             else
             {
-                if ( _entityManager.TryGetComponent<Game.Objects.Relative>( _model.FollowEntity, out var component1 ) )
+                if (_entityManager.TryGetBuffer<Game.Objects.TransformFrame>(_model.FollowEntity, true, out var buffer1))
                 {
-                    var relativePosition = GetRelativePosition( _model.FollowEntity, component1, out bounds );
-                    position = relativePosition.m_Position;
-                    rotation = relativePosition.m_Rotation;
+                    var interpolatedPosition = GetInterpolatedPosition(_model.FollowEntity, buffer1, out bounds);
+                    position = interpolatedPosition.m_Position;
+                    rotation = interpolatedPosition.m_Rotation;
                 }
                 else
                 {
-                    if ( _entityManager.TryGetComponent<Game.Objects.Transform>( _model.FollowEntity, out var component2 ) )
+                    if (_entityManager.TryGetComponent<Game.Objects.Relative>(_model.FollowEntity, out var component1))
                     {
-                        var objectPosition = GetObjectPosition( _model.FollowEntity, component2, out bounds );
-                        position = objectPosition.m_Position;
-                        rotation = objectPosition.m_Rotation;
+                        var relativePosition = GetRelativePosition(_model.FollowEntity, component1, out bounds);
+                        position = relativePosition.m_Position;
+                        rotation = relativePosition.m_Rotation;
+                    }
+                    else
+                    {
+                        if (_entityManager.TryGetComponent<Game.Objects.Transform>(_model.FollowEntity, out var component2))
+                        {
+                            var objectPosition = GetObjectPosition(_model.FollowEntity, component2, out bounds);
+                            position = objectPosition.m_Position;
+                            rotation = objectPosition.m_Rotation;
+                        }
                     }
                 }
             }
