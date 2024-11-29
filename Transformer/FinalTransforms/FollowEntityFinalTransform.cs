@@ -49,7 +49,7 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
             //rig.Parent.position = pos + pivot;
             if (isTrain)
             {
-                model.Position = pos + new float3(0f, 2f, 0f) + (forward * 8f);
+                model.Position = pos + new float3(0f, 2f, 0f) + (forward * (8f + model.PositionFollowOffset.y));
             }
             else
             {
