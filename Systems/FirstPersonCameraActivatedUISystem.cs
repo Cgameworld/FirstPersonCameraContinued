@@ -9,6 +9,7 @@ using Game.Vehicles;
 using Newtonsoft.Json;
 using System;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
@@ -117,8 +118,11 @@ namespace FirstPersonCameraContinued.Systems
                         followedEntityInfo.passengers = -1;
                     }
 
-                    followedEntityInfo.vehicleType = CameraController.GetTransformer().DetermineScope().ToString();
-
+                    if (CameraController.GetTransformer().CheckForVehicleScope(out var modelVehicleType))
+                    {
+                        followedEntityInfo.vehicleType = Regex.Replace(modelVehicleType.ToString(), "(?<!^)([A-Z])", " $1");
+                    }
+                     
                     followedEntityInfo.unitsSystem = (int)GameManager.instance.settings.userInterface.unitSystem;
 
                     this.followedEntityInfo = JsonConvert.SerializeObject(followedEntityInfo);

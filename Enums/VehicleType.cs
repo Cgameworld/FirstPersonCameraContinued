@@ -3,7 +3,7 @@
 namespace FirstPersonCameraContinued.Enums
 {
     [Flags] // Indicates that the enum can be treated as a set of flags (bitwise operations)
-    internal enum VehicleType : long // Explicitly set the underlying type to long
+    public enum VehicleType : long // Explicitly set the underlying type to long
     {
         Unknown = 0,
         PersonalCar = 1L << 0, // 1
@@ -21,8 +21,14 @@ namespace FirstPersonCameraContinued.Enums
         CarTrailer = 1L << 12, // 4096
         Helicopter = 1L << 13, // 8192
 
+        Bus = 1L << 14,
+        Tram = 1L << 15,
+        Train = 1L << 16,
+        Subway = 1L << 17,
+
         Cars = PersonalCar | PoliceCar | Hearse | Taxi,
         Vans = PostVan | PoliceVan | Ambulance | MaintenanceVehicle,
-        Trucks = GarbageTruck | FireEngine | DeliveryTruck | CargoTransport
+        Trucks = GarbageTruck | FireEngine | DeliveryTruck | CargoTransport,
+        Transit = Bus | Tram | Train | Subway
     }
 }

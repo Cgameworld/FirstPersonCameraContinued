@@ -178,7 +178,7 @@ namespace FirstPersonCameraContinued.Transforms
             return false;
         }
 
-        private bool CheckForVehicleScope( out VehicleType vehicleType )
+        public bool CheckForVehicleScope( out VehicleType vehicleType )
         {
             vehicleType = VehicleType.Unknown;
 
@@ -273,6 +273,38 @@ namespace FirstPersonCameraContinued.Transforms
                 return true;
             }
 
+            if (_entityManager.HasComponent<Game.Vehicles.PublicTransport>(entity))
+            {
+                if (_entityManager.TryGetComponent<Game.Prefabs.PrefabRef>(_model.FollowEntity, out var prefabRefComponent))
+                {
+                    if (_entityManager.TryGetComponent<Game.Prefabs.PublicTransportVehicleData>(prefabRefComponent.m_Prefab, out var publicTransportVehicleDataComponent))
+                    {
+                        var transportType = publicTransportVehicleDataComponent.m_TransportType;
+
+                        if (transportType == Game.Prefabs.TransportType.Bus)
+                        {
+                            vehicleType = VehicleType.Bus;
+                            return true;
+                        }
+                        if (transportType == Game.Prefabs.TransportType.Tram)
+                        {
+                            vehicleType = VehicleType.Tram;
+                            return true;
+                        }
+                        if (transportType == Game.Prefabs.TransportType.Train)
+                        {
+                            vehicleType = VehicleType.Train;
+                            return true;
+                        }
+                        if (transportType == Game.Prefabs.TransportType.Subway)
+                        {
+                            vehicleType = VehicleType.Subway;
+                            return true;
+                        }
+                    }
+                }
+            }
+            
             return isVehicle;            
         }
     }
