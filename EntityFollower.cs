@@ -182,19 +182,21 @@ namespace FirstPersonCameraContinued
         /// <param name="bounds"></param>
         /// <param name="rotation"></param>
         /// <returns></returns>
-        public bool TryGetPosition( out float3 position, out Bounds3 bounds, out quaternion rotation )
+        public bool TryGetPosition( out float3 position, out Bounds3 bounds, out quaternion rotation, out bool isTrain)
         {
             position = default;
             bounds = default;
             rotation = default;
+            isTrain = false;
 
             Filter();
             if (_entityManager.TryGetComponent<Game.Vehicles.TrainNavigation>(_model.FollowEntity, out var trainNavigationComponent))
             {
                 if (_entityManager.TryGetComponent<Game.Rendering.InterpolatedTransform>(_model.FollowEntity, out var interpolatedTransformComponent))
                 {
-                    position = interpolatedTransformComponent.m_Position + new float3(0f, 2f, 0f);
+                    position = interpolatedTransformComponent.m_Position;
                     rotation = interpolatedTransformComponent.m_Rotation;
+                    isTrain = true;
                 }
             }
             else
@@ -223,6 +225,7 @@ namespace FirstPersonCameraContinued
                         }
                     }
                 }
+                isTrain = false;
             }
             return true;
         }

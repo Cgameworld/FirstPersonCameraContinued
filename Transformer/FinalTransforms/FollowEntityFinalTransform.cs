@@ -1,4 +1,5 @@
-﻿using FirstPersonCameraContinued.DataModels;
+﻿using Colossal.Mathematics;
+using FirstPersonCameraContinued.DataModels;
 using FirstPersonCameraContinued.Enums;
 using Game.Citizens;
 using Unity.Entities;
@@ -28,7 +29,7 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
         /// <param name="model"></param>
         public void Apply( VirtualCameraRig rig, CameraDataModel model )
         {
-            if ( !_entityFollower.TryGetPosition( out var pos, out var bounds, out var rot ) )
+            if ( !_entityFollower.TryGetPosition( out float3 pos, out Bounds3 bounds, out quaternion rot, out bool isTrain) )
                 return;
 
             // When the entity changes get the new offset
@@ -46,7 +47,14 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
 
             //pos += new float3(, 0, model.PositionFollowOffset.x);
             //rig.Parent.position = pos + pivot;
-            model.Position = pos + pivot;
+            if (isTrain)
+            {
+                model.Position = pos + new float3(0f, 2f, 0f) + (forward * 8f);
+            }
+            else
+            {
+                model.Position = pos + pivot;
+            }
             //model.Position = rig.Parent.position;
             model.Rotation = math.mul(rotation, model.Rotation);
         }
