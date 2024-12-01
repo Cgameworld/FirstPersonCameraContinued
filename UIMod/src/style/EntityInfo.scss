@@ -1,0 +1,17 @@
+.fpcc-info-label {
+    flex-grow: 0;
+    flex-shrink: 1;
+    flex-basis: auto;
+    font-size: var(--fontSizeL);
+    font-weight: bold;
+    white-space: normal;
+    text-align: center;
+}
+.fpcc-info-data {
+    text-align: center;
+    font-size: var(--fontSizeL);
+}
+.fpcc-info-group{
+    padding-left:20rem;
+    padding-right:20rem;
+}

@@ -7,6 +7,7 @@ import { VanillaComponentsResolver } from "../types/internal";
 import ReactDOM from 'react-dom';
 import 'style/DropdownWindow.scss';
 import 'style/Crosshair.scss';
+import 'style/EntityInfo.scss';
 import engine from 'cohtml/cohtml';
 
 const register: ModRegistrar = (moduleRegistry) => {
@@ -133,6 +134,8 @@ const register: ModRegistrar = (moduleRegistry) => {
             formattedSpeed = Math.round(parsedSpeed * 1.8) + " km/h";
         }
 
+
+
         return <div>
             <DescriptionTooltip title="First Person Camera" description={tooltipDescriptionMainCameraIcon}>
                 <button id="FPC-MainGameButton" className="button_ke4 button_ke4 button_h9N" onClick={() => {
@@ -144,9 +147,32 @@ const register: ModRegistrar = (moduleRegistry) => {
                 </button>
             </DescriptionTooltip>
             <div style={{ backgroundColor: 'rgba(255,255,255,0.7)' }}>
-                {parsedSpeed !== -1 && <div>Speed: {formattedSpeed}</div>}
-                {parsedPassengers !== -1 && <div>Passengers: {parsedPassengers}</div>}
-                <div>Vehicle Type: {vehicleType}</div>
+                
+            </div>
+
+            <div className="tool-options-panel_Se6">
+                <div className="item_bZY">               
+                    {parsedSpeed !== -1 && (
+                        <div style={{ width: '105rem' }}>
+                            <div className="fpcc-info-label">Speed</div>
+                            <div className="fpcc-info-data">{formattedSpeed}</div>
+                        </div>
+                    )}
+
+                    {vehicleType !== null && (
+                        <div className="fpcc-info-group">
+                            <div className="fpcc-info-label">Vehicle Type</div>
+                            <div className="fpcc-info-data">{vehicleType}</div>
+                        </div>
+                    )}
+
+                    {parsedPassengers !== -1 && (
+                        <div className="fpcc-info-group">
+                            <div className="fpcc-info-label">Passengers</div>
+                            <div className="fpcc-info-data">{parsedPassengers}</div>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>;
     }
