@@ -40,12 +40,9 @@ const register: ModRegistrar = (moduleRegistry) => {
             setShowButtonDropdown(!showButtonDropdown);
         };
 
-
         const isEntered = useValue(IsEntered$);
 
         const showCrosshair = useValue(ShowCrosshair$);
-
-        //const showCrosshair: boolean = true;
 
         tooltipDescriptionMainCameraIcon = translate("FirstPersonCameraContinued.TooltipMainCameraIcon");
         tooltipDescriptionFollowCamera = translate("FirstPersonCameraContinued.TooltipFollowCamera");

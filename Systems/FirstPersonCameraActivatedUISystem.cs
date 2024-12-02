@@ -32,7 +32,7 @@ namespace FirstPersonCameraContinued.Systems
 
         private GetterValueBinding<string> followedEntityInfoBinding;
         public string followedEntityInfo = "none?";
-        private FirstPersonCameraUISystem _firstPersonUISystem;
+
         private bool isObjectsSystemsInitalized;
 
         private GetterValueBinding<bool> isEnteredBinding;
@@ -69,22 +69,19 @@ namespace FirstPersonCameraContinued.Systems
                 CameraController = cameraControllerObj.GetComponent<FirstPersonCameraController>();
             }
 
-            _firstPersonUISystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraUISystem>();
-
-            isObjectsSystemsInitalized = CameraController != null && _firstPersonUISystem != null;
+            isObjectsSystemsInitalized = CameraController != null;
             return isObjectsSystemsInitalized;
         }
 
         protected override void OnUpdate()
         {
-            if (showCrosshair)
+            if (isEntered)
             {
                 if (!InitializeObjectsSystems())
                 {
                     return;
                 }
-
-                Entity currentEntity = _firstPersonUISystem._selectedEntity;
+                Entity currentEntity = CameraController.GetFollowEntity();
                 if (currentEntity != Entity.Null)
                 {
                     FollowedEntityInfo followedEntityInfo = new FollowedEntityInfo();

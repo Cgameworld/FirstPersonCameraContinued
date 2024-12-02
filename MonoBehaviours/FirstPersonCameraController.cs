@@ -39,6 +39,11 @@ namespace FirstPersonCameraContinued.MonoBehaviours
             return _input;
         }
 
+        public Entity GetFollowEntity()
+        {
+            return _model.FollowEntity;
+        }
+
         private FirstPersonCameraSystem _firstPersonCameraSystem;
         private FirstPersonCameraActivatedUISystem _firstPersonCameraActivatedUISystem;
         private TerrainSystem terrainSystem;

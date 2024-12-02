@@ -1,11 +1,13 @@
 import { bindValue, useValue } from "cs2/api";
 
 const FollowedEntityInfo$ = bindValue<string>('fpc', 'FollowedEntityInfo');
+const ShowCrosshair$ = bindValue<boolean>('fpc', 'ShowCrosshair');
 
 
 const FollowedVehicleInfoPanel: React.FC = () => {
 
     const followedEntityInfo = useValue(FollowedEntityInfo$);
+    const showCrosshair = useValue(ShowCrosshair$);
 
     const parsedSpeed: number = JSON.parse(followedEntityInfo).currentSpeed;
     const parsedUnits: number = JSON.parse(followedEntityInfo).unitsSystem;
@@ -24,18 +26,19 @@ const FollowedVehicleInfoPanel: React.FC = () => {
     return (
         <div style={{
             position: 'absolute',
-            top: '60rem',
-            right: '0rem',
+            top: showCrosshair ? '60rem': '10rem',
+            right: '10rem',
             display: 'flex',
         }}>
+        {/*85+60*/}
         <div className="tool-options-panel_Se6">
             <div className="item_bZY">
-                {parsedSpeed !== -1 && (
-                    <div style={{ width: '105rem' }}>
+                    {parsedSpeed !== -1 && (                       
+                        <div style={{ width: '145rem' }}>  
                         <div className="fpcc-info-label">Speed</div>
                         <div className="fpcc-info-data">{formattedSpeed}</div>
                     </div>
-                )}
+                    )}
                 {vehicleType !== null && (
                     <div className="fpcc-info-group">
                         <div className="fpcc-info-label">Vehicle Type</div>
