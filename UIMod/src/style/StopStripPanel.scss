@@ -1,0 +1,66 @@
+.firstpersoncameracontinued_strippanel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+}
+.fpcc-stopstrip-container {
+    padding-top: 20rem;
+    padding-bottom: 35rem;
+    background-color: var(--panelColorNormal);
+    backdrop-filter: var(--panelBlur);
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.fpcc-stopstrip-progress-track {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    max-width: 1600rem;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.fpcc-stopstrip-progress-bar-container {
+    position: absolute;
+    width: 100%;
+    left: 0px;
+    top: 9rem;
+    padding-left: 50rem;
+    padding-right: 50rem;
+    z-index: 1;
+}
+
+.fpcc-stopstrip-progress-bar {
+    height: 10rem;
+    background-color: #ff0000;
+    width: 100%;
+}
+
+.fpcc-stopstrip-station {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+}
+
+.fpcc-stopstrip-station-dot {
+    width: 28rem;
+    height: 28rem;
+    background-color: white;
+    border: 5rem solid #000;
+    border-radius: 50%;
+    margin-bottom: 8rem;
+    box-sizing: content-box;
+}
+
+.fpcc-stopstrip-station-name {
+    color: var(--textColorDim);
+    font-size: 24rem;
+    font-weight: bold;
+    white-space: nowrap;
+}
