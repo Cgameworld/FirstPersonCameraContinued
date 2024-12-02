@@ -40,6 +40,7 @@ namespace FirstPersonCameraContinued.MonoBehaviours
         }
 
         private FirstPersonCameraSystem _firstPersonCameraSystem;
+        private FirstPersonCameraActivatedUISystem _firstPersonCameraActivatedUISystem;
         private TerrainSystem terrainSystem;
         private RenderingSystem renderingSystem;
 
@@ -66,7 +67,7 @@ namespace FirstPersonCameraContinued.MonoBehaviours
             terrainSystem = world.GetExistingSystemManaged<TerrainSystem>( );
             renderingSystem = world.GetOrCreateSystemManaged<RenderingSystem>( );
             _firstPersonCameraSystem = world.GetExistingSystemManaged<FirstPersonCameraSystem>( );
-
+            _firstPersonCameraActivatedUISystem = world.GetExistingSystemManaged<FirstPersonCameraActivatedUISystem>();
             SetupEvents( );
         }
 
@@ -132,6 +133,7 @@ namespace FirstPersonCameraContinued.MonoBehaviours
             {
                 IsActive = true;
                 _firstPersonCameraSystem.EntryInfo.Activated = true;
+                _firstPersonCameraActivatedUISystem.SetActive();
             }
 
             if ( _model.IsTransitioningIn )
@@ -206,6 +208,7 @@ namespace FirstPersonCameraContinued.MonoBehaviours
                 IsActive = false; // Update the IsActive status to off now
                 _firstPersonCameraSystem.EntryInfo.Activated = false;
                 _firstPersonCameraSystem.EntryInfo.RandomFollow = false;
+                _firstPersonCameraActivatedUISystem.SetInactive();
                 _model.Mode = CameraMode.Disabled;
             }
             else

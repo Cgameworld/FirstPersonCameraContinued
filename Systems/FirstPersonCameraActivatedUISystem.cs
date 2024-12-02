@@ -35,9 +35,15 @@ namespace FirstPersonCameraContinued.Systems
         private FirstPersonCameraUISystem _firstPersonUISystem;
         private bool isObjectsSystemsInitalized;
 
+        private GetterValueBinding<bool> isEnteredBinding;
+        private bool isEntered;
+
         protected override void OnCreate()
         {
             base.OnCreate();
+
+            this.isEnteredBinding = new GetterValueBinding<bool>("fpc", "IsEntered", () => isEntered);
+            AddBinding(this.isEnteredBinding);
 
             this.showCrosshairBinding = new GetterValueBinding<bool>("fpc", "ShowCrosshair", () => showCrosshair);
             AddBinding(this.showCrosshairBinding);
@@ -129,7 +135,6 @@ namespace FirstPersonCameraContinued.Systems
                     followedEntityInfoBinding.Update();
                 }
             }
-
         }
         public string SetFollowedEntityDefaults()
         {
@@ -151,6 +156,17 @@ namespace FirstPersonCameraContinued.Systems
         {
             showCrosshair = false;
             showCrosshairBinding.Update();
+        }
+
+        public void SetActive()
+        {
+            isEntered = true;
+            isEnteredBinding.Update();
+        }
+        public void SetInactive()
+        {
+            isEntered = false;
+            isEnteredBinding.Update();
         }
 
 

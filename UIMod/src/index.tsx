@@ -9,6 +9,7 @@ import 'style/DropdownWindow.scss';
 import 'style/Crosshair.scss';
 import 'style/EntityInfo.scss';
 import engine from 'cohtml/cohtml';
+import FollowedVehicleInfoPanel from './panels/FollowedVehicleInfoPanel';
 
 const register: ModRegistrar = (moduleRegistry) => {
 
@@ -27,8 +28,9 @@ const register: ModRegistrar = (moduleRegistry) => {
     let uiTextFollowRandomCim: string | null;
     let uiTextFollowRandomVehicle: string | null;
 
+    const IsEntered$ = bindValue<boolean>('fpc', 'IsEntered');
+
     const ShowCrosshair$ = bindValue<boolean>('fpc', 'ShowCrosshair');
-    const FollowedEntityInfo$ = bindValue<string>('fpc', 'FollowedEntityInfo');
 
     const CustomMenuButton = () => {
 
@@ -39,8 +41,9 @@ const register: ModRegistrar = (moduleRegistry) => {
         };
 
 
+        const isEntered = useValue(IsEntered$);
+
         const showCrosshair = useValue(ShowCrosshair$);
-        const followedEntityInfo = useValue(FollowedEntityInfo$);
 
         //const showCrosshair: boolean = true;
 
@@ -101,6 +104,25 @@ const register: ModRegistrar = (moduleRegistry) => {
 
 
         useEffect(() => {
+            if (isEntered) {
+                const injectionPoint = document.body;
+                const newDiv = document.createElement('div');
+                newDiv.className = 'firstpersoncameracontinued_entityinfo';
+                injectionPoint.insertBefore(newDiv, injectionPoint.firstChild);
+
+                ReactDOM.render(<FollowedVehicleInfoPanel />, newDiv);
+
+                return () => {
+                    ReactDOM.unmountComponentAtNode(newDiv);
+                    if (newDiv.parentNode) {
+                        newDiv.parentNode.removeChild(newDiv);
+                    }
+                };
+            }
+        }, [isEntered]);
+
+
+        useEffect(() => {
             if (showCrosshair) {
                 const div = document.querySelector('.game-main-screen_TRK.child-opacity-transition_nkS');
 
@@ -120,22 +142,6 @@ const register: ModRegistrar = (moduleRegistry) => {
 
         }, [showCrosshair]);
 
-        const parsedSpeed: number = JSON.parse(followedEntityInfo).currentSpeed
-        const parsedUnits: number = JSON.parse(followedEntityInfo).unitsSystem;
-        const parsedPassengers: number = JSON.parse(followedEntityInfo).passengers;
-        const vehicleType: string = JSON.parse(followedEntityInfo).vehicleType;
-
-        let formattedSpeed: string;
-
-        if (parsedUnits == 1) {
-            formattedSpeed = Math.round(parsedSpeed * 1.26) + " mph";
-        }
-        else {
-            formattedSpeed = Math.round(parsedSpeed * 1.8) + " km/h";
-        }
-
-
-
         return <div>
             <DescriptionTooltip title="First Person Camera" description={tooltipDescriptionMainCameraIcon}>
                 <button id="FPC-MainGameButton" className="button_ke4 button_ke4 button_h9N" onClick={() => {
@@ -146,34 +152,6 @@ const register: ModRegistrar = (moduleRegistry) => {
                     </div>
                 </button>
             </DescriptionTooltip>
-            <div style={{ backgroundColor: 'rgba(255,255,255,0.7)' }}>
-                
-            </div>
-
-            <div className="tool-options-panel_Se6">
-                <div className="item_bZY">               
-                    {parsedSpeed !== -1 && (
-                        <div style={{ width: '105rem' }}>
-                            <div className="fpcc-info-label">Speed</div>
-                            <div className="fpcc-info-data">{formattedSpeed}</div>
-                        </div>
-                    )}
-
-                    {vehicleType !== null && (
-                        <div className="fpcc-info-group">
-                            <div className="fpcc-info-label">Vehicle Type</div>
-                            <div className="fpcc-info-data">{vehicleType}</div>
-                        </div>
-                    )}
-
-                    {parsedPassengers !== -1 && (
-                        <div className="fpcc-info-group">
-                            <div className="fpcc-info-label">Passengers</div>
-                            <div className="fpcc-info-data">{parsedPassengers}</div>
-                        </div>
-                    )}
-                </div>
-            </div>
         </div>;
     }
 
