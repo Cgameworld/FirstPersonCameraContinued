@@ -8,8 +8,7 @@ using System.Reflection;
 namespace FirstPersonCameraContinued
 {
     [FileLocation(nameof(FirstPersonCameraContinued))]
-    [SettingsUIGroupOrder(CameraSettingsGroup, KeybindingSettingsGroup, OtherSettingsGroup)]
-    [SettingsUIShowGroupName(CameraSettingsGroup, KeybindingSettingsGroup, OtherSettingsGroup)]
+    [SettingsUIShowGroupName(CameraSettingsGroup, KeybindingSettingsGroup, OtherSettingsGroup, UISettingsGroup, InfoBoxSettingsGroup)]
     [SettingsUITabOrder(GeneralSettingsTab,UISettingsTab)]
     public class Setting : ModSetting
     {
@@ -19,6 +18,8 @@ namespace FirstPersonCameraContinued
         public const string OtherSettingsGroup = "OtherSettingsGroup";
         public const string UISettingsTab = "UISettingsTab";
         public const string UISettingsGroup = "UISettingsGroup";
+        public const string InfoBoxSettingsGroup = "InfoBoxSettingsGroup";
+
 
         public Setting(IMod mod) : base(mod)
         {
@@ -46,9 +47,6 @@ namespace FirstPersonCameraContinued
         [SettingsUISection(GeneralSettingsTab, CameraSettingsGroup)]
         public float TransitionSpeedFactor { get; set; }
 
-        [SettingsUISection(UISettingsTab, UISettingsGroup)]
-        public bool ShowGameUI { get; set; }
-
         public const string FreeModeKeybindName = "FreeModeKeybind";
 
         [SettingsUIKeyboardBinding(BindingKeyboard.F, Mod.kButtonActionName, alt: true)]
@@ -59,23 +57,6 @@ namespace FirstPersonCameraContinued
         [SettingsUISection(GeneralSettingsTab, KeybindingSettingsGroup)]
         public string MultilineText => "List of Keyboard Shortcuts in First Person Mode\n" +
             "To move around use WASD, use SHIFT to walk faster and R/F keys to increase/decrease the camera height";
-
-
-        /*
-        [SettingsUISection(GeneralSettingsTab, OtherSettingsGroup)]
-        public string DebugGroupNamesText
-        {
-            get
-            {
-                string fullText = "Tab:" + GetOptionGroupLocaleID(nameof(GeneralSettingsTab)) + "\nGroup: " + GetOptionGroupLocaleID(nameof(CameraSettingsGroup)) + "\nOption: " + GetOptionLabelLocaleID(nameof(ShowGameUI));
-                Mod.log.Info(fullText);
-                return string.Join("\n",
-                    Enumerable.Range(0, (fullText.Length + 19) / 20)
-                    .Select(i => fullText.Substring(i * 20,
-                        Math.Min(20, fullText.Length - i * 20))));
-            }
-        }
-        */
 
         [SettingsUISection(GeneralSettingsTab, OtherSettingsGroup)]
         public string ModVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
@@ -93,6 +74,21 @@ namespace FirstPersonCameraContinued
             }
 
         }
+
+
+        [SettingsUISection(UISettingsTab, UISettingsGroup)]
+        public bool ShowGameUI { get; set; }
+
+
+        [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
+        public bool ShowInfoBox { get; set; }
+
+
+        [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
+        public bool ShowVehicleType { get; set; }
+
+        [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
+        public Enums.InfoBoxSize InfoBoxSize { get; set; } = Enums.InfoBoxSize.Default;
 
         //sometimes saving doesn't happen when changing values to their default? - hack to guarantee
         [SettingsUIHidden]

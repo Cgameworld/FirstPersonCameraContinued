@@ -7,12 +7,11 @@ using System.Threading.Tasks;
 namespace FirstPersonCameraContinued.Enums
 {
     /// <summary>
-    ///  Gets which random mode the session is in
+    /// Represents size of UI info box
     /// </summary>
-    public enum RandomMode
+    public enum InfoBoxSize
     {
-        None,
-        Vehicle,
-        Cim
+        Default,
+        Large
     }
 }
