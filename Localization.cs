@@ -246,6 +246,7 @@ namespace FirstPersonCameraContinued
             // Unpack key to full game settings key.
             return context switch
             {
+                "Options.TAB" => settings.GetOptionTabLocaleID(key),
                 "Options.GROUP" => settings.GetOptionGroupLocaleID(key),
                 "Options.OPTION" => settings.GetOptionLabelLocaleID(key),
                 "Options.OPTION_DESCRIPTION" => settings.GetOptionDescLocaleID(key),
