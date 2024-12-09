@@ -84,7 +84,7 @@ public class ToastTextFPC : MonoBehaviour
     {
         if (Mod.FirstPersonModSettings != null)
         {
-            float currentY = Mod.FirstPersonModSettings.ShowGameUI ? 60 : 15;
+            float currentY = Mod.FirstPersonModSettings.ShowGameUI ? 60 : 20;
             string[] lines = displayedText.Split('\n');
 
             foreach (string line in lines)

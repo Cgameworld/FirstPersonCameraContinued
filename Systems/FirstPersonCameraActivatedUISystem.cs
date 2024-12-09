@@ -198,7 +198,7 @@ namespace FirstPersonCameraContinued.Systems
                 {
                     ShowInfoBox = true,
                     ShowVehicleType = true,
-                    InfoBoxSize = 0
+                    InfoBoxSize = 1
                 };
             }
 

@@ -41,7 +41,10 @@ const FollowedVehicleInfoPanel: React.FC = () => {
         return null;
     }
 
-    const infoBoxSizeClass = infoBoxSize === 1 ? 'large' : '';
+    const infoBoxSizeClass = {
+        0: 'small',
+        2: 'large'
+    }[infoBoxSize] || '';
 
     return (
         <div style={{
@@ -54,7 +57,7 @@ const FollowedVehicleInfoPanel: React.FC = () => {
         <div className="tool-options-panel_Se6">
             <div className="item_bZY">
                     {parsedSpeed !== -1 && (
-                        <div className={`fpcc-speed-width`}>
+                        <div className={`fpcc-speed-width ${infoBoxSizeClass}`}>
                             <div className={`fpcc-info-label ${infoBoxSizeClass}`}>Speed</div>
                             <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{formattedSpeed}</div>
                         </div>

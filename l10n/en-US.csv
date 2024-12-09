@@ -39,6 +39,7 @@
 "Options.OPTION_DESCRIPTION:ShowInfoBox","Show info box with current speed and other stats while in first person mode"
 "Options.OPTION:InfoBoxSize","Info Box Size"
 "Options.OPTION_DESCRIPTION:InfoBoxSize","Display size of info box"
+"Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.INFOBOXSIZE[Small]","Small"
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.INFOBOXSIZE[Default]","Default"
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.INFOBOXSIZE[Large]","Large"
 "Options.OPTION:ShowVehicleType","Show Vehicle Type"

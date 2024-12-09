@@ -11,6 +11,7 @@ namespace FirstPersonCameraContinued.Enums
     /// </summary>
     public enum InfoBoxSize
     {
+        Small,
         Default,
         Large
     }
