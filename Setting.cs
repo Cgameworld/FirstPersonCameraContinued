@@ -92,6 +92,11 @@ namespace FirstPersonCameraContinued
             set
             {
                 _showInfoBox = value;
+                //if info box disabled, show vehicletype has to also be disabled
+                if (!value)
+                {
+                    _showVehicleType = false;
+                }
                 SetUISettingsGroup();
             }
         }
@@ -104,6 +109,11 @@ namespace FirstPersonCameraContinued
             set
             {
                 _showVehicleType = value;
+                // if showvehicletype is enabled, the infobox also has to be
+                if (value)
+                {
+                    _showInfoBox = true;
+                }
                 SetUISettingsGroup();
             }
         }

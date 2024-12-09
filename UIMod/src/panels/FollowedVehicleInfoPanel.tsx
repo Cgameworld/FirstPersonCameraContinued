@@ -19,8 +19,9 @@ const FollowedVehicleInfoPanel: React.FC = () => {
 
     const showCrosshair = useValue(ShowCrosshair$);
 
-    const showInfoPanel = JSON.parse(uiSettingsGroupOptions).ShowInfoBox
-    const showVehicleType = JSON.parse(uiSettingsGroupOptions).ShowVehicleType
+    const showInfoPanel: boolean = JSON.parse(uiSettingsGroupOptions).ShowInfoBox;
+    const showVehicleType: boolean = JSON.parse(uiSettingsGroupOptions).ShowVehicleType;
+    const infoBoxSize: number = JSON.parse(uiSettingsGroupOptions).InfoBoxSize;
 
     const parsedSpeed: number = JSON.parse(followedEntityInfo).currentSpeed;
     const parsedUnits: number = JSON.parse(followedEntityInfo).unitsSystem;
@@ -40,6 +41,8 @@ const FollowedVehicleInfoPanel: React.FC = () => {
         return null;
     }
 
+    const infoBoxSizeClass = infoBoxSize === 1 ? 'large' : '';
+
     return (
         <div style={{
             position: 'absolute',
@@ -50,23 +53,23 @@ const FollowedVehicleInfoPanel: React.FC = () => {
         {/*85+60*/}
         <div className="tool-options-panel_Se6">
             <div className="item_bZY">
-                    {parsedSpeed !== -1 && (                       
-                        <div style={{ width: '145rem' }}>  
-                        <div className="fpcc-info-label">Speed</div>
-                        <div className="fpcc-info-data">{formattedSpeed}</div>
-                    </div>
+                    {parsedSpeed !== -1 && (
+                        <div className={`fpcc-speed-width`}>
+                            <div className={`fpcc-info-label ${infoBoxSizeClass}`}>Speed</div>
+                            <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{formattedSpeed}</div>
+                        </div>
                     )}
                     {vehicleType !== null && showVehicleType && (
-                    <div className="fpcc-info-group">
-                        <div className="fpcc-info-label">Vehicle Type</div>
-                        <div className="fpcc-info-data">{vehicleType}</div>
-                    </div>
-                )}
-                {parsedPassengers !== -1 && (
-                    <div className="fpcc-info-group">
-                        <div className="fpcc-info-label">Passengers</div>
-                        <div className="fpcc-info-data">{parsedPassengers}</div>
-                    </div>
+                        <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
+                            <div className={`fpcc-info-label ${infoBoxSizeClass}`}>Vehicle Type</div>
+                            <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{vehicleType}</div>
+                        </div>
+                    )}
+                    {parsedPassengers !== -1 && (
+                        <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
+                            <div className={`fpcc-info-label ${infoBoxSizeClass}`}>Passengers</div>
+                            <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{parsedPassengers}</div>
+                        </div>
                 )}
                 </div>
             </div>

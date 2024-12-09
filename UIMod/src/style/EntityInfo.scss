@@ -2,16 +2,53 @@
     flex-grow: 0;
     flex-shrink: 1;
     flex-basis: auto;
-    font-size: 26rem;
+    font-size: 24rem;
     font-weight: bold;
     white-space: normal;
     text-align: center;
+    &.small {
+        font-size: 22rem;
+    }
+
+    &.large {
+        font-size: 26rem;
+    }
 }
 .fpcc-info-data {
     text-align: center;
-    font-size: 22rem;
+    font-size: 20rem;
+
+    &.small {
+        font-size: 18rem;
+    }
+
+    &.large {
+        font-size: 22rem;
+    }
 }
-.fpcc-info-group{
-    padding-left:30rem;
-    padding-right:30rem;
+.fpcc-info-group {
+    padding-left: 25rem;
+    padding-right: 25rem;
+
+    &.small {
+        padding-left: 20rem;
+        padding-right: 20rem;
+    }
+
+
+    &.large {
+        padding-left: 30rem;
+        padding-right: 30rem;
+    }
+}
+.fpcc-speed-width {
+    width: 123rem;
+
+    &.small {
+        width: 100rem;
+    }
+
+    &.large {
+        width: 145rem;
+    }
 }

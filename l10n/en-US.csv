@@ -40,6 +40,6 @@
 "Options.OPTION:InfoBoxSize","Info Box Size"
 "Options.OPTION_DESCRIPTION:InfoBoxSize","Display size of info box"
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.INFOBOXSIZE[Default]","Default"
-"Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.INFOBOXSIZE[Large]", "Large"
+"Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.INFOBOXSIZE[Large]","Large"
 "Options.OPTION:ShowVehicleType","Show Vehicle Type"
 "Options.OPTION_DESCRIPTION:ShowVehicleType","Show the type of vehicle in the info box while in first person view"
