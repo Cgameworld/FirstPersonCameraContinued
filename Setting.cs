@@ -4,6 +4,9 @@ using Game.Settings;
 using Game.UI;
 using Game.Input;
 using System.Reflection;
+using FirstPersonCameraContinued.Systems;
+using FirstPersonCameraContinued.Enums;
+using Unity.Entities;
 
 namespace FirstPersonCameraContinued
 {
@@ -20,6 +23,9 @@ namespace FirstPersonCameraContinued
         public const string UISettingsGroup = "UISettingsGroup";
         public const string InfoBoxSettingsGroup = "InfoBoxSettingsGroup";
 
+        private bool _showInfoBox;
+        private bool _showVehicleType;
+        private InfoBoxSize _infoBoxSize;
 
         public Setting(IMod mod) : base(mod)
         {
@@ -81,14 +87,42 @@ namespace FirstPersonCameraContinued
 
 
         [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
-        public bool ShowInfoBox { get; set; }
+        public bool ShowInfoBox { 
+            get => _showInfoBox; 
+            set
+            {
+                _showInfoBox = value;
+                SetUISettingsGroup();
+            }
+        }
 
 
         [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
-        public bool ShowVehicleType { get; set; }
+        public bool ShowVehicleType
+        {
+            get => _showVehicleType;
+            set
+            {
+                _showVehicleType = value;
+                SetUISettingsGroup();
+            }
+        }
 
         [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
-        public Enums.InfoBoxSize InfoBoxSize { get; set; } = Enums.InfoBoxSize.Default;
+        public Enums.InfoBoxSize InfoBoxSize
+        {
+            get => _infoBoxSize;
+            set
+            {
+                _infoBoxSize = value;
+                SetUISettingsGroup();
+            }
+        }
+
+        private void SetUISettingsGroup()
+        {
+            World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<FirstPersonCameraActivatedUISystem>().SetUISettingsGroupOptions();
+        }
 
         //sometimes saving doesn't happen when changing values to their default? - hack to guarantee
         [SettingsUIHidden]
@@ -101,8 +135,11 @@ namespace FirstPersonCameraContinued
             MovementSpeed = 0.1f;
             RunSpeed = 0.35f;
             CimHeight = 1.7f;
-            ShowGameUI = false;
             TransitionSpeedFactor = 1f;
+            ShowGameUI = false;
+            ShowInfoBox = true;
+            ShowVehicleType = true;
+            InfoBoxSize = Enums.InfoBoxSize.Default;
         }
 
        public void Unload()

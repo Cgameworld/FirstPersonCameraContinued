@@ -1,6 +1,7 @@
 ﻿using Colossal.Entities;
 using Colossal.UI.Binding;
 using FirstPersonCameraContinued.DataModels;
+using FirstPersonCameraContinued.Enums;
 using FirstPersonCameraContinued.MonoBehaviours;
 using FirstPersonCameraContinued.Transforms;
 using Game.SceneFlow;
@@ -8,6 +9,7 @@ using Game.UI;
 using Game.Vehicles;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using Unity.Entities;
@@ -32,11 +34,13 @@ namespace FirstPersonCameraContinued.Systems
 
         private GetterValueBinding<string> followedEntityInfoBinding;
         public string followedEntityInfo = "none?";
-
+        private GetterValueBinding<string> uiSettingsGroupOptionsBinding;
         private bool isObjectsSystemsInitalized;
 
         private GetterValueBinding<bool> isEnteredBinding;
         private bool isEntered;
+
+        private static string serializedUISettingsGroupOptions;
 
         protected override void OnCreate()
         {
@@ -53,8 +57,13 @@ namespace FirstPersonCameraContinued.Systems
 
             followedEntityInfo = SetFollowedEntityDefaults();
 
+            this.uiSettingsGroupOptionsBinding = new GetterValueBinding<string>("fpc", "UISettingsGroupOptions", () => serializedUISettingsGroupOptions);
+            AddBinding(this.uiSettingsGroupOptionsBinding);
+
             isObjectsSystemsInitalized = false;
         }
+
+
 
         private bool InitializeObjectsSystems()
         {
@@ -143,6 +152,12 @@ namespace FirstPersonCameraContinued.Systems
                 vehicleType = "none",
             });
         }
+        public void SetUISettingsGroupOptions()
+        {
+            serializedUISettingsGroupOptions = JsonConvert.SerializeObject(UISettingsGroup.FromModSettings());
+            Mod.log.Info("ses " + serializedUISettingsGroupOptions);
+            uiSettingsGroupOptionsBinding?.Update();
+        }
 
         public void EnableCrosshair()
         {
@@ -168,4 +183,32 @@ namespace FirstPersonCameraContinued.Systems
 
 
     }
+
+    public class UISettingsGroup
+    {
+        public bool ShowInfoBox { get; set; }
+        public bool ShowVehicleType { get; set; }
+        public int InfoBoxSize { get; set; }
+
+        public static UISettingsGroup FromModSettings()
+        {
+            if (Mod.FirstPersonModSettings == null)
+            {
+                return new UISettingsGroup
+                {
+                    ShowInfoBox = true,
+                    ShowVehicleType = true,
+                    InfoBoxSize = 0
+                };
+            }
+
+            return new UISettingsGroup
+            {
+                ShowInfoBox = Mod.FirstPersonModSettings.ShowInfoBox,
+                ShowVehicleType = Mod.FirstPersonModSettings.ShowVehicleType,
+                InfoBoxSize = ((int)Mod.FirstPersonModSettings.InfoBoxSize)
+            };
+        }
+    }
+
 }

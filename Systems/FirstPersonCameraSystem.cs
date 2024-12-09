@@ -55,6 +55,7 @@ namespace FirstPersonCameraContinued.Systems
             };
 
             _firstPersonCameraActivatedUISystem = World.GetExistingSystemManaged<FirstPersonCameraActivatedUISystem>();
+            _firstPersonCameraActivatedUISystem.SetUISettingsGroupOptions();
 
             UnityEngine.Debug.Log( "FirstPersonCamera loaded!" );
 

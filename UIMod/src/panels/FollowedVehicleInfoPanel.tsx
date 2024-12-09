@@ -1,13 +1,26 @@
 import { bindValue, useValue } from "cs2/api";
+import { useEffect } from "react";
 
+const UISettingsGroupOptions$ = bindValue<string>('fpc', 'UISettingsGroupOptions');
 const FollowedEntityInfo$ = bindValue<string>('fpc', 'FollowedEntityInfo');
+
 const ShowCrosshair$ = bindValue<boolean>('fpc', 'ShowCrosshair');
 
 
 const FollowedVehicleInfoPanel: React.FC = () => {
 
+    const uiSettingsGroupOptions = useValue(UISettingsGroupOptions$);
+
+    useEffect(() => {
+        console.log(uiSettingsGroupOptions);
+    }, [uiSettingsGroupOptions]);
+
     const followedEntityInfo = useValue(FollowedEntityInfo$);
+
     const showCrosshair = useValue(ShowCrosshair$);
+
+    const showInfoPanel = JSON.parse(uiSettingsGroupOptions).ShowInfoBox
+    const showVehicleType = JSON.parse(uiSettingsGroupOptions).ShowVehicleType
 
     const parsedSpeed: number = JSON.parse(followedEntityInfo).currentSpeed;
     const parsedUnits: number = JSON.parse(followedEntityInfo).unitsSystem;
@@ -21,6 +34,10 @@ const FollowedVehicleInfoPanel: React.FC = () => {
     }
     else {
         formattedSpeed = Math.round(parsedSpeed * 1.8) + " km/h";
+    }
+
+    if (!showInfoPanel) {
+        return null;
     }
 
     return (
@@ -39,7 +56,7 @@ const FollowedVehicleInfoPanel: React.FC = () => {
                         <div className="fpcc-info-data">{formattedSpeed}</div>
                     </div>
                     )}
-                {vehicleType !== null && (
+                    {vehicleType !== null && showVehicleType && (
                     <div className="fpcc-info-group">
                         <div className="fpcc-info-label">Vehicle Type</div>
                         <div className="fpcc-info-data">{vehicleType}</div>
