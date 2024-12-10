@@ -4,6 +4,10 @@ using FirstPersonCameraContinued.DataModels;
 using FirstPersonCameraContinued.Enums;
 using FirstPersonCameraContinued.MonoBehaviours;
 using FirstPersonCameraContinued.Transforms;
+using Game.Citizens;
+using Game.Common;
+using Game.Prefabs;
+using Game.Rendering;
 using Game.SceneFlow;
 using Game.UI;
 using Game.Vehicles;
@@ -11,6 +15,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Unity.Entities;
 using UnityEngine;
@@ -128,6 +133,25 @@ namespace FirstPersonCameraContinued.Systems
                     else
                     {
                         followedEntityInfo.passengers = -1;
+                    }
+
+                    //		m_CitizenNameQuery = GetEntityQuery(ComponentType.ReadOnly<Citizen>(), ComponentType.ReadOnly<PrefabRef>(), ComponentType.Exclude<RandomLocalizationIndex>());
+
+                    //if ped
+                    if (EntityManager.TryGetComponent<Game.Creatures.Resident>(currentEntity, out var residentComponent) && EntityManager.TryGetComponent<Game.Prefabs.PrefabRef>(currentEntity, out var prefabRefComponent))
+                    {
+                        MethodInfo method = typeof(NameSystem).GetMethod("GetCitizenName", BindingFlags.NonPublic | BindingFlags.Instance);
+                        var name = (NameSystem.Name)method.Invoke(World.GetExistingSystemManaged<NameSystem>(), new object[] { residentComponent.m_Citizen, prefabRefComponent.m_Prefab });
+
+                        var nameArgs = (string[])name.GetType().GetField("m_NameArgs", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(name);
+                        string firstNameLocalizationID = nameArgs[1];
+                        string lastNameLocalizationID = nameArgs[3];
+
+                        string firstName = GameManager.instance.localizationManager.activeDictionary.TryGetValue(firstNameLocalizationID, out var first) ? first : firstNameLocalizationID;
+                        string lastName = GameManager.instance.localizationManager.activeDictionary.TryGetValue(lastNameLocalizationID, out var last) ? last : lastNameLocalizationID;
+
+                        Mod.log.Info("Citizen Name: " + firstName + " " + lastName);
+                        //to do set to stored value
                     }
 
                     if (CameraController.GetTransformer().CheckForVehicleScope(out var modelVehicleType))
