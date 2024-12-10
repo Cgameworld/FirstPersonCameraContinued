@@ -69,6 +69,7 @@ namespace FirstPersonCameraContinued.Systems
             }));
             this.AddBinding(new TriggerBinding("fpc", "RandomCimFPC", () => EnterFollowRandomCim()));
             this.AddBinding(new TriggerBinding("fpc", "RandomVehicleFPC", () => EnterFollowRandomVehicle()));
+            this.AddBinding(new TriggerBinding("fpc", "RandomTransitFPC", () => EnterFollowRandomTransit()));
 
             m_ButtonAction = Mod.FirstPersonModSettings.GetAction(Mod.kButtonActionName);
 
@@ -141,7 +142,23 @@ namespace FirstPersonCameraContinued.Systems
 
             ConfigureRandomEnterFollow(firstTimeEntry, RandomMode.Vehicle, randomEntity);
         }
-       
+
+        public void EnterFollowRandomTransit(bool firstTimeEntry = true)
+        {
+            EntityQuery query = GetEntityQuery(new EntityQueryDesc()
+            {
+                All = new ComponentType[1] { ComponentType.ReadOnly<PassengerTransport>() },
+                None = new ComponentType[2] {
+                    ComponentType.ReadOnly<Deleted>(),
+                    ComponentType.ReadOnly<Temp>()
+                }
+            });
+
+            Entity randomEntity = GetRandomEntityFromQuery(query);
+
+            ConfigureRandomEnterFollow(firstTimeEntry, RandomMode.Transit, randomEntity);
+        }
+
         public void EnterFollowRandomCim(bool firstTimeEntry = true)
         {
             EntityQuery query = GetEntityQuery(new EntityQueryDesc()

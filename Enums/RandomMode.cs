@@ -13,6 +13,7 @@ namespace FirstPersonCameraContinued.Enums
     {
         None,
         Vehicle,
-        Cim
+        Cim,
+        Transit
     }
 }

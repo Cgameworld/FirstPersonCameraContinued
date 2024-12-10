@@ -27,6 +27,7 @@ const register: ModRegistrar = (moduleRegistry) => {
     let uiTextEnterFreeCamera: string | null;
     let uiTextFollowRandomCim: string | null;
     let uiTextFollowRandomVehicle: string | null;
+    let uiTextFollowRandomTransit: string | null;
 
     const IsEntered$ = bindValue<boolean>('fpc', 'IsEntered');
 
@@ -50,6 +51,7 @@ const register: ModRegistrar = (moduleRegistry) => {
         uiTextEnterFreeCamera = translate("FirstPersonCameraContinued.EnterFreeCamera");
         uiTextFollowRandomCim = translate("FirstPersonCameraContinued.FollowRandomCim");
         uiTextFollowRandomVehicle = translate("FirstPersonCameraContinued.FollowRandomVehicle");
+        uiTextFollowRandomTransit = translate("FirstPersonCameraContinued.FollowRandomTransit");
 
         var selectedEntity: Entity;
         if (selectedInfo && selectedInfo.selectedEntity$) {
@@ -272,6 +274,9 @@ const register: ModRegistrar = (moduleRegistry) => {
                                     </div>
                                     <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("RandomVehicleFPC")}>
                                         <div className="right_k3O row_S2v">{uiTextFollowRandomVehicle}</div>
+                                    </div>
+                                    <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("RandomTransitFPC")}>
+                                        <div className="right_k3O row_S2v">{uiTextFollowRandomTransit}</div>
                                     </div>
                                 </div>
                             </div>

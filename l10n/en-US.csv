@@ -6,6 +6,7 @@
 "FirstPersonCameraContinued.EnterFreeCamera","Enter Free Camera"
 "FirstPersonCameraContinued.FollowRandomCim","Follow Random Cim"
 "FirstPersonCameraContinued.FollowRandomVehicle","Follow Random Vehicle"
+"FirstPersonCameraContinued.FollowRandomTransit","Follow Random Transit"
 "FirstPersonCameraContinued.TooltipFollowCamera","Follow the selected item in first person camera mode."
 "Options.TAB:GeneralSettingsTab","General"
 "Options.TAB:UISettingsTab","UI"
