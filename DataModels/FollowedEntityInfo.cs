@@ -12,5 +12,6 @@ namespace FirstPersonCameraContinued.DataModels
         public int unitsSystem;
         public int passengers;
         public string? vehicleType;
+        public string? citizenName;
     }
 }

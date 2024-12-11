@@ -150,8 +150,8 @@ namespace FirstPersonCameraContinued.Systems
                         string firstName = GameManager.instance.localizationManager.activeDictionary.TryGetValue(firstNameLocalizationID, out var first) ? first : firstNameLocalizationID;
                         string lastName = GameManager.instance.localizationManager.activeDictionary.TryGetValue(lastNameLocalizationID, out var last) ? last : lastNameLocalizationID;
 
-                        Mod.log.Info("Citizen Name: " + firstName + " " + lastName);
-                        //to do set to stored value
+                        //Mod.log.Info("Citizen Name: " + firstName + " " + lastName);
+                        followedEntityInfo.citizenName = firstName + " " + lastName;
                     }
 
                     if (CameraController.GetTransformer().CheckForVehicleScope(out var modelVehicleType))
@@ -174,6 +174,7 @@ namespace FirstPersonCameraContinued.Systems
                 unitsSystem = -1,
                 passengers = -1,
                 vehicleType = "none",
+                citizenName = "none",
             });
         }
         public void SetUISettingsGroupOptions()
