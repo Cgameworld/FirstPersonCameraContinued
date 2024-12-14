@@ -28,6 +28,7 @@ const FollowedVehicleInfoPanel: React.FC = () => {
     const parsedPassengers: number = JSON.parse(followedEntityInfo).passengers;
     const vehicleType: string = JSON.parse(followedEntityInfo).vehicleType;
     const citizenName: string = JSON.parse(followedEntityInfo).citizenName;
+    const citizenAction: string = JSON.parse(followedEntityInfo).citizenAction;
 
     let formattedSpeed: string;
 
@@ -73,6 +74,12 @@ const FollowedVehicleInfoPanel: React.FC = () => {
                         <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
                             <div className={`fpcc-info-label ${infoBoxSizeClass}`}>Vehicle Type</div>
                             <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{vehicleType}</div>
+                        </div>
+                    )}
+                    {citizenAction !== null && (
+                        <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
+                            <div className={`fpcc-info-label ${infoBoxSizeClass}`}>Action</div>
+                            <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{citizenAction}</div>
                         </div>
                     )}
                     {parsedPassengers !== -1 && (

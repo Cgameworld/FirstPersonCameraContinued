@@ -10,6 +10,7 @@ using Game.Prefabs;
 using Game.Rendering;
 using Game.SceneFlow;
 using Game.UI;
+using Game.UI.InGame;
 using Game.Vehicles;
 using Newtonsoft.Json;
 using System;
@@ -152,6 +153,14 @@ namespace FirstPersonCameraContinued.Systems
 
                         //Mod.log.Info("Citizen Name: " + firstName + " " + lastName);
                         followedEntityInfo.citizenName = firstName + " " + lastName;
+
+                        //get what citizen is doing
+                        string citizenActionEnum = Enum.GetName(typeof(CitizenStateKey), CitizenUIUtils.GetStateKey(EntityManager, residentComponent.m_Citizen));
+                        string citizenActionEnumID = "SelectedInfoPanel.CITIZEN_STATE[" + citizenActionEnum + "]";
+
+                        string citizenAction = GameManager.instance.localizationManager.activeDictionary.TryGetValue(citizenActionEnumID, out var action) ? action : citizenActionEnumID;
+
+                        followedEntityInfo.citizenAction = citizenAction;
                     }
 
                     if (CameraController.GetTransformer().CheckForVehicleScope(out var modelVehicleType))
@@ -175,6 +184,7 @@ namespace FirstPersonCameraContinued.Systems
                 passengers = -1,
                 vehicleType = "none",
                 citizenName = "none",
+                citizenAction = "none",
             });
         }
         public void SetUISettingsGroupOptions()
