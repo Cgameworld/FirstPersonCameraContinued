@@ -90,7 +90,7 @@ namespace FirstPersonCameraContinued.Systems
 
         protected override void OnUpdate()
         {
-            if (isEntered)
+            if (isEntered && Mod.FirstPersonModSettings != null && Mod.FirstPersonModSettings.ShowInfoBox)
             {
                 if (!InitializeObjectsSystems())
                 {
@@ -163,9 +163,9 @@ namespace FirstPersonCameraContinued.Systems
                         followedEntityInfo.citizenAction = citizenAction;
                     }
 
-                    if (CameraController.GetTransformer().CheckForVehicleScope(out var modelVehicleType))
+                    if (CameraController.GetTransformer().CheckForVehicleScope(out _, out var translatedVehicleType))
                     {
-                        followedEntityInfo.vehicleType = Regex.Replace(modelVehicleType.ToString(), "(?<!^)([A-Z])", " $1");
+                        followedEntityInfo.vehicleType = translatedVehicleType;
                     }
                      
                     followedEntityInfo.unitsSystem = (int)GameManager.instance.settings.userInterface.unitSystem;

@@ -25,6 +25,8 @@ namespace FirstPersonCameraContinued.Enums
         Tram = 1L << 15,
         Train = 1L << 16,
         Subway = 1L << 17,
+        Ship = 1L << 18,
+        Aircraft = 1L << 19,
 
         Cars = PersonalCar | PoliceCar | Hearse | Taxi,
         Vans = PostVan | PoliceVan | Ambulance | MaintenanceVehicle,

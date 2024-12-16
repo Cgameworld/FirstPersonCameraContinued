@@ -6,6 +6,9 @@ using FirstPersonCameraContinued.Transformer;
 using FirstPersonCameraContinued.Transformer.FinalTransforms;
 using FirstPersonCameraContinued.Transformer.Transforms;
 using Game.Citizens;
+using Game.SceneFlow;
+using Game.UI.InGame;
+using Game.Vehicles;
 using System;
 using System.Collections.Generic;
 using Unity.Entities;
@@ -147,7 +150,7 @@ namespace FirstPersonCameraContinued.Transforms
             {
                 return CameraScope.Pet;
             }
-            else if ( CheckForVehicleScope( out var vehicleType ) )
+            else if ( CheckForVehicleScope( out var vehicleType, out _ ) )
             {
                 var isCar = ( vehicleType & VehicleType.Cars ) != 0;
                 var isVan = ( vehicleType & VehicleType.Vans ) != 0;
@@ -178,98 +181,119 @@ namespace FirstPersonCameraContinued.Transforms
             return false;
         }
 
-        public bool CheckForVehicleScope( out VehicleType vehicleType )
+        public bool CheckForVehicleScope( out VehicleType vehicleType, out string translatedVehicleType )
         {
-            vehicleType = VehicleType.Unknown;
-
             var entity = _model.FollowEntity;
-
-            //if ( _entityManager.TryGetComponent<Game.Vehicles.PublicTransport>( entity, out var component1 ) )
-            //    return true;
-
             var isVehicle = false;
 
-            if ( _entityManager.HasComponent<Game.Vehicles.Helicopter>( entity ) )
+            vehicleType = VehicleType.Unknown;
+            translatedVehicleType = GetVehicleLocalizedString("VEHICLE_STATES[Unknown]");
+
+            if (_entityManager.HasComponent<Game.Vehicles.Helicopter>(entity))
             {
                 vehicleType = VehicleType.Helicopter;
                 isVehicle = true;
+
+                if (_entityManager.HasComponent<Game.Vehicles.Ambulance>(entity))
+                {
+                    translatedVehicleType = GetVehicleLocalizedString("HEALTHCARE_VEHICLE_TITLE[MedicalHelicopter]");
+                }
+                if (_entityManager.HasComponent<Game.Vehicles.PoliceCar>(entity))
+                {
+                    translatedVehicleType = GetVehicleLocalizedString("HEALTHCARE_VEHICLE_TITLE[MedicalHelicopter]");
+                }
+                if (_entityManager.HasComponent<Game.Vehicles.FireEngine>(entity))
+                {
+                    translatedVehicleType = GetVehicleLocalizedString("FIRE_VEHICLE_TITLE[FireHelicopter]");
+                }
             }
 
-            if ( _entityManager.HasComponent<Game.Vehicles.CarTrailer>( entity ) )
+            if (_entityManager.HasComponent<Game.Vehicles.CarTrailer>(entity))
             {
                 vehicleType = VehicleType.CarTrailer;
                 isVehicle = true;
             }
 
-            if ( _entityManager.HasComponent<Game.Vehicles.Vehicle>( entity ) )
+            if (_entityManager.HasComponent<Game.Vehicles.Vehicle>(entity))
             {
                 vehicleType = VehicleType.Unknown;
                 isVehicle = true;
             }
 
-            if ( _entityManager.HasComponent<Game.Vehicles.PersonalCar>( entity ) )
+            if (_entityManager.HasComponent<Game.Vehicles.PersonalCar>(entity))
             {
                 vehicleType = VehicleType.PersonalCar;
+                translatedVehicleType = GetVehicleLocalizedString("PRIVATE_VEHICLE_TITLE[HouseholdVehicle]");
                 return true;
             }
 
-            if ( _entityManager.HasComponent<Game.Vehicles.PostVan>( entity ) )
+            if (_entityManager.HasComponent<Game.Vehicles.PostVan>(entity))
             {
                 vehicleType = VehicleType.PersonalCar;
+                translatedVehicleType = GetVehicleLocalizedString("PRIVATE_VEHICLE_TITLE[Taxi]");
                 return true;
             }
 
-            if ( _entityManager.HasComponent<Game.Vehicles.PoliceCar>( entity ) )
+            if (_entityManager.HasComponent<Game.Vehicles.PoliceCar>(entity))
             {
                 vehicleType = VehicleType.PoliceCar;
+                translatedVehicleType = GetVehicleLocalizedString("POLICE_VEHICLE_TITLE[PolicePatrolCar]");
                 return true;
             }
 
-            if ( _entityManager.HasComponent<Game.Vehicles.MaintenanceVehicle>( entity ) )
+            if (_entityManager.HasComponent<Game.Vehicles.MaintenanceVehicle>(entity))
             {
                 vehicleType = VehicleType.MaintenanceVehicle;
+                translatedVehicleType = GetVehicleLocalizedString("MAINTENANCE_VEHICLE_TITLE");
                 return true;
             }
 
-            if ( _entityManager.HasComponent<Game.Vehicles.Ambulance>( entity ) )
+            if (_entityManager.HasComponent<Game.Vehicles.Ambulance>(entity))
             {
                 vehicleType = VehicleType.Ambulance;
+                translatedVehicleType = GetVehicleLocalizedString("HEALTHCARE_VEHICLE_TITLE[Ambulance]");
                 return true;
             }
 
-            if ( _entityManager.HasComponent<Game.Vehicles.GarbageTruck>( entity ) )
+            if (_entityManager.HasComponent<Game.Vehicles.GarbageTruck>(entity))
             {
                 vehicleType = VehicleType.GarbageTruck;
+                translatedVehicleType = GetVehicleLocalizedString("GARBAGE_VEHICLE_TITLE[GarbageTruck]");
                 return true;
             }
 
-            if ( _entityManager.HasComponent<Game.Vehicles.FireEngine>( entity ) )
+            if (_entityManager.HasComponent<Game.Vehicles.FireEngine>(entity))
             {
                 vehicleType = VehicleType.FireEngine;
+                translatedVehicleType = GetVehicleLocalizedString("FIRE_VEHICLE_TITLE[FireEngine]");
                 return true;
             }
 
-            if ( _entityManager.HasComponent<Game.Vehicles.DeliveryTruck>( entity ) )
+            if (_entityManager.HasComponent<Game.Vehicles.DeliveryTruck>(entity))
             {
                 vehicleType = VehicleType.DeliveryTruck;
+                translatedVehicleType = GetVehicleLocalizedString("DELIVERY_VEHICLE_TITLE[DeliveryTruck]");
                 return true;
             }
 
-            if ( _entityManager.HasComponent<Game.Vehicles.Hearse>( entity ) )
+            if (_entityManager.HasComponent<Game.Vehicles.Hearse>(entity))
             {
                 vehicleType = VehicleType.Hearse;
+                translatedVehicleType = GetVehicleLocalizedString("DEATHCARE_VEHICLE_TITLE");
                 return true;
             }
 
-            if ( _entityManager.HasComponent<Game.Vehicles.CargoTransport>( entity ) )
+            if (_entityManager.HasComponent<Game.Vehicles.CargoTransport>(entity))
             {
                 vehicleType = VehicleType.CargoTransport;
+                translatedVehicleType = GetVehicleLocalizedString("CARGO_TRANSPORT_VEHICLE_TITLE");
                 return true;
             }
 
-            if ( _entityManager.HasComponent<Game.Vehicles.Taxi>( entity ) )
+            if (_entityManager.HasComponent<Game.Vehicles.Taxi>(entity))
             {
                 vehicleType = VehicleType.Taxi;
+                translatedVehicleType = GetVehicleLocalizedString("PRIVATE_VEHICLE_TITLE[Taxi]");
                 return true;
             }
 
@@ -284,28 +308,58 @@ namespace FirstPersonCameraContinued.Transforms
                         if (transportType == Game.Prefabs.TransportType.Bus)
                         {
                             vehicleType = VehicleType.Bus;
+                            translatedVehicleType = GetVehicleLocalizedString("Editor.ASSET_CATEGORY_TITLE[Vehicles/Services/Bus]", true);
                             return true;
                         }
                         if (transportType == Game.Prefabs.TransportType.Tram)
                         {
                             vehicleType = VehicleType.Tram;
+                            translatedVehicleType = GetVehicleLocalizedString("Editor.ASSET_CATEGORY_TITLE[Vehicles/Services/Tram]", true);
                             return true;
                         }
                         if (transportType == Game.Prefabs.TransportType.Train)
                         {
                             vehicleType = VehicleType.Train;
+                            translatedVehicleType = GetVehicleLocalizedString("Editor.ASSET_CATEGORY_TITLE[Vehicles/Services/Train]", true);
                             return true;
                         }
                         if (transportType == Game.Prefabs.TransportType.Subway)
                         {
                             vehicleType = VehicleType.Subway;
+                            translatedVehicleType = GetVehicleLocalizedString("Editor.ASSET_CATEGORY_TITLE[Vehicles/Services/Subway]", true);
+                            return true;
+                        }
+                        if (transportType == Game.Prefabs.TransportType.Ship)
+                        {
+                            vehicleType = VehicleType.Ship;
+                            translatedVehicleType = GetVehicleLocalizedString("Editor.ASSET_CATEGORY_TITLE[Vehicles/Services/Ship]", true);
+                            return true;
+                        }
+                        if (transportType == Game.Prefabs.TransportType.Airplane)
+                        {
+                            vehicleType = VehicleType.Aircraft;
+                            translatedVehicleType = GetVehicleLocalizedString("Editor.ASSET_CATEGORY_TITLE[Vehicles/Services/Healthcare]", true);
                             return true;
                         }
                     }
                 }
             }
-            
-            return isVehicle;            
+
+            return isVehicle;
         }
+
+        private static string GetVehicleLocalizedString(string dictionaryValue, bool fullLength = false)
+        {
+            string translatedVehicleType;
+            var dictionary = GameManager.instance.localizationManager.activeDictionary;
+
+            string value = dictionaryValue;
+            if (!fullLength)
+            {
+                value = "SelectedInfoPanel." + dictionaryValue;
+            }
+            return dictionary.TryGetValue(value, out translatedVehicleType) ? translatedVehicleType : "Error";
+        }
+
     }
 }
