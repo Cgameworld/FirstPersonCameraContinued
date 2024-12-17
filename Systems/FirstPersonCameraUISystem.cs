@@ -1,4 +1,5 @@
-﻿using Colossal.UI.Binding;
+﻿using Colossal.Entities;
+using Colossal.UI.Binding;
 using FirstPersonCamera.Helpers;
 using FirstPersonCameraContinued.Enums;
 using FirstPersonCameraContinued.MonoBehaviours;
@@ -156,7 +157,21 @@ namespace FirstPersonCameraContinued.Systems
 
             Entity randomEntity = GetRandomEntityFromQuery(query);
 
-            ConfigureRandomEnterFollow(firstTimeEntry, RandomMode.Transit, randomEntity);
+            //follow end cars
+            if (EntityManager.TryGetComponent<Game.Vehicles.Controller>(randomEntity, out var controllerComponent))
+            {
+                //if entity same as current, try again
+                if (Controller.GetFollowEntity() == controllerComponent.m_Controller)
+                {
+                    EnterFollowRandomTransit(firstTimeEntry);
+                }
+                else
+                {
+                    ConfigureRandomEnterFollow(firstTimeEntry, RandomMode.Transit, controllerComponent.m_Controller);
+                }
+            }
+
+            
         }
 
         public void EnterFollowRandomCim(bool firstTimeEntry = true)
