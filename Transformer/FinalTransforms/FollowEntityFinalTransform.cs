@@ -45,17 +45,15 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
 
             pivot += forward * ( ( bounds.max.z - bounds.min.z ) * offset.z+ model.PositionFollowOffset.y);
 
-            //pos += new float3(, 0, model.PositionFollowOffset.x);
-            //rig.Parent.position = pos + pivot;
             if (isTrain)
             {
-                model.Position = pos + new float3(0f, 2f, 0f) + (forward * (8f + model.PositionFollowOffset.y));
+                model.Position = pos + new float3(0f, offset.y, 0f) + (forward * (offset.z + model.PositionFollowOffset.y));
             }
             else
             {
                 model.Position = pos + pivot;
             }
-            //model.Position = rig.Parent.position;
+
             model.Rotation = math.mul(rotation, model.Rotation);
         }
 
@@ -79,11 +77,11 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
             var y = 0.5f;
             var scope = model.Scope;
 
-            if ( scope == CameraScope.Citizen )
+            if (scope == CameraScope.Citizen)
             {
                 var age = model.ScopeCitizen;
 
-                switch ( age )
+                switch (age)
                 {
                     case CitizenAge.Child:
                         y = 0.25f;
@@ -99,31 +97,46 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
                         break;
                 }
             }
-            else if ( scope == CameraScope.Truck )
+            else if (scope == CameraScope.Truck)
             {
                 z = 0.53f;
                 y = 0.52f;
             }
-            else if ( scope == CameraScope.Van )
+            else if (scope == CameraScope.Van)
             {
                 z = 0.385f;
                 y = 0.5f;
             }
-            else if ( scope == CameraScope.Car )
+            else if (scope == CameraScope.Car)
             {
                 z = 0.3f;
                 y = 0.475f;
             }
-            else if ( scope == CameraScope.UnknownVehicle )
+            else if (model.ScopeVehicle == VehicleType.Tram)
+            {
+                y = 2f;
+                z = 5.8f;
+            }
+            else if (model.ScopeVehicle == VehicleType.Train && model.ScopeVehicle == VehicleType.Subway)
+            {
+                y = 2f;
+                z = 10f;
+            }
+            else if (model.ScopeVehicle == VehicleType.Bus)
+            {
+                y = 1.5f;
+                z = 0f;
+            }
+            else if (scope == CameraScope.UnknownVehicle)
             {
                 z = 0.25f;
                 y = 0.5f;
             }
-            else if ( scope == CameraScope.Pet )
+            else if (scope == CameraScope.Pet)
             {
                 y = 0.35f;
             }
-            else if ( scope == CameraScope.UnknownVehicle && model.ScopeVehicle == VehicleType.Helicopter )
+            else if (scope == CameraScope.UnknownVehicle && model.ScopeVehicle == VehicleType.Helicopter)
             {
                 y = 0f;
                 z = 0.01f;

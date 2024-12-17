@@ -177,7 +177,7 @@ namespace FirstPersonCameraContinued
             {
                 if (_model.Mode == CameraMode.Follow)
                 {
-                    _model.PositionFollowOffset += new float2(ctx.ReadValue<Vector2>().x * 0.5f, ctx.ReadValue<Vector2>().y * 0.5f);
+                    _model.PositionFollowOffset += new float2(ctx.ReadValue<Vector2>().x * 0.1f, ctx.ReadValue<Vector2>().y * 0.1f);
                     Mod.log.Info("_model.PositionFollowOffset: " + _model.PositionFollowOffset);
                 }
             };
