@@ -338,7 +338,7 @@ namespace FirstPersonCameraContinued.Transforms
                         if (transportType == Game.Prefabs.TransportType.Airplane)
                         {
                             vehicleType = VehicleType.Aircraft;
-                            translatedVehicleType = GetVehicleLocalizedString("Editor.ASSET_CATEGORY_TITLE[Vehicles/Services/Healthcare]", true);
+                            translatedVehicleType = GetVehicleLocalizedString("Editor.ASSET_CATEGORY_TITLE[Vehicles/Services/Aircraft]", true);
                             return true;
                         }
                     }

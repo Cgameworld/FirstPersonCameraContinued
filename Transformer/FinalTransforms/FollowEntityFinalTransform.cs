@@ -17,7 +17,7 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
 
         private readonly EntityFollower _entityFollower;
 
-        public FollowEntityFinalTransform( EntityFollower entityFollower )
+        public FollowEntityFinalTransform(EntityFollower entityFollower)
         {
             _entityFollower = entityFollower;
         }
@@ -27,25 +27,25 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
         /// </summary>
         /// <param name="rig"></param>
         /// <param name="model"></param>
-        public void Apply( VirtualCameraRig rig, CameraDataModel model )
+        public void Apply(VirtualCameraRig rig, CameraDataModel model)
         {
-            if ( !_entityFollower.TryGetPosition( out float3 pos, out Bounds3 bounds, out quaternion rot, out bool isTrain) )
+            if (!_entityFollower.TryGetPosition(out float3 pos, out Bounds3 bounds, out quaternion rot, out bool isTrain))
                 return;
 
             // When the entity changes get the new offset
-            if ( lastFollow != model.FollowEntity )
+            if (lastFollow != model.FollowEntity)
             {
                 lastFollow = model.FollowEntity;
-                GrabOffset( model );
+                GrabOffset(model);
             }
 
-            var rotation = new quaternion( rot.value.x, rot.value.y, rot.value.z, rot.value.w );
-            var forward = math.mul( rotation, new float3( 0, 0, 1 ) ); // Equivalent to Vector3.forward
-            var pivot = new float3( 0f, ( bounds.y.max - bounds.y.min ) / 2f + offset.y, 0f );
+            var rotation = new quaternion(rot.value.x, rot.value.y, rot.value.z, rot.value.w);
+            var forward = math.mul(rotation, new float3(0, 0, 1)); // Equivalent to Vector3.forward
+            var pivot = new float3(0f, (bounds.y.max - bounds.y.min) / 2f + offset.y, 0f);
 
-            pivot += forward * ( ( bounds.max.z - bounds.min.z ) * offset.z+ model.PositionFollowOffset.y);
+            pivot += forward * ((bounds.max.z - bounds.min.z) * offset.z + model.PositionFollowOffset.y);
 
-            if (isTrain || model.ScopeVehicle == VehicleType.Bus)
+            if (isTrain || model.ScopeVehicle == VehicleType.Bus || model.ScopeVehicle == VehicleType.Ship)
             {
                 model.Position = pos + new float3(0f, offset.y, 0f) + (forward * (offset.z + model.PositionFollowOffset.y));
             }
@@ -61,9 +61,9 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
         /// Store the offset for the entity
         /// </summary>
         /// <param name="model"></param>
-        private void GrabOffset( CameraDataModel model )
+        private void GrabOffset(CameraDataModel model)
         {
-            offset = GetOffset( model );
+            offset = GetOffset(model);
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        private float3 GetOffset( CameraDataModel model )
+        private float3 GetOffset(CameraDataModel model)
         {
             var z = 0.25f;
             var y = 0.5f;
@@ -127,6 +127,11 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
                 y = 2f;
                 z = 10f;
             }
+            else if (model.ScopeVehicle == VehicleType.Ship)
+            {
+                y = 22f;
+                z = 28f;
+            }
             else if (scope == CameraScope.UnknownVehicle)
             {
                 z = 0.25f;
@@ -142,7 +147,7 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
                 z = 0.01f;
             }
 
-            return new float3( 0f, y, z );
+            return new float3(0f, y, z);
         }
     }
 }
