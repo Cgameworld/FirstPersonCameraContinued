@@ -160,14 +160,37 @@ namespace FirstPersonCameraContinued.Systems
             //follow end cars
             if (EntityManager.TryGetComponent<Game.Vehicles.Controller>(randomEntity, out var controllerComponent))
             {
+                Entity selectedEntity = Entity.Null;
+
+                //check if attaching in reverse direction
+                if (EntityManager.TryGetComponent<Game.Vehicles.Train>(controllerComponent.m_Controller, out var trainComponent) && trainComponent.m_Flags.HasFlag(Game.Vehicles.TrainFlags.Reversed))
+                {
+                    //get all cars in rail vehicle
+                    if (EntityManager.TryGetBuffer<Game.Vehicles.LayoutElement>(controllerComponent.m_Controller, false, out var layoutElementBuffer))
+                    {
+                        if (layoutElementBuffer[0].m_Vehicle != controllerComponent.m_Controller)
+                        {
+                            selectedEntity = layoutElementBuffer[0].m_Vehicle;
+                        }
+                        else
+                        {
+                            selectedEntity = layoutElementBuffer[layoutElementBuffer.Length - 1].m_Vehicle;
+                        }
+                    }
+                }
+                else
+                {
+                    selectedEntity = controllerComponent.m_Controller;
+                }
+
                 //if entity same as current, try again
-                if (Controller.GetFollowEntity() == controllerComponent.m_Controller)
+                if (Controller.GetFollowEntity() == selectedEntity)
                 {
                     EnterFollowRandomTransit(firstTimeEntry);
                 }
                 else
                 {
-                    ConfigureRandomEnterFollow(firstTimeEntry, RandomMode.Transit, controllerComponent.m_Controller);
+                    ConfigureRandomEnterFollow(firstTimeEntry, RandomMode.Transit, selectedEntity);
                 }
             }
             else
