@@ -43,5 +43,5 @@
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.INFOBOXSIZE[Small]","Small"
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.INFOBOXSIZE[Default]","Default"
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.INFOBOXSIZE[Large]","Large"
-"Options.OPTION:ShowVehicleType","Show Vehicle Type"
-"Options.OPTION_DESCRIPTION:ShowVehicleType","Show the type of vehicle in the info box while in first person view"
+"Options.OPTION:OnlyShowSpeed","Only Show Speed"
+"Options.OPTION_DESCRIPTION:OnlyShowSpeed","Only show the speed in the info box while in first person view"

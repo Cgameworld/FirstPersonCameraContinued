@@ -20,7 +20,7 @@ const FollowedVehicleInfoPanel: React.FC = () => {
     const showCrosshair = useValue(ShowCrosshair$);
 
     const showInfoPanel: boolean = JSON.parse(uiSettingsGroupOptions).ShowInfoBox;
-    const showVehicleType: boolean = JSON.parse(uiSettingsGroupOptions).ShowVehicleType;
+    const onlyShowSpeed: boolean = JSON.parse(uiSettingsGroupOptions).OnlyShowSpeed;
     const infoBoxSize: number = JSON.parse(uiSettingsGroupOptions).InfoBoxSize;
 
     const parsedSpeed: number = JSON.parse(followedEntityInfo).currentSpeed;
@@ -58,7 +58,7 @@ const FollowedVehicleInfoPanel: React.FC = () => {
         {/*85+60*/}
         <div className="tool-options-panel_Se6">
                 <div className="item_bZY">
-                    {citizenName !== null && (
+                    {citizenName !== null && !onlyShowSpeed && (
                         <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
                             <div className={`fpcc-info-label ${infoBoxSizeClass}`}>Name</div>
                             <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{citizenName}</div>
@@ -70,19 +70,19 @@ const FollowedVehicleInfoPanel: React.FC = () => {
                             <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{formattedSpeed}</div>
                         </div>
                     )}
-                    {vehicleType !== null && showVehicleType && (
+                    {vehicleType !== null && !onlyShowSpeed && (
                         <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
                             <div className={`fpcc-info-label ${infoBoxSizeClass}`}>Vehicle Type</div>
                             <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{vehicleType}</div>
                         </div>
                     )}
-                    {citizenAction !== null && (
+                    {citizenAction !== null && !onlyShowSpeed && (
                         <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
                             <div className={`fpcc-info-label ${infoBoxSizeClass}`}>Action</div>
                             <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{citizenAction}</div>
                         </div>
                     )}
-                    {parsedPassengers !== -1 && (
+                    {parsedPassengers !== -1 && !onlyShowSpeed && (
                         <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
                             <div className={`fpcc-info-label ${infoBoxSizeClass}`}>Passengers</div>
                             <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{parsedPassengers}</div>

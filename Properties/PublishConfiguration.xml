@@ -86,7 +86,7 @@ If you like this mod be sure to leave an upvote! Thanks
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
 # v1.4
-* Added info box in follow mode, displaying current speed, type, etc
+* Added info box in follow mode, displaying current speed and other stats
 * Improved train model following
 * Updated default following positions for Bus, Tram, Train, Subway and Ship vehicle types 
 * Added "Random Transit" option

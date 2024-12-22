@@ -222,7 +222,7 @@ namespace FirstPersonCameraContinued.Systems
     public class UISettingsGroup
     {
         public bool ShowInfoBox { get; set; }
-        public bool ShowVehicleType { get; set; }
+        public bool OnlyShowSpeed { get; set; }
         public int InfoBoxSize { get; set; }
 
         public static UISettingsGroup FromModSettings()
@@ -232,7 +232,7 @@ namespace FirstPersonCameraContinued.Systems
                 return new UISettingsGroup
                 {
                     ShowInfoBox = true,
-                    ShowVehicleType = true,
+                    OnlyShowSpeed = false,
                     InfoBoxSize = 1
                 };
             }
@@ -240,7 +240,7 @@ namespace FirstPersonCameraContinued.Systems
             return new UISettingsGroup
             {
                 ShowInfoBox = Mod.FirstPersonModSettings.ShowInfoBox,
-                ShowVehicleType = Mod.FirstPersonModSettings.ShowVehicleType,
+                OnlyShowSpeed = Mod.FirstPersonModSettings.OnlyShowSpeed,
                 InfoBoxSize = ((int)Mod.FirstPersonModSettings.InfoBoxSize)
             };
         }

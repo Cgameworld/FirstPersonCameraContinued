@@ -24,7 +24,7 @@ namespace FirstPersonCameraContinued
         public const string InfoBoxSettingsGroup = "InfoBoxSettingsGroup";
 
         private bool _showInfoBox;
-        private bool _showVehicleType;
+        private bool _onlyShowSpeed;
         private InfoBoxSize _infoBoxSize;
 
         public Setting(IMod mod) : base(mod)
@@ -95,7 +95,7 @@ namespace FirstPersonCameraContinued
                 //if info box disabled, show vehicletype has to also be disabled
                 if (!value)
                 {
-                    _showVehicleType = false;
+                    _onlyShowSpeed = false;
                 }
                 SetUISettingsGroup();
             }
@@ -103,13 +103,13 @@ namespace FirstPersonCameraContinued
 
 
         [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
-        public bool ShowVehicleType
+        public bool OnlyShowSpeed
         {
-            get => _showVehicleType;
+            get => _onlyShowSpeed;
             set
             {
-                _showVehicleType = value;
-                // if showvehicletype is enabled, the infobox also has to be
+                _onlyShowSpeed = value;
+                // if enabled, the infobox also has to be
                 if (value)
                 {
                     _showInfoBox = true;
@@ -148,7 +148,7 @@ namespace FirstPersonCameraContinued
             TransitionSpeedFactor = 1f;
             ShowGameUI = false;
             ShowInfoBox = true;
-            ShowVehicleType = true;
+            OnlyShowSpeed = false;
             InfoBoxSize = Enums.InfoBoxSize.Default;
         }
 
