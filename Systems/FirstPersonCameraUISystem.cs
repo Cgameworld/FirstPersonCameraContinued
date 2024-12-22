@@ -170,6 +170,10 @@ namespace FirstPersonCameraContinued.Systems
                     ConfigureRandomEnterFollow(firstTimeEntry, RandomMode.Transit, controllerComponent.m_Controller);
                 }
             }
+            else
+            {
+                ConfigureRandomEnterFollow(firstTimeEntry, RandomMode.Transit, randomEntity);
+            }
 
             
         }
