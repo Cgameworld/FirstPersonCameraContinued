@@ -97,84 +97,105 @@ namespace FirstPersonCameraContinued.Systems
                     return;
                 }
                 Entity currentEntity = CameraController.GetFollowEntity();
+
                 if (currentEntity != Entity.Null)
                 {
-                    FollowedEntityInfo followedEntityInfo = new FollowedEntityInfo();
-                    if (EntityManager.TryGetComponent<Game.Objects.Moving>(currentEntity, out var movingComponent))
+                    UpdateFollowedEntityInfo(currentEntity);
+                }
+
+                else
+                {
+                    FollowedEntityInfo followedEntityInfo = new FollowedEntityInfo()
                     {
-                        followedEntityInfo.currentSpeed = new Vector3(movingComponent.m_Velocity.x, movingComponent.m_Velocity.y, movingComponent.m_Velocity.z).magnitude;
-                    }
-
-                    //get passenger numbers if bus, tram, metro, etc
-                    if (EntityManager.HasComponent<Game.Vehicles.PassengerTransport>(currentEntity))
-                    {
-                        if (EntityManager.TryGetComponent<Game.Vehicles.Controller>(currentEntity, out var controllerComponent))
-                        {
-                            if (EntityManager.TryGetBuffer<Game.Vehicles.LayoutElement>(controllerComponent.m_Controller, false, out var layoutElementBuffer))
-                            {
-                                int totalPassengers = 0;
-                                for (int i = 0; i < layoutElementBuffer.Length; i++)
-                                {
-                                    if (EntityManager.TryGetBuffer<Game.Vehicles.Passenger>(layoutElementBuffer[i].m_Vehicle, false, out var passengerBuffer))
-                                    {
-                                        totalPassengers += passengerBuffer.Length;
-                                    }
-                                }
-                                followedEntityInfo.passengers = totalPassengers;
-                            }
-                        }
-                        else
-                        {
-                            if (EntityManager.TryGetBuffer<Game.Vehicles.Passenger>(currentEntity, false, out var passengerBuffer))
-                            {
-                                followedEntityInfo.passengers = passengerBuffer.Length;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        followedEntityInfo.passengers = -1;
-                    }
-
-                    //		m_CitizenNameQuery = GetEntityQuery(ComponentType.ReadOnly<Citizen>(), ComponentType.ReadOnly<PrefabRef>(), ComponentType.Exclude<RandomLocalizationIndex>());
-
-                    //if ped
-                    if (EntityManager.TryGetComponent<Game.Creatures.Resident>(currentEntity, out var residentComponent) && EntityManager.TryGetComponent<Game.Prefabs.PrefabRef>(currentEntity, out var prefabRefComponent))
-                    {
-                        MethodInfo method = typeof(NameSystem).GetMethod("GetCitizenName", BindingFlags.NonPublic | BindingFlags.Instance);
-                        var name = (NameSystem.Name)method.Invoke(World.GetExistingSystemManaged<NameSystem>(), new object[] { residentComponent.m_Citizen, prefabRefComponent.m_Prefab });
-
-                        var nameArgs = (string[])name.GetType().GetField("m_NameArgs", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(name);
-                        string firstNameLocalizationID = nameArgs[1];
-                        string lastNameLocalizationID = nameArgs[3];
-
-                        string firstName = GameManager.instance.localizationManager.activeDictionary.TryGetValue(firstNameLocalizationID, out var first) ? first : firstNameLocalizationID;
-                        string lastName = GameManager.instance.localizationManager.activeDictionary.TryGetValue(lastNameLocalizationID, out var last) ? last : lastNameLocalizationID;
-
-                        //Mod.log.Info("Citizen Name: " + firstName + " " + lastName);
-                        followedEntityInfo.citizenName = firstName + " " + lastName;
-
-                        //get what citizen is doing
-                        string citizenActionEnum = Enum.GetName(typeof(CitizenStateKey), CitizenUIUtils.GetStateKey(EntityManager, residentComponent.m_Citizen));
-                        string citizenActionEnumID = "SelectedInfoPanel.CITIZEN_STATE[" + citizenActionEnum + "]";
-
-                        string citizenAction = GameManager.instance.localizationManager.activeDictionary.TryGetValue(citizenActionEnumID, out var action) ? action : citizenActionEnumID;
-
-                        followedEntityInfo.citizenAction = citizenAction;
-                    }
-
-                    if (CameraController.GetTransformer().CheckForVehicleScope(out _, out var translatedVehicleType))
-                    {
-                        followedEntityInfo.vehicleType = translatedVehicleType;
-                    }
-                     
-                    followedEntityInfo.unitsSystem = (int)GameManager.instance.settings.userInterface.unitSystem;
-
+                        unitsSystem = -1,
+                        passengers = -1,
+                        currentSpeed = -1,
+                    };
+                    
                     this.followedEntityInfo = JsonConvert.SerializeObject(followedEntityInfo);
                     followedEntityInfoBinding.Update();
                 }
+
             }
         }
+
+        private void UpdateFollowedEntityInfo(Entity currentEntity)
+        {
+            FollowedEntityInfo followedEntityInfo = new FollowedEntityInfo();
+            if (EntityManager.TryGetComponent<Game.Objects.Moving>(currentEntity, out var movingComponent))
+            {
+                followedEntityInfo.currentSpeed = new Vector3(movingComponent.m_Velocity.x, movingComponent.m_Velocity.y, movingComponent.m_Velocity.z).magnitude;
+            }
+
+            //get passenger numbers if bus, tram, metro, etc
+            if (EntityManager.HasComponent<Game.Vehicles.PassengerTransport>(currentEntity))
+            {
+                if (EntityManager.TryGetComponent<Game.Vehicles.Controller>(currentEntity, out var controllerComponent))
+                {
+                    if (EntityManager.TryGetBuffer<Game.Vehicles.LayoutElement>(controllerComponent.m_Controller, false, out var layoutElementBuffer))
+                    {
+                        int totalPassengers = 0;
+                        for (int i = 0; i < layoutElementBuffer.Length; i++)
+                        {
+                            if (EntityManager.TryGetBuffer<Game.Vehicles.Passenger>(layoutElementBuffer[i].m_Vehicle, false, out var passengerBuffer))
+                            {
+                                totalPassengers += passengerBuffer.Length;
+                            }
+                        }
+                        followedEntityInfo.passengers = totalPassengers;
+                    }
+                }
+                else
+                {
+                    if (EntityManager.TryGetBuffer<Game.Vehicles.Passenger>(currentEntity, false, out var passengerBuffer))
+                    {
+                        followedEntityInfo.passengers = passengerBuffer.Length;
+                    }
+                }
+            }
+            else
+            {
+                followedEntityInfo.passengers = -1;
+            }
+
+            //		m_CitizenNameQuery = GetEntityQuery(ComponentType.ReadOnly<Citizen>(), ComponentType.ReadOnly<PrefabRef>(), ComponentType.Exclude<RandomLocalizationIndex>());
+
+            //if ped
+            if (EntityManager.TryGetComponent<Game.Creatures.Resident>(currentEntity, out var residentComponent) && EntityManager.TryGetComponent<Game.Prefabs.PrefabRef>(currentEntity, out var prefabRefComponent))
+            {
+                MethodInfo method = typeof(NameSystem).GetMethod("GetCitizenName", BindingFlags.NonPublic | BindingFlags.Instance);
+                var name = (NameSystem.Name)method.Invoke(World.GetExistingSystemManaged<NameSystem>(), new object[] { residentComponent.m_Citizen, prefabRefComponent.m_Prefab });
+
+                var nameArgs = (string[])name.GetType().GetField("m_NameArgs", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(name);
+                string firstNameLocalizationID = nameArgs[1];
+                string lastNameLocalizationID = nameArgs[3];
+
+                string firstName = GameManager.instance.localizationManager.activeDictionary.TryGetValue(firstNameLocalizationID, out var first) ? first : firstNameLocalizationID;
+                string lastName = GameManager.instance.localizationManager.activeDictionary.TryGetValue(lastNameLocalizationID, out var last) ? last : lastNameLocalizationID;
+
+                //Mod.log.Info("Citizen Name: " + firstName + " " + lastName);
+                followedEntityInfo.citizenName = firstName + " " + lastName;
+
+                //get what citizen is doing
+                string citizenActionEnum = Enum.GetName(typeof(CitizenStateKey), CitizenUIUtils.GetStateKey(EntityManager, residentComponent.m_Citizen));
+                string citizenActionEnumID = "SelectedInfoPanel.CITIZEN_STATE[" + citizenActionEnum + "]";
+
+                string citizenAction = GameManager.instance.localizationManager.activeDictionary.TryGetValue(citizenActionEnumID, out var action) ? action : citizenActionEnumID;
+
+                followedEntityInfo.citizenAction = citizenAction;
+            }
+
+            if (CameraController.GetTransformer().CheckForVehicleScope(out _, out var translatedVehicleType))
+            {
+                followedEntityInfo.vehicleType = translatedVehicleType;
+            }
+
+            followedEntityInfo.unitsSystem = (int)GameManager.instance.settings.userInterface.unitSystem;
+
+            this.followedEntityInfo = JsonConvert.SerializeObject(followedEntityInfo);
+            followedEntityInfoBinding.Update();
+        }
+
         public string SetFollowedEntityDefaults()
         {
             return JsonConvert.SerializeObject(new FollowedEntityInfo()
