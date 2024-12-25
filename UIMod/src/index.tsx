@@ -53,6 +53,14 @@ const register: ModRegistrar = (moduleRegistry) => {
         uiTextFollowRandomVehicle = translate("FirstPersonCameraContinued.FollowRandomVehicle");
         uiTextFollowRandomTransit = translate("FirstPersonCameraContinued.FollowRandomTransit");
 
+        const uiTextFollowedVehiclePanel = {
+            nameLabel: translate("FirstPersonCameraContinued.NameLabel"),
+            speedLabel: translate("FirstPersonCameraContinued.SpeedLabel"),
+            vehicleTypeLabel: translate("FirstPersonCameraContinued.VehicleTypeLabel"),
+            actionLabel: translate("FirstPersonCameraContinued.ActionLabel"),
+            passengersLabel: translate("FirstPersonCameraContinued.PassengersLabel")
+        };
+
         var selectedEntity: Entity;
         if (selectedInfo && selectedInfo.selectedEntity$) {
             selectedInfo.selectedEntity$.subscribe(SelectedEntityChanged);
@@ -109,7 +117,7 @@ const register: ModRegistrar = (moduleRegistry) => {
                 newDiv.className = 'firstpersoncameracontinued_entityinfo';
                 injectionPoint.insertBefore(newDiv, injectionPoint.firstChild);
 
-                ReactDOM.render(<FollowedVehicleInfoPanel />, newDiv);
+                ReactDOM.render(<FollowedVehicleInfoPanel translation={uiTextFollowedVehiclePanel} />, newDiv);
 
                 return () => {
                     ReactDOM.unmountComponentAtNode(newDiv);

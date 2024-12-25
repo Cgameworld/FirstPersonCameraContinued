@@ -6,8 +6,19 @@ const FollowedEntityInfo$ = bindValue<string>('fpc', 'FollowedEntityInfo');
 
 const ShowCrosshair$ = bindValue<boolean>('fpc', 'ShowCrosshair');
 
+interface TranslationProps {
+    nameLabel: string | null;
+    speedLabel: string | null;
+    vehicleTypeLabel: string | null;
+    actionLabel: string | null;
+    passengersLabel: string | null;
+}
 
-const FollowedVehicleInfoPanel: React.FC = () => {
+interface FollowedVehicleInfoPanelProps {
+    translation: TranslationProps;
+}
+
+const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ translation }) => {
 
     const uiSettingsGroupOptions = useValue(UISettingsGroupOptions$);
 
@@ -60,31 +71,31 @@ const FollowedVehicleInfoPanel: React.FC = () => {
                 <div className="item_bZY">
                     {citizenName !== null && !onlyShowSpeed && (
                         <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
-                            <div className={`fpcc-info-label ${infoBoxSizeClass}`}>Name</div>
+                            <div className={`fpcc-info-label ${infoBoxSizeClass}`}>{translation.nameLabel}</div>
                             <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{citizenName}</div>
                         </div>
                     )}
                     {parsedSpeed !== -1 && (
                         <div className={`fpcc-speed-width ${infoBoxSizeClass}`}>
-                            <div className={`fpcc-info-label ${infoBoxSizeClass}`}>Speed</div>
+                            <div className={`fpcc-info-label ${infoBoxSizeClass}`}>{translation.speedLabel}</div>
                             <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{formattedSpeed}</div>
                         </div>
                     )}
                     {vehicleType !== null && !onlyShowSpeed && (
                         <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
-                            <div className={`fpcc-info-label ${infoBoxSizeClass}`}>Vehicle Type</div>
+                            <div className={`fpcc-info-label ${infoBoxSizeClass}`}>{translation.vehicleTypeLabel}</div>
                             <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{vehicleType}</div>
                         </div>
                     )}
                     {citizenAction !== null && !onlyShowSpeed && (
                         <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
-                            <div className={`fpcc-info-label ${infoBoxSizeClass}`}>Action</div>
+                            <div className={`fpcc-info-label ${infoBoxSizeClass}`}>{translation.actionLabel}</div>
                             <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{citizenAction}</div>
                         </div>
                     )}
                     {parsedPassengers !== -1 && !onlyShowSpeed && (
                         <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
-                            <div className={`fpcc-info-label ${infoBoxSizeClass}`}>Passengers</div>
+                            <div className={`fpcc-info-label ${infoBoxSizeClass}`}>{translation.passengersLabel}</div>
                             <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{parsedPassengers}</div>
                         </div>
                 )}
