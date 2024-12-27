@@ -29,13 +29,21 @@ To exit follow mode press WASD, to exit first person mode, press ESC or ALT+F.
 
 Several loaded parameters can also be configured from the main game settings, taking effect at the start of each first person session, specifically:
 
+In General Tab:
+
 - FOV
 - Walking Speed
 - Running Speed
 - Cim Height
 - Transition Speed
-- Show Game UI
 - Free Camera Toggle Keyboard Shortcut
+
+In UI Tab:
+
+- Show Game UI
+- Show Info Box
+|-- Only Show Speed
+|-- Info Box Size
 
 # Localization
 
