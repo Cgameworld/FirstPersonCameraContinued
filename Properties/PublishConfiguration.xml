@@ -89,8 +89,8 @@ If you like this mod be sure to leave an upvote! Thanks
 * Added info box in follow mode, displaying current speed and other stats
 * Improved train model following
 * Updated default following positions for Bus, Tram, Train, Subway and Ship vehicle types 
-* Added "Random Transit" option
-* Updated Chinese (Traditional), French, German, Spanish and Polish translations (Thanks allegretic, elGendo87, karmel68, Edou24 for thier contributions)  
+* Added "Follow Random Transit" option
+* Updated Chinese (Traditional), French, German, Spanish and Polish translations (Thanks allegretic, elGendo87, karmel68, Edou24 for their contributions)  
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />

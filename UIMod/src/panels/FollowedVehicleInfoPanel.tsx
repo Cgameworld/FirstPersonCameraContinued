@@ -1,9 +1,8 @@
+import React, { useRef, useEffect, useState } from 'react';
 import { bindValue, useValue } from "cs2/api";
-import { useEffect } from "react";
 
 const UISettingsGroupOptions$ = bindValue<string>('fpc', 'UISettingsGroupOptions');
 const FollowedEntityInfo$ = bindValue<string>('fpc', 'FollowedEntityInfo');
-
 const ShowCrosshair$ = bindValue<boolean>('fpc', 'ShowCrosshair');
 
 interface TranslationProps {
@@ -19,16 +18,25 @@ interface FollowedVehicleInfoPanelProps {
 }
 
 const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ translation }) => {
+    const speedDivRef = useRef<HTMLDivElement>(null);
+    const [speedWidth, setSpeedWidth] = useState<number | undefined>(undefined);
 
     const uiSettingsGroupOptions = useValue(UISettingsGroupOptions$);
-
-    useEffect(() => {
-        console.log(uiSettingsGroupOptions);
-    }, [uiSettingsGroupOptions]);
-
     const followedEntityInfo = useValue(FollowedEntityInfo$);
-
     const showCrosshair = useValue(ShowCrosshair$);
+
+    // Get initial width on first render
+    useEffect(() => {
+        requestAnimationFrame(() => {
+            if (speedDivRef.current) {
+                const width = speedDivRef.current?.offsetWidth;
+                if (width) {
+                    setSpeedWidth(width / (window.innerWidth / 1920) + 40 + 5);
+                }
+            }
+
+        });
+    }, []);
 
     const showInfoPanel: boolean = JSON.parse(uiSettingsGroupOptions).ShowInfoBox;
     const onlyShowSpeed: boolean = JSON.parse(uiSettingsGroupOptions).OnlyShowSpeed;
@@ -42,11 +50,9 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
     const citizenAction: string = JSON.parse(followedEntityInfo).citizenAction;
 
     let formattedSpeed: string;
-
     if (parsedUnits == 1) {
         formattedSpeed = Math.round(parsedSpeed * 1.26) + " mph";
-    }
-    else {
+    } else {
         formattedSpeed = Math.round(parsedSpeed * 1.8) + " km/h";
     }
 
@@ -62,12 +68,12 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
     return (
         <div style={{
             position: 'absolute',
-            top: showCrosshair ? '60rem': '10rem',
+            top: showCrosshair ? '60rem' : '10rem',
             right: '10rem',
             display: 'flex',
         }}>
-        {/*85+60*/}
-        <div className="tool-options-panel_Se6">
+            {/*85+60*/}
+            <div className="tool-options-panel_Se6">
                 <div className="item_bZY">
                     {citizenName !== null && !onlyShowSpeed && (
                         <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
@@ -76,7 +82,11 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
                         </div>
                     )}
                     {parsedSpeed !== -1 && (
-                        <div className={`fpcc-speed-width ${infoBoxSizeClass}`}>
+                        <div
+                            ref={speedDivRef}
+                            className={`fpcc-info-group-speed-padding ${infoBoxSizeClass}`}
+                            style={{ width: speedWidth ? `${speedWidth}rem` : 'auto' }}
+                        >
                             <div className={`fpcc-info-label ${infoBoxSizeClass}`}>{translation.speedLabel}</div>
                             <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{formattedSpeed}</div>
                         </div>
@@ -98,7 +108,7 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
                             <div className={`fpcc-info-label ${infoBoxSizeClass}`}>{translation.passengersLabel}</div>
                             <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{parsedPassengers}</div>
                         </div>
-                )}
+                    )}
                 </div>
             </div>
         </div>

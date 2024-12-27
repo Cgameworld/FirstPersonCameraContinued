@@ -41,6 +41,23 @@
         padding-right: 30rem;
     }
 }
+
+.fpcc-info-group-speed-padding {
+    padding-left: 5rem;
+    padding-right: 5rem;
+
+    &.small {
+        padding-left: 0rem;
+        padding-right: 0rem;
+    }
+
+
+    &.large {
+        padding-left: 10rem;
+        padding-right: 10rem;
+    }
+}
+
 .fpcc-speed-width {
     width: 135rem;
 
@@ -52,3 +69,4 @@
         width: 145rem;
     }
 }
+
