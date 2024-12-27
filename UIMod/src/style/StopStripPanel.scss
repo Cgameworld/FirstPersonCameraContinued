@@ -5,6 +5,7 @@
     width: 100%;
     z-index: 100;
 }
+
 .fpcc-stopstrip-container {
     padding-top: 20rem;
     padding-bottom: 35rem;
@@ -56,6 +57,11 @@
     border-radius: 50%;
     margin-bottom: 8rem;
     box-sizing: content-box;
+    //transition: background-color 0.1s ease;
+
+    &.blink-red {
+        background-color: #ff0000;
+    }
 }
 
 .fpcc-stopstrip-station-name {

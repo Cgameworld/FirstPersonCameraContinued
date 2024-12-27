@@ -1,7 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import 'style/StopStripPanel.scss';
 
 const StopStripPanel: React.FC = () => {
+    const [currentStop, setCurrentStop] = useState(0);
+    const [isBlinking, setIsBlinking] = useState(false);
+
+    useEffect(() => {
+        const blinkInterval = setInterval(() => {
+            setIsBlinking(prev => !prev);
+        }, 1000);
+
+        return () => clearInterval(blinkInterval);
+    }, []);
+
     const stations = [
         { name: 'Cedar Park' },
         { name: 'Cedar Park' },
@@ -19,7 +30,10 @@ const StopStripPanel: React.FC = () => {
                 </div>
                 {stations.map((station, index) => (
                     <div key={index} className="fpcc-stopstrip-station">
-                        <div className="fpcc-stopstrip-station-dot"></div>
+                        <div
+                            className={`fpcc-stopstrip-station-dot ${index === currentStop && isBlinking ? 'blink-red' : ''
+                                }`}
+                        />
                         <div className="fpcc-stopstrip-station-name">{station.name}</div>
                     </div>
                 ))}
