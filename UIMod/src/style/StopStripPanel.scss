@@ -7,9 +7,10 @@
 }
 
 .fpcc-stopstrip-container {
-    padding-top: 20rem;
+    padding-top: 30rem;
     padding-bottom: 35rem;
-    background-color: var(--panelColorNormal);
+    //background-color: var(--panelColorNormal);
+    background-color: var(--panelColorDark);
     backdrop-filter: var(--panelBlur);
     display: flex;
     justify-content: center;
@@ -69,4 +70,6 @@
     font-size: 24rem;
     font-weight: bold;
     white-space: nowrap;
+    color: var(--textColorDim);
+    text-shadow: 0px 0px 35rem rgba(0, 0, 0, 0.85);
 }

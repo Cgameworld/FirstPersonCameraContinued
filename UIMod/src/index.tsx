@@ -113,25 +113,6 @@ const register: ModRegistrar = (moduleRegistry) => {
             }
         }, [showButtonDropdown]);
 
-
-        useEffect(() => {
-            if (isEntered) {
-                const injectionPoint = document.body;
-                const newDiv = document.createElement('div');
-                newDiv.className = 'firstpersoncameracontinued_entityinfo';
-                injectionPoint.insertBefore(newDiv, injectionPoint.firstChild);
-
-                ReactDOM.render(<FollowedVehicleInfoPanel translation={uiTextFollowedVehiclePanel} />, newDiv);
-
-                return () => {
-                    ReactDOM.unmountComponentAtNode(newDiv);
-                    if (newDiv.parentNode) {
-                        newDiv.parentNode.removeChild(newDiv);
-                    }
-                };
-            }
-        }, [isEntered]);
-
         useEffect(() => {
             if (isEntered) {
                 const injectionPoint = document.body;
@@ -150,6 +131,23 @@ const register: ModRegistrar = (moduleRegistry) => {
             }
         }, [isEntered]);
 
+        useEffect(() => {
+            if (isEntered) {
+                const injectionPoint = document.body;
+                const newDiv = document.createElement('div');
+                newDiv.className = 'firstpersoncameracontinued_entityinfo';
+                injectionPoint.insertBefore(newDiv, injectionPoint.firstChild);
+
+                ReactDOM.render(<FollowedVehicleInfoPanel translation={uiTextFollowedVehiclePanel} />, newDiv);
+
+                return () => {
+                    ReactDOM.unmountComponentAtNode(newDiv);
+                    if (newDiv.parentNode) {
+                        newDiv.parentNode.removeChild(newDiv);
+                    }
+                };
+            }
+        }, [isEntered]);
 
         useEffect(() => {
             if (showCrosshair) {
