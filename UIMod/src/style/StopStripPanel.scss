@@ -9,7 +9,6 @@
 .fpcc-stopstrip-container {
     padding-top: 30rem;
     padding-bottom: 35rem;
-    //background-color: var(--panelColorNormal);
     background-color: var(--panelColorDark);
     backdrop-filter: var(--panelBlur);
     display: flex;
@@ -32,8 +31,8 @@
     width: 100%;
     left: 0px;
     top: 9rem;
-    padding-left: 50rem;
-    padding-right: 50rem;
+    padding-left: 25rem;
+    padding-right: 25rem;
     z-index: 1;
 }
 
@@ -48,6 +47,7 @@
     flex-direction: column;
     align-items: center;
     z-index: 2;
+    width: 50rem;
 }
 
 .fpcc-stopstrip-station-dot {
@@ -58,7 +58,7 @@
     border-radius: 50%;
     margin-bottom: 8rem;
     box-sizing: content-box;
-    //transition: background-color 0.1s ease;
+    will-change: background-color;
 
     &.blink-red {
         background-color: #ff0000;
@@ -70,6 +70,5 @@
     font-size: 24rem;
     font-weight: bold;
     white-space: nowrap;
-    color: var(--textColorDim);
     text-shadow: 0px 0px 35rem rgba(0, 0, 0, 0.85);
 }
