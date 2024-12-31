@@ -10,11 +10,16 @@ namespace FirstPersonCameraContinued.Patches
     {
         static void Postfix( AudioManager __instance, Colossal.Serialization.Entities.Purpose purpose, GameMode mode )
         {
-            if ( !mode.IsGame( ) || mode.IsEditor( ) )
-                return;
 
-            __instance.World.GetOrCreateSystemManaged<FirstPersonCameraSystem>( );
-            __instance.World.GetOrCreateSystemManaged<FirstPersonCameraUISystem>();
+            if (mode.IsGameOrEditor())
+            {
+                __instance.World.GetOrCreateSystemManaged<FirstPersonCameraSystem>();
+                __instance.World.GetOrCreateSystemManaged<FirstPersonCameraUISystem>();
+            }
+
+
+
+
         }
     }
 }
