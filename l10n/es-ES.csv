@@ -6,7 +6,7 @@
 "FirstPersonCameraContinued.EnterFreeCamera","Ingresar en Cámara Libre"
 "FirstPersonCameraContinued.FollowRandomCim","Seguir Cim Aleatorio"
 "FirstPersonCameraContinued.FollowRandomVehicle","Seguir Vehículo Aleatorio"
-"FirstPersonCameraContinued.FollowRandomTransit","Seguir vehículo aleatorio"
+"FirstPersonCameraContinued.FollowRandomTransit","Seguir Transporte Aleatorio"
 "FirstPersonCameraContinued.TooltipFollowCamera","Seguir al elemento seleccionado en modo de cámara en primera persona."
 "FirstPersonCameraContinued.NameLabel","Nombre"
 "FirstPersonCameraContinued.SpeedLabel","Velocidad"
