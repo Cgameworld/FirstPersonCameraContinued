@@ -283,17 +283,30 @@ namespace FirstPersonCameraContinued.Transforms
                 return true;
             }
 
-            if (_entityManager.HasComponent<Game.Vehicles.CargoTransport>(entity))
-            {
-                vehicleType = VehicleType.CargoTransport;
-                translatedVehicleType = GetVehicleLocalizedString("CARGO_TRANSPORT_VEHICLE_TITLE");
-                return true;
-            }
-
             if (_entityManager.HasComponent<Game.Vehicles.Taxi>(entity))
             {
                 vehicleType = VehicleType.Taxi;
                 translatedVehicleType = GetVehicleLocalizedString("PRIVATE_VEHICLE_TITLE[Taxi]");
+                return true;
+            }
+
+            if (_entityManager.HasComponent<Game.Vehicles.TrainCurrentLane>(entity))
+            {
+                if (_entityManager.TryGetComponent<Game.Vehicles.Controller>(entity, out var controllerComponent))
+                {
+                    if (_entityManager.HasComponent<Game.Vehicles.CargoTransport>(controllerComponent.m_Controller))
+                    {
+                        vehicleType = VehicleType.CargoTrain;
+                        translatedVehicleType = GetVehicleLocalizedString("CARGO_TRANSPORT_VEHICLE_TITLE");
+                        return true;
+                    }
+                }
+            }
+
+            if (_entityManager.HasComponent<Game.Vehicles.CargoTransport>(entity))
+            {
+                vehicleType = VehicleType.CargoTransport;
+                translatedVehicleType = GetVehicleLocalizedString("CARGO_TRANSPORT_VEHICLE_TITLE");
                 return true;
             }
 

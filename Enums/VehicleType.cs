@@ -28,6 +28,8 @@ namespace FirstPersonCameraContinued.Enums
         Ship = 1L << 18,
         Aircraft = 1L << 19,
 
+        CargoTrain = 1L << 20,
+
         Cars = PersonalCar | PoliceCar | Hearse | Taxi,
         Vans = PostVan | PoliceVan | Ambulance | MaintenanceVehicle,
         Trucks = GarbageTruck | FireEngine | DeliveryTruck | CargoTransport,

@@ -122,7 +122,7 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
                 y = 1.8f;
                 z = 5.7f;
             }
-            else if (model.ScopeVehicle == VehicleType.Train || model.ScopeVehicle == VehicleType.Subway)
+            else if (model.ScopeVehicle == VehicleType.Train || model.ScopeVehicle == VehicleType.CargoTrain ||  model.ScopeVehicle == VehicleType.Subway)
             {
                 y = 2f;
                 z = 10f;
