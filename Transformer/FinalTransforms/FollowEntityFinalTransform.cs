@@ -43,15 +43,17 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
             var forward = math.mul(rotation, new float3(0, 0, 1)); // Equivalent to Vector3.forward
             var pivot = new float3(0f, (bounds.y.max - bounds.y.min) / 2f + offset.y, 0f);
 
+            var userHeightOffset = model.HeightOffset;
+
             pivot += forward * ((bounds.max.z - bounds.min.z) * offset.z + model.PositionFollowOffset.y);
 
             if (isTrain || model.ScopeVehicle == VehicleType.Bus || model.ScopeVehicle == VehicleType.Ship)
             {
-                model.Position = pos + new float3(0f, offset.y, 0f) + (forward * (offset.z + model.PositionFollowOffset.y));
+                model.Position = pos + new float3(0f, offset.y + userHeightOffset, 0f) + (forward * (offset.z + model.PositionFollowOffset.y));
             }
             else
             {
-                model.Position = pos + pivot;
+                model.Position = pos + new float3(0f, userHeightOffset, 0f) + pivot;
             }
 
             model.Rotation = math.mul(rotation, model.Rotation);

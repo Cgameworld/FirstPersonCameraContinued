@@ -113,7 +113,14 @@ namespace FirstPersonCameraContinued
             action.AddBinding("<Keyboard>/r");
             action.performed += ctx =>
             {
-                _model.HeightOffset += 1.0f;
+                if (_model.Mode == CameraMode.Follow)
+                {
+                    _model.HeightOffset += 0.25f;
+                }
+                else
+                {
+                    _model.HeightOffset += 1.0f;
+                }
             };
             action.Disable();
 
@@ -127,7 +134,14 @@ namespace FirstPersonCameraContinued
             {
                 if (!Keyboard.current.altKey.isPressed)
                 {
-                    _model.HeightOffset -= 1.0f;
+                    if (_model.Mode == CameraMode.Follow)
+                    {
+                        _model.HeightOffset -= 0.25f;
+                    }
+                    else
+                    {
+                        _model.HeightOffset -= 1.0f;
+                    }
                 }
             };
             action.Disable();

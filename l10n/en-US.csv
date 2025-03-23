@@ -33,7 +33,7 @@
 "Options.WARNING:ResetModSettings","Are you sure you want to reset all mod settings?"
 "Options.OPTION:ModVersion","Mod Version"
 "Options.OPTION_DESCRIPTION:ModVersion","Installed version of mod"
-"Options.OPTION:MultilineText","Keyboard Shortcuts in First Person Mode:\nWASD - move around\nSHIFT - walk faster\nR/F -increase/decrease the camera height\nUP/DOWN ARROW - shift camera forwards/backwards in follow mode"
+"Options.OPTION:MultilineText","Keyboard Shortcuts in First Person Mode:\nWASD - move around\nSHIFT - walk faster\nR/F - increase/decrease the camera height\nUP/DOWN ARROW - shift camera forwards/backwards in follow mode"
 "Options.OPTION:FreeModeKeybind","Enter Free Mode"
 "Options.BINDING:EnterFreeModeBinding","Enter Free Mode"
 "Options.OPTION_DESCRIPTION:FreeModeKeybind","Keyboard Shortcut to enter free camera first person mode"
