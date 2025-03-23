@@ -21,7 +21,7 @@ To move around use WASD, use SHIFT to walk faster and R/F keys to increase/decre
 
 To enter follow mode, right click on an object in free camera first person mode or click on the video camera button in the info panel for the object. Alternatively, choose the "Follow Random Cim" or "Follow Random Vehicle" options in the dropdown that appears after clicking the main mod button to find a random cim/vehicle in your city to follow.
 
-To shift the camera forwards or backwards in follow mode press the UP ARROW and DOWN ARROW keys
+To shift the camera forwards or backwards in follow mode press the UP ARROW and DOWN ARROW keys, to change the height use the R/F keys.
 
 To exit follow mode press WASD, to exit first person mode, press ESC or ALT+F.
 
@@ -42,8 +42,8 @@ In UI Tab:
 
 - Show Game UI
 - Show Info Box
-|-- Only Show Speed
-|-- Info Box Size
+-- Only Show Speed
+-- Info Box Size
 
 # Localization
 
@@ -94,6 +94,7 @@ If you like this mod be sure to leave an upvote! Thanks
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
 # v1.4.2
+* Added support for height adjustment in follow mode with r/f keys
 * Fixed bug where cargo trains in follow mode attached to the bottom of vehicle
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
