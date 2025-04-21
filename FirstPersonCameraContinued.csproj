@@ -119,6 +119,15 @@
 		<Reference Include="UnityEngine.IMGUIModule">
 			<Private>false</Private>
 		</Reference>
+		<Reference Include="UnityEngine.UI">
+      <Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.UIElementsModule">
+      <Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.UIModule">
+      <Private>false</Private>
+		</Reference>
 	</ItemGroup>
 
 	<ItemGroup>

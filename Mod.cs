@@ -10,6 +10,7 @@ using Game.Input;
 using FirstPersonCameraContinued.Systems;
 using Game.Rendering;
 using Unity.Entities;
+using RoadCustomizerDraftUI;
 
 namespace FirstPersonCameraContinued
 {
@@ -38,6 +39,7 @@ namespace FirstPersonCameraContinued
             AssetDatabase.global.LoadSettings(nameof(FirstPersonCameraContinued), FirstPersonModSettings, new Setting(this));
 
             updateSystem.UpdateBefore<FirstPersonCameraActivatedUISystem>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAt<FirstPersonCameraPIPSystem>(SystemUpdatePhase.PostSimulation);
         }
 
         public void OnDispose()
