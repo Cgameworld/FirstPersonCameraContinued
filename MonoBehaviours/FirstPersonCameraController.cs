@@ -44,6 +44,11 @@ namespace FirstPersonCameraContinued.MonoBehaviours
             return _model.FollowEntity;
         }
 
+        public quaternion GetViewRotation()
+        {
+            return _model.Rotation;
+        }
+
         private FirstPersonCameraSystem _firstPersonCameraSystem;
         private FirstPersonCameraActivatedUISystem _firstPersonCameraActivatedUISystem;
         private TerrainSystem terrainSystem;

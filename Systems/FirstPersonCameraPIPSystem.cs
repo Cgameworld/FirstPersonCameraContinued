@@ -13,12 +13,13 @@ using Game.Tools;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Jobs;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Color = UnityEngine.Color;
 
-namespace RoadCustomizerDraftUI
+namespace FirstPersonCameraContinued
 {
     public partial class FirstPersonCameraPIPSystem : GameSystemBase
     {
@@ -49,7 +50,6 @@ namespace RoadCustomizerDraftUI
             base.OnCreate();
             // Example on how to get a existing ECS System from the ECS World
             // this.simulation = World.GetExistingSystemManaged<SimulationSystem>();
-            CreateKeyBinding();
         }
 
         protected override void OnUpdate()
@@ -57,19 +57,32 @@ namespace RoadCustomizerDraftUI
             if (m_PipCameraObject != null)
             {
                 var positon = CameraController.transform.position;
-                SetPiPPosition(positon.x, positon.y + 25f, positon.z, 50f, 0f, 0f);
+                var rotation = CameraController.GetViewRotation();
+                SetPiPPosition(positon.x, positon.y + 25f, positon.z, rotation);
             }
         }
 
-        private void CreateKeyBinding()
+
+        public void CreatePiPWindow()
         {
-            var inputAction = new InputAction("MyModHotkeyPress");
-            inputAction.AddBinding("<Keyboard>/j");
-            inputAction.performed += OnHotkeyPress;
-            inputAction.Enable();
+            DestroyPiPWindow();
+
+            InitializePiP();
+
+            var cameraControllerObj = GameObject.Find(nameof(FirstPersonCameraController));
+            if (cameraControllerObj != null)
+            {
+                CameraController = cameraControllerObj.GetComponent<FirstPersonCameraController>();
+            }
+
+
+            //Mod.log.Info("CameraControllertransfrom: " + positon);
+            //SetPiPPosition(positon.x, positon.y+10f,positon.z,0f,0f,0f);
+            //SetPiPPosition(-701f, 600f, -1477f, 0f, 0f, 0f);
+
         }
 
-        private void OnHotkeyPress(InputAction.CallbackContext obj)
+        public void DestroyPiPWindow()
         {
             if (m_RenderTexture != null)
             {
@@ -82,21 +95,8 @@ namespace RoadCustomizerDraftUI
 
             if (m_PipUIContainer != null)
                 UnityEngine.Object.Destroy(m_PipUIContainer);
-
-            InitializePiP();
-
-            var cameraControllerObj = GameObject.Find(nameof(FirstPersonCameraController));
-            if (cameraControllerObj != null)
-            {
-                CameraController = cameraControllerObj.GetComponent<FirstPersonCameraController>();
-            }
-
-            
-            //Mod.log.Info("CameraControllertransfrom: " + positon);
-            //SetPiPPosition(positon.x, positon.y+10f,positon.z,0f,0f,0f);
-            //SetPiPPosition(-701f, 600f, -1477f, 0f, 0f, 0f);
-
         }
+
         private void InitializePiP()
         {
             // Create the camera for PiP
@@ -195,10 +195,9 @@ namespace RoadCustomizerDraftUI
         }
 
         // Command to set PiP camera position
-        public void SetPiPPosition(float x, float y, float z, float rotX, float rotY, float rotZ)
+        public void SetPiPPosition(float x, float y, float z, quaternion rotation)
         {
-            Vector3 position = new Vector3(x, y, z);
-            Quaternion rotation = Quaternion.Euler(rotX, rotY, rotZ);
+            Vector3 position = new Vector3(x, y, z);      
             UpdateCameraPosition(position, rotation);
         }
 

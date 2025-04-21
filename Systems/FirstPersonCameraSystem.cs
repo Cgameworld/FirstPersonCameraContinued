@@ -42,6 +42,7 @@ namespace FirstPersonCameraContinued.Systems
         private RenderingSystem _renderingSystem;
         private ToolRaycastSystem _toolRaycastSystem;
         private ToolSystem _toolSystem;
+        private FirstPersonCameraPIPSystem _firstPersonCameraPIPSystem;
 
         protected override void OnCreate( )
         {
@@ -56,6 +57,8 @@ namespace FirstPersonCameraContinued.Systems
 
             _firstPersonCameraActivatedUISystem = World.GetExistingSystemManaged<FirstPersonCameraActivatedUISystem>();
             _firstPersonCameraActivatedUISystem.SetUISettingsGroupOptions();
+
+            _firstPersonCameraPIPSystem = World.GetExistingSystemManaged<FirstPersonCameraPIPSystem>();
 
             UnityEngine.Debug.Log( "FirstPersonCamera loaded!" );
 
@@ -113,11 +116,13 @@ namespace FirstPersonCameraContinued.Systems
                     _toolRaycastSystem.raycastFlags |= RaycastFlags.FreeCameraDisable;
                     _toolSystem.activeTool = World.GetExistingSystemManaged<DefaultToolSystem>();
                     m_UIView.ExecuteScript("document.querySelector('.app-container_Y5l').style.visibility = 'hidden';");
+                    _firstPersonCameraPIPSystem.CreatePiPWindow();
                 }
                 else
                 {
                     _toolRaycastSystem.raycastFlags &= ~RaycastFlags.FreeCameraDisable;
                     m_UIView.ExecuteScript("document.querySelector('.app-container_Y5l').style.visibility = 'visible';");
+                    _firstPersonCameraPIPSystem.DestroyPiPWindow();
                 }
             }
             else
