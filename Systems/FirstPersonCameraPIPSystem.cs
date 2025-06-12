@@ -35,9 +35,12 @@ namespace FirstPersonCameraContinued
         // Configuration
         private Vector3 m_SecondaryViewPosition = new Vector3(0, 100, 0); // Default position
         private Quaternion m_SecondaryViewRotation = Quaternion.Euler(45, 0, 0); // Default rotation looking down
-        private float m_PipSize = 0.4f; // 20% of screen size
+
 
         private Camera m_MainCamera;
+
+        public float m_PipSize = 0.4f;
+        public float adjustableCameraOffset = 10f;
 
         private FirstPersonCameraController CameraController
         {
@@ -58,7 +61,7 @@ namespace FirstPersonCameraContinued
             {
                 var positon = CameraController.transform.position;
                 var rotation = CameraController.GetViewRotation();
-                SetPiPPosition(positon.x, positon.y + 25f, positon.z, rotation);
+                SetPiPPosition(positon.x, positon.y, positon.z, rotation);
             }
         }
 
@@ -80,6 +83,11 @@ namespace FirstPersonCameraContinued
             //SetPiPPosition(positon.x, positon.y+10f,positon.z,0f,0f,0f);
             //SetPiPPosition(-701f, 600f, -1477f, 0f, 0f, 0f);
 
+        }
+
+        public bool IsPiPWindow()
+        {
+            return m_PipCameraObject != null;
         }
 
         public void DestroyPiPWindow()
@@ -197,7 +205,11 @@ namespace FirstPersonCameraContinued
         // Command to set PiP camera position
         public void SetPiPPosition(float x, float y, float z, quaternion rotation)
         {
-            Vector3 position = new Vector3(x, y, z);      
+            //rotation = math.mul(rotation, quaternion.RotateY(math.PI));
+            rotation = math.mul(rotation, quaternion.RotateX(math.PI / 8));
+            var forward = math.mul(rotation, new float3(0, 0, 1));
+            float3 position = new float3(x, y + adjustableCameraOffset, z) + (forward * -( adjustableCameraOffset + 35f));
+            
             UpdateCameraPosition(position, rotation);
         }
 

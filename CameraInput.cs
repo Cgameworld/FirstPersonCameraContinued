@@ -201,6 +201,24 @@ namespace FirstPersonCameraContinued
             // We only want these actions to occur whilst the controller is active
             TemporaryActions.Add(action);
 
+            action = new InputAction("FPSController_ScrollWheel", binding: "<Mouse>/scroll/y");
+            action.performed += ctx =>
+            {
+                float scrollValue = ctx.ReadValue<float>() * 0.02f;
+
+                var _pipSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraPIPSystem>();
+
+                if (_pipSystem.IsPiPWindow())
+                {
+                    float targetOffset = _pipSystem.adjustableCameraOffset + scrollValue;
+                    _pipSystem.adjustableCameraOffset = targetOffset;
+                }
+            };
+            action.Disable();
+
+            // We only want these actions to occur whilst the controller is active
+            TemporaryActions.Add(action);
+
             action = new InputAction("FPSController_MousePosition", binding: "<Mouse>/delta");
             action.performed += ctx => _model.Look = ctx.ReadValue<Vector2>();
             action.canceled += ctx => _model.Look = float2.zero;
