@@ -167,53 +167,56 @@ const register: ModRegistrar = (moduleRegistry) => {
     const middleSections$ = selectedInfo.middleSections$;
     const titleSection$ = selectedInfo.titleSection$;
 
-    //listen and inject the item into the DOM manually, can't figure out how to put the button in the same row in the official UI system
+    //inject the item into the DOM manually, can't figure out how to put the button in the same row in the official UI system
     const observeAndAppend = (): void => {
-        const targetNode: HTMLElement | null = document.querySelector('.info-layout_BVk');
-        const config: MutationObserverInit = { childList: true, subtree: true };
-        const callback = (mutationsList: MutationRecord[], observer: MutationObserver): void => {
-            for (let mutation of mutationsList) {
-                if (mutation.type === 'childList') {
-                    let element: HTMLElement | null = document.querySelector('.actions-section_X1x');
-                    if (element && !middleSections$.value.some(x =>
-                        x?.__Type === "Game.UI.InGame.LevelSection" as any ||
-                        x?.__Type === "Game.UI.InGame.RoadSection" as any ||
-                        x?.__Type === "Game.UI.InGame.ResidentsSection" as any ||
-                        x?.__Type === "Game.UI.InGame.UpkeepSection" as any
-                    ) &&
-                        !JSON.stringify(titleSection$.value?.name).includes("Decal")
-                    ) {
-                        //console.log('Element .actions-section_X1x found:', element);
-                        let existingDiv: HTMLDivElement | null = element.querySelector('div.fpc-injected-div');
-                        if (!existingDiv) {
-                            let div: HTMLDivElement = document.createElement('div');
-                            div.className = 'fpc-injected-div';
-                            ReactDOM.render(FPVInfoWindowButton(), div);
+        // Clear any existing interval
+        if ((window as any).fpcObserverInterval) {
+            clearInterval((window as any).fpcObserverInterval);
+        }
 
-                            // Insert after the first button in the .actions-section_X1x element
-                            let firstButton: HTMLButtonElement | null = element.querySelector('button');
-                            if (firstButton && firstButton.nextSibling) {
-                                element.insertBefore(div, firstButton.nextSibling);
-                            } else {
-                                element.appendChild(div);
-                            }
+        //uses polling instead of MutationObserver
+        const checkAndInject = () => {
+            const element: HTMLElement | null = document.querySelector('.actions-section_X1x');
 
-                            console.log('New div appended:', div);
-                            observer.disconnect();
-                            //console.log('Observer disconnected');
-                            break;
-                        }
-                    }
+            if (!element) return;
+            const shouldInject = !middleSections$.value.some(x =>
+                x?.__Type === "Game.UI.InGame.LevelSection" as any ||
+                x?.__Type === "Game.UI.InGame.RoadSection" as any ||
+                x?.__Type === "Game.UI.InGame.ResidentsSection" as any ||
+                x?.__Type === "Game.UI.InGame.UpkeepSection" as any
+            ) && !JSON.stringify(titleSection$.value?.name).includes("Decal");
+
+            if (shouldInject) {
+                let existingDiv: HTMLDivElement | null = element.querySelector('div.fpc-injected-div');
+                if (!existingDiv) {
+                    let div: HTMLDivElement = document.createElement('div');
+                    div.className = 'fpc-injected-div';
+                    ReactDOM.render(FPVInfoWindowButton(), div);
+
+                    element.appendChild(div);
+
+                    console.log('New div appended:', div);
+                    // Clear interval after successful injection
+                    clearInterval((window as any).fpcObserverInterval);
+                    delete (window as any).fpcObserverInterval;
                 }
             }
         };
 
-        let observer: MutationObserver = new MutationObserver(callback);
+        // Check immediately
+        checkAndInject();
 
-        if (targetNode) {
-            observer.observe(targetNode, config);
-        }
-    }
+        // Set up polling as backup
+        (window as any).fpcObserverInterval = setInterval(checkAndInject, 100);
+
+        // Clear after reasonable timeout
+        setTimeout(() => {
+            if ((window as any).fpcObserverInterval) {
+                clearInterval((window as any).fpcObserverInterval);
+                delete (window as any).fpcObserverInterval;
+            }
+        }, 5000);
+    };
 
     const FPVInfoWindowButton = () => {
         return (
