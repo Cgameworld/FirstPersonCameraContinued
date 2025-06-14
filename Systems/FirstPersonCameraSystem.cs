@@ -116,7 +116,7 @@ namespace FirstPersonCameraContinued.Systems
                     _toolRaycastSystem.raycastFlags |= RaycastFlags.FreeCameraDisable;
                     _toolSystem.activeTool = World.GetExistingSystemManaged<DefaultToolSystem>();
                     m_UIView.ExecuteScript("document.querySelector('.app-container_Y5l').style.visibility = 'hidden';");
-                    _firstPersonCameraPIPSystem.CreatePiPWindow();
+                    //_firstPersonCameraPIPSystem.CreatePiPWindow();
                 }
                 else
                 {

@@ -201,6 +201,21 @@ namespace FirstPersonCameraContinued
             // We only want these actions to occur whilst the controller is active
             TemporaryActions.Add(action);
 
+
+            // Create the input action (show pip window)
+            action = new InputAction("FPSController_HeightDown");
+            action.AddBinding("<Keyboard>/p");
+            action.performed += ctx =>
+            {
+                World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraPIPSystem>().CreatePiPWindow();
+            };
+            action.Disable();
+
+            // We only want these actions to occur whilst the controller is active
+            TemporaryActions.Add(action);
+
+
+            //zoom in out pip window
             action = new InputAction("FPSController_ScrollWheel", binding: "<Mouse>/scroll/y");
             action.performed += ctx =>
             {
@@ -376,16 +391,18 @@ namespace FirstPersonCameraContinued
 
             EntryInfo entryInfo = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraSystem>().EntryInfo;
 
+            GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastPIPWindow", out string pipWindowText);
+
             if (entryInfo.RandomFollow)
             {
                 if (entryInfo.RandomMode == RandomMode.Cim)
                 {
                     GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextRandomModeCimEnter", out string randomModeText);
-                    toastComponent.Initialize(entryText + "\n" + randomModeText);
+                    toastComponent.Initialize(entryText + "\n" + randomModeText + "\n" + pipWindowText);
                 }
                 else {
                     GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextRandomModeVehicleEnter", out string randomModeText);
-                    toastComponent.Initialize(entryText + "\n" + randomModeText);
+                    toastComponent.Initialize(entryText + "\n" + randomModeText + "\n" + pipWindowText);
                 }
 
             }

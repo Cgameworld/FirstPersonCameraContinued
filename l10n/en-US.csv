@@ -2,6 +2,7 @@
 "FirstPersonCameraContinued.ToastTextEnter","Press ESC key to exit"
 "FirstPersonCameraContinued.ToastTextRandomModeCimEnter","Press ENTER to follow another random cim"
 "FirstPersonCameraContinued.ToastTextRandomModeVehicleEnter","Press ENTER to follow another random vehicle"
+"FirstPersonCameraContinued.ToastPIPWindow","Press P to open picture in picture window"
 "FirstPersonCameraContinued.TooltipMainCameraIcon","Click to select a first person mode"
 "FirstPersonCameraContinued.EnterFreeCamera","Enter Free Camera"
 "FirstPersonCameraContinued.FollowRandomCim","Follow Random Cim"
