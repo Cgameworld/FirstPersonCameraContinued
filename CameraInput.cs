@@ -207,7 +207,16 @@ namespace FirstPersonCameraContinued
             action.AddBinding("<Keyboard>/p");
             action.performed += ctx =>
             {
-                World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraPIPSystem>().CreatePiPWindow();
+                var _pipSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraPIPSystem>();
+
+                if (_pipSystem.IsPiPWindow())
+                {
+                    _pipSystem.DestroyPiPWindow();
+                }
+                else
+                {
+                    _pipSystem.CreatePiPWindow();
+                }              
             };
             action.Disable();
 
@@ -408,7 +417,7 @@ namespace FirstPersonCameraContinued
             }
             else
             {
-                toastComponent.Initialize(entryText);
+                toastComponent.Initialize(entryText + "\n" + pipWindowText);
             }
 
             yield break;
