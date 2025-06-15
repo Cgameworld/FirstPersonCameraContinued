@@ -44,10 +44,19 @@ namespace FirstPersonCameraContinued
 
         public float aspectRatio = 1.2f;
 
+        public PiPCorner m_PipCorner = PiPCorner.BottomRight;
         private FirstPersonCameraController CameraController
         {
             get;
             set;
+        }
+
+        public enum PiPCorner
+        {
+            BottomLeft,
+            BottomRight,
+            TopLeft,
+            TopRight
         }
 
         protected override void OnCreate()
@@ -66,6 +75,7 @@ namespace FirstPersonCameraContinued
                 SetPiPPosition(positon.x, positon.y, positon.z, rotation);
             }
         }
+
 
 
         public void CreatePiPWindow()
@@ -175,12 +185,48 @@ namespace FirstPersonCameraContinued
             m_PipDisplay = imageObject.AddComponent<RawImage>();
             m_PipDisplay.texture = m_RenderTexture;
 
-            // Position in bottom-left corner
+
             RectTransform rectTransform = imageObject.GetComponent<RectTransform>();
-            rectTransform.anchorMin = new Vector2(0, 0);
-            rectTransform.anchorMax = new Vector2(0, 0);
-            rectTransform.pivot = new Vector2(0, 0);
-            rectTransform.anchoredPosition = new Vector2(20, 20); // 20px padding from corner
+
+            Vector2 anchorMin, anchorMax, pivot, anchoredPosition;
+
+            switch (m_PipCorner)
+            {
+                case PiPCorner.BottomLeft:
+                    anchorMin = anchorMax = new Vector2(0, 0);
+                    pivot = new Vector2(0, 0);
+                    anchoredPosition = new Vector2(20, 20);
+                    break;
+
+                case PiPCorner.BottomRight:
+                    anchorMin = anchorMax = new Vector2(1, 0);
+                    pivot = new Vector2(1, 0);
+                    anchoredPosition = new Vector2(-20, 20);
+                    break;
+
+                case PiPCorner.TopLeft:
+                    anchorMin = anchorMax = new Vector2(0, 1);
+                    pivot = new Vector2(0, 1);
+                    anchoredPosition = new Vector2(20, -20);
+                    break;
+
+                case PiPCorner.TopRight:
+                    anchorMin = anchorMax = new Vector2(1, 1);
+                    pivot = new Vector2(1, 1);
+                    anchoredPosition = new Vector2(-20, -20);
+                    break;
+
+                default:
+                    anchorMin = anchorMax = new Vector2(0, 0);
+                    pivot = new Vector2(0, 0);
+                    anchoredPosition = new Vector2(20, 20);
+                    break;
+            }
+
+            rectTransform.anchorMin = anchorMin;
+            rectTransform.anchorMax = anchorMax;
+            rectTransform.pivot = pivot;
+            rectTransform.anchoredPosition = anchoredPosition;
 
             // Set size
 
