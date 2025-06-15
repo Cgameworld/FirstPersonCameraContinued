@@ -36,7 +36,6 @@ namespace FirstPersonCameraContinued
         private Vector3 m_SecondaryViewPosition = new Vector3(0, 100, 0); // Default position
         private Quaternion m_SecondaryViewRotation = Quaternion.Euler(45, 0, 0); // Default rotation looking down
 
-
         private Camera m_MainCamera;
 
         public float m_PipSize = 0.4f;
@@ -199,6 +198,25 @@ namespace FirstPersonCameraContinued
                 // Store the updated position and rotation
                 m_SecondaryViewPosition = position;
                 m_SecondaryViewRotation = rotation;
+            }
+        }
+
+        public void UpdatePiPSize(float size)
+        {
+            if (m_RenderTexture != null && m_PipDisplay != null)
+            {
+                // Update render texture size
+                int width = (int)(Screen.width * size);
+                int height = (int)(Screen.height * size);
+
+                m_RenderTexture.Release();
+                m_RenderTexture.width = width;
+                m_RenderTexture.height = height;
+                m_RenderTexture.Create();
+
+                // Update UI size
+                RectTransform rectTransform = m_PipDisplay.GetComponent<RectTransform>();
+                rectTransform.sizeDelta = new Vector2(width, height);
             }
         }
 

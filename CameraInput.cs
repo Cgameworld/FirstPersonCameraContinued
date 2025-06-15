@@ -228,15 +228,27 @@ namespace FirstPersonCameraContinued
             action = new InputAction("FPSController_ScrollWheel", binding: "<Mouse>/scroll/y");
             action.performed += ctx =>
             {
-                float scrollValue = ctx.ReadValue<float>() * 0.02f;
+
 
                 var _pipSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraPIPSystem>();
 
                 if (_pipSystem.IsPiPWindow())
                 {
-                    float targetOffset = _pipSystem.adjustableCameraOffset + scrollValue;
-                    _pipSystem.adjustableCameraOffset = targetOffset;
-                }
+                    if (!Keyboard.current.ctrlKey.isPressed)
+                    {
+                        float scrollValue = ctx.ReadValue<float>() * 0.02f;
+                        float targetOffset = _pipSystem.adjustableCameraOffset + scrollValue;
+                        _pipSystem.adjustableCameraOffset = targetOffset;
+                    }
+                    else
+                    {
+                        float scrollValue = ctx.ReadValue<float>() * 0.02f;
+                        float newSize = _pipSystem.m_PipSize + scrollValue * 0.01f;
+                        Mod.log.Info("newSize: " + newSize);
+                        _pipSystem.UpdatePiPSize(newSize);
+                        _pipSystem.m_PipSize = newSize;
+                    }
+            }
             };
             action.Disable();
 
