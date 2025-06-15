@@ -133,6 +133,10 @@ namespace FirstPersonCameraContinued
             // Configure the secondary camera
             CopyCameraSettings(m_MainCamera, m_SecondaryCamera);
 
+            if (Mod.FirstPersonModSettings != null)
+            {
+                aspectRatio = Mod.FirstPersonModSettings.PIPAspectRatio;
+            }
 
             int size = (int)(Screen.height * m_PipSize);
             int width = (int)(size * aspectRatio);
@@ -190,6 +194,11 @@ namespace FirstPersonCameraContinued
 
             Vector2 anchorMin, anchorMax, pivot, anchoredPosition;
 
+            if (Mod.FirstPersonModSettings != null)
+            {
+                m_PipCorner = m_PipCorner = Mod.FirstPersonModSettings.PIPSnapToCorner;
+            }
+            
             switch (m_PipCorner)
             {
                 case PiPCorner.BottomLeft:

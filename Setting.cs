@@ -22,6 +22,7 @@ namespace FirstPersonCameraContinued
         public const string UISettingsTab = "UISettingsTab";
         public const string UISettingsGroup = "UISettingsGroup";
         public const string InfoBoxSettingsGroup = "InfoBoxSettingsGroup";
+        public const string PIPWindowSettingsGroup = "PIPWindowSettingsGroup";
 
         private bool _showInfoBox;
         private bool _onlyShowSpeed;
@@ -129,6 +130,14 @@ namespace FirstPersonCameraContinued
             }
         }
 
+
+        [SettingsUISection(UISettingsTab, PIPWindowSettingsGroup)]
+        public FirstPersonCameraPIPSystem.PiPCorner PIPSnapToCorner { get; set; }
+
+        [SettingsUISlider(min = 0.8f, max = 2f, step = .1f, scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
+        [SettingsUISection(UISettingsTab, PIPWindowSettingsGroup)]
+        public float PIPAspectRatio { get; set; }
+
         private void SetUISettingsGroup()
         {
             World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<FirstPersonCameraActivatedUISystem>().SetUISettingsGroupOptions();
@@ -150,6 +159,9 @@ namespace FirstPersonCameraContinued
             ShowInfoBox = true;
             OnlyShowSpeed = false;
             InfoBoxSize = Enums.InfoBoxSize.Default;
+            PIPSnapToCorner = FirstPersonCameraPIPSystem.PiPCorner.BottomLeft;
+            PIPAspectRatio = 1.2f;
+
         }
 
        public void Unload()
