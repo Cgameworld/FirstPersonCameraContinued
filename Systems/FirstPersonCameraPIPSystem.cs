@@ -119,13 +119,14 @@ namespace FirstPersonCameraContinued
 
             // Configure the secondary camera
             CopyCameraSettings(m_MainCamera, m_SecondaryCamera);
-            //m_SecondaryCamera.depth = -1; // Render before main camera
 
-            // Create render texture for the PiP view
-            int width = (int)(Screen.width * m_PipSize);
-            int height = (int)(Screen.height * m_PipSize);
-            m_RenderTexture = new RenderTexture(width, height, 24);
+            // Create SQUARE render texture for the PiP view
+            int size = (int)(Screen.height * m_PipSize); // Use height to ensure it fits
+            m_RenderTexture = new RenderTexture(size, size, 24);
             m_SecondaryCamera.targetTexture = m_RenderTexture;
+
+            // Adjust camera's aspect ratio to match the square texture
+            m_SecondaryCamera.aspect = 1.0f; // Force square aspect ratio
 
             // Position the secondary camera
             UpdateCameraPosition(m_SecondaryViewPosition, m_SecondaryViewRotation);
@@ -179,7 +180,7 @@ namespace FirstPersonCameraContinued
             // Set size
             int width = (int)(Screen.width * m_PipSize);
             int height = (int)(Screen.height * m_PipSize);
-            rectTransform.sizeDelta = new Vector2(width, height);
+            rectTransform.sizeDelta = new Vector2(height, height);
 
             // Add border
             var border = imageObject.AddComponent<Outline>();
@@ -210,13 +211,13 @@ namespace FirstPersonCameraContinued
                 int height = (int)(Screen.height * size);
 
                 m_RenderTexture.Release();
-                m_RenderTexture.width = width;
+                m_RenderTexture.width = height;
                 m_RenderTexture.height = height;
                 m_RenderTexture.Create();
 
                 // Update UI size
                 RectTransform rectTransform = m_PipDisplay.GetComponent<RectTransform>();
-                rectTransform.sizeDelta = new Vector2(width, height);
+                rectTransform.sizeDelta = new Vector2(height, height);
             }
         }
 
