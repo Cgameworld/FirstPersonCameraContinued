@@ -9,6 +9,7 @@ using Game;
 using Game.Common;
 using Game.Objects;
 using Game.Prefabs;
+using Game.Simulation;
 using Game.Tools;
 using Unity.Burst;
 using Unity.Entities;
@@ -40,6 +41,8 @@ namespace FirstPersonCameraContinued
 
         public float m_PipSize = 0.4f;
         public float adjustableCameraOffset = 10f;
+
+        public float aspectRatio = 1.2f;
 
         private FirstPersonCameraController CameraController
         {
@@ -120,13 +123,15 @@ namespace FirstPersonCameraContinued
             // Configure the secondary camera
             CopyCameraSettings(m_MainCamera, m_SecondaryCamera);
 
-            // Create SQUARE render texture for the PiP view
-            int size = (int)(Screen.height * m_PipSize); // Use height to ensure it fits
-            m_RenderTexture = new RenderTexture(size, size, 24);
+
+            int size = (int)(Screen.height * m_PipSize);
+            int width = (int)(size * aspectRatio);
+            m_RenderTexture = new RenderTexture(width, size, 24);
+
             m_SecondaryCamera.targetTexture = m_RenderTexture;
 
             // Adjust camera's aspect ratio to match the square texture
-            m_SecondaryCamera.aspect = 1.0f; // Force square aspect ratio
+            m_SecondaryCamera.aspect = aspectRatio; 
 
             // Position the secondary camera
             UpdateCameraPosition(m_SecondaryViewPosition, m_SecondaryViewRotation);
@@ -178,9 +183,10 @@ namespace FirstPersonCameraContinued
             rectTransform.anchoredPosition = new Vector2(20, 20); // 20px padding from corner
 
             // Set size
-            int width = (int)(Screen.width * m_PipSize);
-            int height = (int)(Screen.height * m_PipSize);
-            rectTransform.sizeDelta = new Vector2(height, height);
+
+            int size = (int)(Screen.height * m_PipSize);
+            int width = (int)(size * aspectRatio);
+            rectTransform.sizeDelta = new Vector2(width, size);
 
             // Add border
             var border = imageObject.AddComponent<Outline>();
@@ -202,22 +208,22 @@ namespace FirstPersonCameraContinued
             }
         }
 
-        public void UpdatePiPSize(float size)
+        public void UpdatePiPSize()
         {
             if (m_RenderTexture != null && m_PipDisplay != null)
             {
-                // Update render texture size
-                int width = (int)(Screen.width * size);
-                int height = (int)(Screen.height * size);
+                int size = (int)(Screen.height * m_PipSize);
+                int width = (int)(size * aspectRatio);
 
                 m_RenderTexture.Release();
-                m_RenderTexture.width = height;
-                m_RenderTexture.height = height;
+                m_RenderTexture.width = width;
+                m_RenderTexture.height = size;
                 m_RenderTexture.Create();
 
                 // Update UI size
                 RectTransform rectTransform = m_PipDisplay.GetComponent<RectTransform>();
-                rectTransform.sizeDelta = new Vector2(height, height);
+
+                rectTransform.sizeDelta = new Vector2(width, size);
             }
         }
 

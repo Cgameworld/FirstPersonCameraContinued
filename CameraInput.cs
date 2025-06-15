@@ -245,8 +245,8 @@ namespace FirstPersonCameraContinued
                         float scrollValue = ctx.ReadValue<float>() * 0.02f;
                         float newSize = _pipSystem.m_PipSize + scrollValue * 0.01f;
                         Mod.log.Info("newSize: " + newSize);
-                        _pipSystem.UpdatePiPSize(newSize);
                         _pipSystem.m_PipSize = newSize;
+                        _pipSystem.UpdatePiPSize();
                     }
             }
             };
