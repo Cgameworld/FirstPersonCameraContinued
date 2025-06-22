@@ -193,7 +193,12 @@ const register: ModRegistrar = (moduleRegistry) => {
                     div.className = 'fpc-injected-div';
                     ReactDOM.render(FPVInfoWindowButton(), div);
 
-                    element.appendChild(div);
+                    const outOfServiceDiv: HTMLElement | null = element.querySelector('.out-of-service_Kfh');
+                    if (outOfServiceDiv) {
+                        element.insertBefore(div, outOfServiceDiv);
+                    } else {
+                        element.appendChild(div);
+                    }
 
                     console.log('New div appended:', div);
                     // Clear interval after successful injection
