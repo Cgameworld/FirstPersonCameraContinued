@@ -183,7 +183,8 @@ const register: ModRegistrar = (moduleRegistry) => {
                 x?.__Type === "Game.UI.InGame.LevelSection" as any ||
                 x?.__Type === "Game.UI.InGame.RoadSection" as any ||
                 x?.__Type === "Game.UI.InGame.ResidentsSection" as any ||
-                x?.__Type === "Game.UI.InGame.UpkeepSection" as any
+                x?.__Type === "Game.UI.InGame.UpkeepSection" as any ||
+                x?.__Type === "Game.UI.InGame.VehicleCountSection" as any
             ) && !JSON.stringify(titleSection$.value?.name).includes("Decal");
 
             if (shouldInject) {
