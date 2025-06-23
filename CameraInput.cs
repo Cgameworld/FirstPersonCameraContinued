@@ -67,6 +67,7 @@ namespace FirstPersonCameraContinued
         private readonly CameraDataModel _model;
         private static bool firstGameSpeedChangeEvent = true;
         private static bool gameIsPausedState;
+        private InputBarrier shortcutsProxyMapBarrier;
 
         internal CameraInput(CameraDataModel model)
         {
@@ -225,30 +226,6 @@ namespace FirstPersonCameraContinued
             TemporaryActions.Add(action);
 
 
-            action = new InputAction("FPSController_DisablePShortcut");
-            action.AddBinding("<Keyboard>/l");
-            action.performed += ctx =>
-            {
-                //InputManager.instance.Find
-
-                var actions = InputManager.instance.actions;
-                /*
-                foreach (var action in actions)
-                {
-                    Mod.log.Info("action.mapName: " + action.mapName + " , action.name: " + action.name);
-                }
-                */
-                ProxyAction progpanel = InputManager.instance.FindAction("Shortcuts", "Progression Panel");
-
-                var barrier = progpanel.CreateBarrier("Temporary Disable ProgPanel", InputManager.DeviceType.All);
-                barrier.blocked = true;
-
-            };
-            action.Disable();
-
-            // We only want these actions to occur whilst the controller is active
-            TemporaryActions.Add(action);
-
             //zoom in out pip window
             action = new InputAction("FPSController_ScrollWheel", binding: "<Mouse>/scroll/y");
             action.performed += ctx =>
@@ -310,8 +287,8 @@ namespace FirstPersonCameraContinued
             action = new InputAction("FPSController_Escape", binding: "<Keyboard>/escape");
             action.performed += ctx =>
             {
-                if (_model.Mode == CameraMode.Follow)
-                    OnUnfollow?.Invoke();
+               // if (_model.Mode == CameraMode.Follow)
+                //    OnUnfollow?.Invoke();
 
                 Disable();
                 OnToggle?.Invoke();
@@ -343,6 +320,11 @@ namespace FirstPersonCameraContinued
 
             foreach (var action in TemporaryActions)
                 action.Enable();
+
+
+            ProxyActionMap shortcutsProxyMap = InputManager.instance.FindActionMap("Shortcuts");
+            shortcutsProxyMapBarrier = new InputBarrier("Disable Shortcuts Map", shortcutsProxyMap, InputManager.DeviceType.All);
+            shortcutsProxyMapBarrier.blocked = true; 
         }
 
         public void SetEntity(Entity entity)
@@ -357,6 +339,9 @@ namespace FirstPersonCameraContinued
         {
             foreach (var action in TemporaryActions)
                 action.Disable();
+
+            shortcutsProxyMapBarrier.blocked = false;
+            shortcutsProxyMapBarrier.Dispose();
         }
 
         /// <summary>
