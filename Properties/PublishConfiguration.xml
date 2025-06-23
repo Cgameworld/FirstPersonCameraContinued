@@ -93,9 +93,9 @@ If you like this mod be sure to leave an upvote! Thanks
 	<Dependency Id="74417" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
-# v1.4.5
-* Fixed issue with infobox speed section width not being set
-* Added more robust entity deselection
+# v1.5
+* added (activatable) picture in picture box (view)
+* Removed first person shortcut when line info panel is selected
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />

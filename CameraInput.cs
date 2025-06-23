@@ -2,6 +2,7 @@
 using FirstPersonCameraContinued.DataModels;
 using FirstPersonCameraContinued.Enums;
 using FirstPersonCameraContinued.Systems;
+using Game.Input;
 using Game.Rendering;
 using Game.SceneFlow;
 using Game.UI.InGame;
@@ -223,6 +224,30 @@ namespace FirstPersonCameraContinued
             // We only want these actions to occur whilst the controller is active
             TemporaryActions.Add(action);
 
+
+            action = new InputAction("FPSController_DisablePShortcut");
+            action.AddBinding("<Keyboard>/l");
+            action.performed += ctx =>
+            {
+                //InputManager.instance.Find
+
+                var actions = InputManager.instance.actions;
+                /*
+                foreach (var action in actions)
+                {
+                    Mod.log.Info("action.mapName: " + action.mapName + " , action.name: " + action.name);
+                }
+                */
+                ProxyAction progpanel = InputManager.instance.FindAction("Shortcuts", "Progression Panel");
+
+                var barrier = progpanel.CreateBarrier("Temporary Disable ProgPanel", InputManager.DeviceType.All);
+                barrier.blocked = true;
+
+            };
+            action.Disable();
+
+            // We only want these actions to occur whilst the controller is active
+            TemporaryActions.Add(action);
 
             //zoom in out pip window
             action = new InputAction("FPSController_ScrollWheel", binding: "<Mouse>/scroll/y");
