@@ -53,10 +53,10 @@ namespace FirstPersonCameraContinued
 
         public enum PiPCorner
         {
-            BottomLeft,
-            BottomRight,
             TopLeft,
-            TopRight
+            TopRight,
+            BottomLeft,
+            BottomRight           
         }
 
         protected override void OnCreate()

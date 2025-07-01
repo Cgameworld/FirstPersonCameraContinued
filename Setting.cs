@@ -12,7 +12,7 @@ namespace FirstPersonCameraContinued
 {
     [FileLocation(nameof(FirstPersonCameraContinued))]
     [SettingsUIShowGroupName(CameraSettingsGroup, KeybindingSettingsGroup, OtherSettingsGroup, UISettingsGroup, InfoBoxSettingsGroup, PIPWindowSettingsGroup)]
-    [SettingsUITabOrder(GeneralSettingsTab,UISettingsTab)]
+    [SettingsUITabOrder(GeneralSettingsTab, UISettingsTab, PIPSettingsTab)]
     public class Setting : ModSetting
     {
         public const string GeneralSettingsTab = "GeneralSettingsTab";
@@ -22,6 +22,7 @@ namespace FirstPersonCameraContinued
         public const string UISettingsTab = "UISettingsTab";
         public const string UISettingsGroup = "UISettingsGroup";
         public const string InfoBoxSettingsGroup = "InfoBoxSettingsGroup";
+        public const string PIPSettingsTab = "PIPSettingsTab";
         public const string PIPWindowSettingsGroup = "PIPWindowSettingsGroup";
 
         private bool _showInfoBox;
@@ -131,11 +132,11 @@ namespace FirstPersonCameraContinued
         }
 
 
-        [SettingsUISection(UISettingsTab, PIPWindowSettingsGroup)]
+        [SettingsUISection(PIPSettingsTab, PIPWindowSettingsGroup)]
         public FirstPersonCameraPIPSystem.PiPCorner PIPSnapToCorner { get; set; }
 
         [SettingsUISlider(min = 0.8f, max = 2f, step = .1f, scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
-        [SettingsUISection(UISettingsTab, PIPWindowSettingsGroup)]
+        [SettingsUISection(PIPSettingsTab, PIPWindowSettingsGroup)]
         public float PIPAspectRatio { get; set; }
 
         private void SetUISettingsGroup()
@@ -159,8 +160,8 @@ namespace FirstPersonCameraContinued
             ShowInfoBox = true;
             OnlyShowSpeed = false;
             InfoBoxSize = Enums.InfoBoxSize.Default;
-            PIPSnapToCorner = FirstPersonCameraPIPSystem.PiPCorner.BottomLeft;
-            PIPAspectRatio = 1.2f;
+            PIPSnapToCorner = FirstPersonCameraPIPSystem.PiPCorner.TopRight;
+            PIPAspectRatio = 1.1f;
 
         }
 
