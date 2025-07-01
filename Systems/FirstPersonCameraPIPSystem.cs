@@ -204,31 +204,49 @@ namespace FirstPersonCameraContinued
                 case PiPCorner.BottomLeft:
                     anchorMin = anchorMax = new Vector2(0, 0);
                     pivot = new Vector2(0, 0);
-                    anchoredPosition = new Vector2(20, 20);
+                    anchoredPosition = new Vector2(12, 12);
                     break;
 
                 case PiPCorner.BottomRight:
                     anchorMin = anchorMax = new Vector2(1, 0);
                     pivot = new Vector2(1, 0);
-                    anchoredPosition = new Vector2(-20, 20);
+                    anchoredPosition = new Vector2(-12, 12);
                     break;
 
                 case PiPCorner.TopLeft:
                     anchorMin = anchorMax = new Vector2(0, 1);
                     pivot = new Vector2(0, 1);
-                    anchoredPosition = new Vector2(20, -20);
+                    anchoredPosition = new Vector2(12, -12);
                     break;
 
                 case PiPCorner.TopRight:
                     anchorMin = anchorMax = new Vector2(1, 1);
                     pivot = new Vector2(1, 1);
-                    anchoredPosition = new Vector2(-20, -20);
+                    if (Mod.FirstPersonModSettings != null && Mod.FirstPersonModSettings.ShowInfoBox)
+                    {
+                        if (Mod.FirstPersonModSettings.InfoBoxSize == Enums.InfoBoxSize.Large)
+                        {
+                            anchoredPosition = new Vector2(-12, -113);
+                        }
+                        else if (Mod.FirstPersonModSettings.InfoBoxSize == Enums.InfoBoxSize.Small)
+                        {
+                            anchoredPosition = new Vector2(-12, -100);
+                        }
+                        else
+                        {
+                            anchoredPosition = new Vector2(-12, -106);
+                        }
+                    }
+                    else
+                    {
+                        anchoredPosition = new Vector2(-12, -12);
+                    }
                     break;
 
                 default:
                     anchorMin = anchorMax = new Vector2(0, 0);
                     pivot = new Vector2(0, 0);
-                    anchoredPosition = new Vector2(20, 20);
+                    anchoredPosition = new Vector2(12, 12);
                     break;
             }
 
