@@ -138,14 +138,17 @@ namespace FirstPersonCameraContinued
                 aspectRatio = Mod.FirstPersonModSettings.PIPAspectRatio;
             }
 
-            int size = (int)(Screen.height * m_PipSize);
-            int width = (int)(size * aspectRatio);
-            m_RenderTexture = new RenderTexture(width, size, 24);
+            float screenScale = (float)Screen.height / 1080f;
+            int referenceSize = (int)(1080 * m_PipSize);
+            int actualSize = (int)(referenceSize * screenScale);
+            int actualWidth = (int)(actualSize * aspectRatio);
+
+            m_RenderTexture = new RenderTexture(actualWidth, actualSize, 24);
 
             m_SecondaryCamera.targetTexture = m_RenderTexture;
 
-            // Adjust camera's aspect ratio to match the square texture
-            m_SecondaryCamera.aspect = aspectRatio; 
+            // Adjust camera's aspect ratio to match the texture
+            m_SecondaryCamera.aspect = aspectRatio;
 
             // Position the secondary camera
             UpdateCameraPosition(m_SecondaryViewPosition, m_SecondaryViewRotation);
@@ -264,8 +267,8 @@ namespace FirstPersonCameraContinued
             rectTransform.anchoredPosition = anchoredPosition;
 
             // Set size
-
-            int size = (int)(Screen.height * m_PipSize);
+            int referenceHeight = 1080;
+            int size = (int)(referenceHeight * m_PipSize);
             int width = (int)(size * aspectRatio);
             rectTransform.sizeDelta = new Vector2(width, size);
 
@@ -293,18 +296,21 @@ namespace FirstPersonCameraContinued
         {
             if (m_RenderTexture != null && m_PipDisplay != null)
             {
-                int size = (int)(Screen.height * m_PipSize);
-                int width = (int)(size * aspectRatio);
+                float screenScale = (float)Screen.height / 1080f;
+                int referenceSize = (int)(1080 * m_PipSize);
+                int actualSize = (int)(referenceSize * screenScale);
+                int actualWidth = (int)(actualSize * aspectRatio);
 
                 m_RenderTexture.Release();
-                m_RenderTexture.width = width;
-                m_RenderTexture.height = size;
+                m_RenderTexture.width = actualWidth;
+                m_RenderTexture.height = actualSize;
                 m_RenderTexture.Create();
 
-                // Update UI size
+                // UI size stays consistent using reference resolution
+                int uiSize = (int)(1080 * m_PipSize);
+                int uiWidth = (int)(uiSize * aspectRatio);
                 RectTransform rectTransform = m_PipDisplay.GetComponent<RectTransform>();
-
-                rectTransform.sizeDelta = new Vector2(width, size);
+                rectTransform.sizeDelta = new Vector2(uiWidth, uiSize);
             }
         }
 
