@@ -139,6 +139,9 @@ namespace FirstPersonCameraContinued
         [SettingsUISection(PIPSettingsTab, PIPWindowSettingsGroup)]
         public float PIPAspectRatio { get; set; }
 
+        [SettingsUISection(PIPSettingsTab, PIPWindowSettingsGroup)]
+        public bool ShowPIPOnEnter { get; set; }
+
         private void SetUISettingsGroup()
         {
             World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<FirstPersonCameraActivatedUISystem>().SetUISettingsGroupOptions();
@@ -162,6 +165,7 @@ namespace FirstPersonCameraContinued
             InfoBoxSize = Enums.InfoBoxSize.Default;
             PIPSnapToCorner = FirstPersonCameraPIPSystem.PiPCorner.TopRight;
             PIPAspectRatio = 1.1f;
+            ShowPIPOnEnter = false;
 
         }
 

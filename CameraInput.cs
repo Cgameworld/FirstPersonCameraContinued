@@ -209,16 +209,7 @@ namespace FirstPersonCameraContinued
             action.AddBinding("<Keyboard>/p");
             action.performed += ctx =>
             {
-                var _pipSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraPIPSystem>();
-
-                if (_pipSystem.IsPiPWindow())
-                {
-                    _pipSystem.DestroyPiPWindow();
-                }
-                else
-                {
-                    _pipSystem.CreatePiPWindow();
-                }              
+                TogglePiPWindow();
             };
             action.Disable();
 
@@ -301,6 +292,20 @@ namespace FirstPersonCameraContinued
             TemporaryActions.Add(action);
         }
 
+        private static void TogglePiPWindow()
+        {
+            var _pipSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraPIPSystem>();
+
+            if (_pipSystem.IsPiPWindow())
+            {
+                _pipSystem.DestroyPiPWindow();
+            }
+            else
+            {
+                _pipSystem.CreatePiPWindow();
+            }
+        }
+
         /// <summary>
         /// Enable the camera input listeners
         /// </summary>
@@ -324,7 +329,12 @@ namespace FirstPersonCameraContinued
 
             ProxyActionMap shortcutsProxyMap = InputManager.instance.FindActionMap("Shortcuts");
             shortcutsProxyMapBarrier = new InputBarrier("Disable Shortcuts Map", shortcutsProxyMap, InputManager.DeviceType.All);
-            shortcutsProxyMapBarrier.blocked = true; 
+            shortcutsProxyMapBarrier.blocked = true;
+
+            if (Mod.FirstPersonModSettings != null && Mod.FirstPersonModSettings.ShowPIPOnEnter)
+            {
+                TogglePiPWindow();
+            }
         }
 
         public void SetEntity(Entity entity)

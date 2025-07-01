@@ -61,3 +61,5 @@
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.PIPCORNER[TopRight]","Top Right"
 "Options.OPTION:PIPAspectRatio","Aspect Ratio"
 "Options.OPTION_DESCRIPTION:PIPAspectRatio","Configure aspect ratio of the picture-in-picture window"
+"Options.OPTION:ShowPIPOnEnter","Show on Entry"
+"Options.OPTION_DESCRIPTION:ShowPIPOnEnter","Check to show the picture-in-picture window immediately when entering first person mode without needing to activate it with the P key"
