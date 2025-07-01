@@ -222,31 +222,39 @@ namespace FirstPersonCameraContinued
                 case PiPCorner.TopRight:
                     anchorMin = anchorMax = new Vector2(1, 1);
                     pivot = new Vector2(1, 1);
-                    if (Mod.FirstPersonModSettings != null && Mod.FirstPersonModSettings.ShowInfoBox)
+
+                    int infoBoxYOffset = 0;
+                    int otherYOffset = 0;
+
+                    if (Mod.FirstPersonModSettings != null)
                     {
-                        if (Mod.FirstPersonModSettings.InfoBoxSize == Enums.InfoBoxSize.Large)
-                        {
-                            anchoredPosition = new Vector2(-12, -113);
+                        if (Mod.FirstPersonModSettings.ShowInfoBox) {
+
+                            if (Mod.FirstPersonModSettings.InfoBoxSize == Enums.InfoBoxSize.Small)
+                            {
+                                infoBoxYOffset = -88;
+                            }
+                            else if (Mod.FirstPersonModSettings.InfoBoxSize == Enums.InfoBoxSize.Large)
+                            {
+                                infoBoxYOffset = -101;
+                            }
+                            else
+                            {
+                                infoBoxYOffset = -94;
+                            }
                         }
-                        else if (Mod.FirstPersonModSettings.InfoBoxSize == Enums.InfoBoxSize.Small)
+                        if (Mod.FirstPersonModSettings.ShowGameUI)
                         {
-                            anchoredPosition = new Vector2(-12, -100);
-                        }
-                        else
-                        {
-                            anchoredPosition = new Vector2(-12, -106);
+                            otherYOffset = -50;
                         }
                     }
-                    else
-                    {
-                        anchoredPosition = new Vector2(-12, -12);
-                    }
+                    anchoredPosition = new Vector2(-12, -12 + infoBoxYOffset + otherYOffset);
                     break;
 
                 default:
                     anchorMin = anchorMax = new Vector2(0, 0);
                     pivot = new Vector2(0, 0);
-                    anchoredPosition = new Vector2(12, 12);
+                    anchoredPosition = new Vector2(-12, -12);
                     break;
             }
 
