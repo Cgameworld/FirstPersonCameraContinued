@@ -317,10 +317,12 @@ namespace FirstPersonCameraContinued
         // Command to set PiP camera position
         public void SetPiPPosition(float x, float y, float z, quaternion rotation)
         {
-            //rotation = math.mul(rotation, quaternion.RotateY(math.PI));
             rotation = math.mul(rotation, quaternion.RotateX(math.PI / 8));
             var forward = math.mul(rotation, new float3(0, 0, 1));
-            float3 position = new float3(x, y + adjustableCameraOffset, z) + (forward * -( adjustableCameraOffset + 35f));
+
+            var pullback = adjustableCameraOffset / math.tan(math.PI / 8);
+
+            float3 position = new float3(x, y + adjustableCameraOffset, z) + (forward * -(pullback+10));
             
             UpdateCameraPosition(position, rotation);
         }
