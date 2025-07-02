@@ -16,7 +16,7 @@ namespace FirstPersonCameraContinued
     /// <summary>
     /// Utility class to help with Entities and choosing a follow target
     /// </summary>
-    internal class EntityFollower
+    public class EntityFollower
     {
         private readonly CameraDataModel _model;
         private readonly EntityManager _entityManager;

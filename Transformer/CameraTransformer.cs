@@ -39,6 +39,10 @@ namespace FirstPersonCameraContinued.Transforms
             set;
         }
 
+        public EntityFollower GetEntityFollower()
+        {
+            return _entityFollower;
+        }
         public Action OnScopeChanged;
 
         private readonly VirtualCameraRig _rig;

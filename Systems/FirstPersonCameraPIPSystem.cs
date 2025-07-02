@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Colossal.Entities;
+using Colossal.Mathematics;
 using FirstPersonCameraContinued;
 using FirstPersonCameraContinued.MonoBehaviours;
+using FirstPersonCameraContinued.Transforms;
 using Game;
 using Game.Common;
 using Game.Objects;
@@ -45,11 +48,15 @@ namespace FirstPersonCameraContinued
         public float aspectRatio = 1.2f;
 
         public PiPCorner m_PipCorner = PiPCorner.BottomRight;
+        
+
         private FirstPersonCameraController CameraController
         {
             get;
             set;
         }
+
+        private readonly EntityFollower _entityFollower;
 
         public enum PiPCorner
         {
@@ -72,6 +79,16 @@ namespace FirstPersonCameraContinued
             {
                 var positon = CameraController.transform.position;
                 var rotation = CameraController.GetViewRotation();
+
+                Entity currentEntity = CameraController.GetFollowEntity();
+                if (currentEntity != Entity.Null)
+                {
+                    CameraController.GetTransformer().GetEntityFollower().TryGetPosition(out float3 pos, out _, out quaternion rot, out _);
+                    
+                        positon = pos;
+                        rotation = rot;
+                }
+
                 SetPiPPosition(positon.x, positon.y, positon.z, rotation);
             }
         }
@@ -318,12 +335,12 @@ namespace FirstPersonCameraContinued
         public void SetPiPPosition(float x, float y, float z, quaternion rotation)
         {
             rotation = math.mul(rotation, quaternion.RotateX(math.PI / 8));
-            var forward = math.mul(rotation, new float3(0, 0, 1));
+            float3 forward = math.mul(rotation, new float3(0, 0, 1));
+            float pullback = adjustableCameraOffset / math.tan(math.PI / 8);
 
-            var pullback = adjustableCameraOffset / math.tan(math.PI / 8);
+            float3 targetPosition = new float3(x, y+1f, z);
+            float3 position = targetPosition - (forward * pullback);
 
-            float3 position = new float3(x, y + adjustableCameraOffset, z) + (forward * -(pullback+10));
-            
             UpdateCameraPosition(position, rotation);
         }
 
