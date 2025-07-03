@@ -42,10 +42,10 @@ namespace FirstPersonCameraContinued
 
         private Camera m_MainCamera;
 
-        public float m_PipSize = 0.4f;
         public float adjustableCameraOffset = 10f;
 
-        public float aspectRatio = 1.2f;
+        public float m_PipSize = 0.4f;
+        public float aspectRatio = 0.9f;
 
         public PiPCorner m_PipCorner = PiPCorner.BottomRight;
         
@@ -152,6 +152,7 @@ namespace FirstPersonCameraContinued
 
             if (Mod.FirstPersonModSettings != null)
             {
+                m_PipSize = Mod.FirstPersonModSettings.PIPSize;
                 aspectRatio = Mod.FirstPersonModSettings.PIPAspectRatio;
             }
 
