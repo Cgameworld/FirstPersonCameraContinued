@@ -10,11 +10,13 @@ using FirstPersonCameraContinued.MonoBehaviours;
 using FirstPersonCameraContinued.Transforms;
 using Game;
 using Game.Common;
+using Game.Notifications;
 using Game.Objects;
 using Game.Prefabs;
 using Game.Simulation;
 using Game.Tools;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -48,8 +50,9 @@ namespace FirstPersonCameraContinued
         public float aspectRatio = 0.9f;
 
         public PiPCorner m_PipCorner = PiPCorner.BottomRight;
-        
 
+        private GameObject m_MarkerOverlay;
+        private RectTransform m_MarkerIcon;
         private FirstPersonCameraController CameraController
         {
             get;
@@ -90,11 +93,10 @@ namespace FirstPersonCameraContinued
                 }
 
                 SetPiPPosition(positon.x, positon.y, positon.z, rotation);
+
+                UpdateMarkerPosition();
             }
         }
-
-
-
         public void CreatePiPWindow()
         {
             DestroyPiPWindow();
@@ -132,6 +134,9 @@ namespace FirstPersonCameraContinued
 
             if (m_PipUIContainer != null)
                 UnityEngine.Object.Destroy(m_PipUIContainer);
+
+            m_MarkerOverlay = null;
+            m_MarkerIcon = null;
         }
 
         private void InitializePiP()
@@ -294,6 +299,8 @@ namespace FirstPersonCameraContinued
             var border = imageObject.AddComponent<Outline>();
             border.effectColor = new Color(1f, 1f, 1f, 0.8f);
             border.effectDistance = new Vector2(2, 2);
+
+            CreateMarkerOverlay();
         }
 
         public void UpdateCameraPosition(Vector3 position, Quaternion rotation)
@@ -345,5 +352,124 @@ namespace FirstPersonCameraContinued
             UpdateCameraPosition(position, rotation);
         }
 
+        public float3 GetFollowedMarkerPosition()
+        {
+
+            var markerQuery = GetEntityQuery(
+            ComponentType.ReadOnly<Icon>(),
+            ComponentType.ReadOnly<Target>(),
+            ComponentType.ReadOnly<DisallowCluster>()
+        );
+
+            var markerEntities = markerQuery.ToEntityArray(Allocator.TempJob);
+
+            foreach (var entity in markerEntities)
+            {
+                if (EntityManager.TryGetComponent<Icon>(entity, out var iconComponent))
+                {
+                    return iconComponent.m_Location;
+                }
+            }
+
+            return float3.zero;
+        }
+
+        private void CreateMarkerOverlay()
+        {
+            m_MarkerOverlay = new GameObject("PiP_Marker_Overlay");
+            m_MarkerOverlay.transform.SetParent(m_PipDisplay.transform, false);
+
+            RectTransform overlayRect = m_MarkerOverlay.AddComponent<RectTransform>();
+            overlayRect.anchorMin = Vector2.zero;
+            overlayRect.anchorMax = Vector2.one;
+            overlayRect.offsetMin = Vector2.zero;
+            overlayRect.offsetMax = Vector2.zero;
+
+            // Create the marker icon
+            GameObject markerIcon = new GameObject("Marker_Icon");
+            markerIcon.transform.SetParent(m_MarkerOverlay.transform, false);
+
+            UnityEngine.UI.Image markerImage = markerIcon.AddComponent<UnityEngine.UI.Image>();
+
+            markerImage.sprite = CreateCircleSprite();
+            markerImage.color = Color.blue;
+
+            m_MarkerIcon = markerIcon.GetComponent<RectTransform>();
+            m_MarkerIcon.sizeDelta = new Vector2(15, 15);
+
+            // Set anchor to center for easier positioning
+            m_MarkerIcon.anchorMin = new Vector2(0.5f, 0.5f);
+            m_MarkerIcon.anchorMax = new Vector2(0.5f, 0.5f);
+            m_MarkerIcon.pivot = new Vector2(0.5f, 0.5f);
+        }
+        private void UpdateMarkerPosition()
+        {
+            if (m_MarkerIcon == null || m_SecondaryCamera == null) return;
+
+            float3 markerWorldPos = GetFollowedMarkerPosition();
+            if (markerWorldPos.Equals(float3.zero))
+            {
+                m_MarkerIcon.gameObject.SetActive(false);
+                return;
+            }
+           
+            Vector3 screenPos = m_SecondaryCamera.WorldToScreenPoint(markerWorldPos);
+
+            if (screenPos.z > 0 && screenPos.x >= 0 && screenPos.x <= m_SecondaryCamera.pixelWidth
+                && screenPos.y >= 0 && screenPos.y <= m_SecondaryCamera.pixelHeight)
+            {
+                m_MarkerIcon.gameObject.SetActive(true);
+
+                // Get the PiP display rect
+                RectTransform pipRect = m_PipDisplay.GetComponent<RectTransform>();
+
+                // Normalize screen position (0-1) relative to the PiP camera
+                float normalizedX = screenPos.x / m_SecondaryCamera.pixelWidth;
+                float normalizedY = screenPos.y / m_SecondaryCamera.pixelHeight;
+
+                Vector2 pipSize = pipRect.sizeDelta;
+                Vector2 localPos = new Vector2(
+                    (normalizedX - 0.5f) * pipSize.x,
+                    (normalizedY - 0.5f) * pipSize.y
+                );
+
+                m_MarkerIcon.anchoredPosition = localPos;
+            }
+            else
+            {
+                m_MarkerIcon.gameObject.SetActive(false);
+            }
+        }
+
+        private Sprite CreateCircleSprite()
+        {
+            int size = 32;
+            Texture2D texture = new Texture2D(size, size);
+            Color[] pixels = new Color[size * size];
+
+            Vector2 center = new Vector2(size / 2f, size / 2f);
+            float radius = size / 2f - 2f;
+
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float distance = Vector2.Distance(new Vector2(x, y), center);
+                    if (distance <= radius)
+                    {
+                        pixels[y * size + x] = Color.white;
+                    }
+                    else
+                    {
+                        pixels[y * size + x] = Color.clear;
+                    }
+                }
+            }
+
+            texture.SetPixels(pixels);
+            texture.Apply();
+
+            return Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f));
+        }
     }
 }
