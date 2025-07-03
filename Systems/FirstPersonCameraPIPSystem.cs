@@ -374,6 +374,34 @@ namespace FirstPersonCameraContinued
             return float3.zero;
         }
 
+        public Texture2D GetFollowedMarkerTexture()
+        {
+            var markerQuery = GetEntityQuery(
+            ComponentType.ReadOnly<Icon>(),
+            ComponentType.ReadOnly<Target>(),
+            ComponentType.ReadOnly<DisallowCluster>()
+        );
+
+            var markerEntities = markerQuery.ToEntityArray(Allocator.TempJob);
+
+            foreach (var entity in markerEntities)
+            {
+                if (EntityManager.TryGetComponent<PrefabRef>(entity, out var prefabRefComponent))
+                {
+                    if (EntityManager.TryGetComponent<PrefabData>(prefabRefComponent.m_Prefab, out var prefabDataComponent))
+                    {
+                        PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<PrefabSystem>();
+                        if (prefabSystem.TryGetPrefab(prefabDataComponent, out NotificationIconPrefab prefab))
+                        {
+                            return prefab.m_Icon;
+                        }
+                    }
+                }
+
+            }
+            return Texture2D.redTexture;
+        }
+
         private void CreateMarkerOverlay()
         {
             m_MarkerOverlay = new GameObject("PiP_Marker_Overlay");
@@ -391,16 +419,24 @@ namespace FirstPersonCameraContinued
 
             UnityEngine.UI.Image markerImage = markerIcon.AddComponent<UnityEngine.UI.Image>();
 
-            markerImage.sprite = CreateCircleSprite();
-            markerImage.color = Color.blue;
+            Texture2D markerTexture = GetFollowedMarkerTexture();
+            if (markerTexture != null)
+            {
+                markerImage.sprite = Sprite.Create(
+                    markerTexture,
+                    new Rect(0, 0, markerTexture.width, markerTexture.height),
+                    new Vector2(0.5f, 0f)
+                );
+                markerImage.color = Color.white;
+            }
 
             m_MarkerIcon = markerIcon.GetComponent<RectTransform>();
-            m_MarkerIcon.sizeDelta = new Vector2(15, 15);
+            m_MarkerIcon.sizeDelta = new Vector2(50, 50);
 
             // Set anchor to center for easier positioning
             m_MarkerIcon.anchorMin = new Vector2(0.5f, 0.5f);
             m_MarkerIcon.anchorMax = new Vector2(0.5f, 0.5f);
-            m_MarkerIcon.pivot = new Vector2(0.5f, 0.5f);
+            m_MarkerIcon.pivot = new Vector2(0.5f, 0f);
         }
         private void UpdateMarkerPosition()
         {
@@ -412,7 +448,7 @@ namespace FirstPersonCameraContinued
                 m_MarkerIcon.gameObject.SetActive(false);
                 return;
             }
-           
+
             Vector3 screenPos = m_SecondaryCamera.WorldToScreenPoint(markerWorldPos);
 
             if (screenPos.z > 0 && screenPos.x >= 0 && screenPos.x <= m_SecondaryCamera.pixelWidth
@@ -439,37 +475,6 @@ namespace FirstPersonCameraContinued
             {
                 m_MarkerIcon.gameObject.SetActive(false);
             }
-        }
-
-        private Sprite CreateCircleSprite()
-        {
-            int size = 32;
-            Texture2D texture = new Texture2D(size, size);
-            Color[] pixels = new Color[size * size];
-
-            Vector2 center = new Vector2(size / 2f, size / 2f);
-            float radius = size / 2f - 2f;
-
-            for (int y = 0; y < size; y++)
-            {
-                for (int x = 0; x < size; x++)
-                {
-                    float distance = Vector2.Distance(new Vector2(x, y), center);
-                    if (distance <= radius)
-                    {
-                        pixels[y * size + x] = Color.white;
-                    }
-                    else
-                    {
-                        pixels[y * size + x] = Color.clear;
-                    }
-                }
-            }
-
-            texture.SetPixels(pixels);
-            texture.Apply();
-
-            return Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f));
         }
     }
 }
