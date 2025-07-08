@@ -376,28 +376,27 @@ namespace FirstPersonCameraContinued
 
         public Texture2D GetFollowedMarkerTexture()
         {
-            var markerQuery = GetEntityQuery(
-            ComponentType.ReadOnly<Icon>(),
-            ComponentType.ReadOnly<Target>(),
-            ComponentType.ReadOnly<DisallowCluster>()
+            var notificationIconQuery = GetEntityQuery(
+            ComponentType.ReadOnly<NotificationIconData>(),
+            ComponentType.ReadOnly<PrefabData>()
         );
 
-            var markerEntities = markerQuery.ToEntityArray(Allocator.TempJob);
+            var notificationIconEntities = notificationIconQuery.ToEntityArray(Allocator.TempJob);
 
-            foreach (var entity in markerEntities)
+            foreach (var entity in notificationIconEntities)
             {
-                if (EntityManager.TryGetComponent<PrefabRef>(entity, out var prefabRefComponent))
+                if (EntityManager.TryGetComponent<PrefabData>(entity, out var prefabDataComponent))
                 {
-                    if (EntityManager.TryGetComponent<PrefabData>(prefabRefComponent.m_Prefab, out var prefabDataComponent))
+                    PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<PrefabSystem>();
+                    if (prefabSystem.TryGetPrefab(prefabDataComponent, out NotificationIconPrefab prefab))
                     {
-                        PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<PrefabSystem>();
-                        if (prefabSystem.TryGetPrefab(prefabDataComponent, out NotificationIconPrefab prefab))
+                        if (prefab.name == "Followed")
                         {
                             return prefab.m_Icon;
                         }
+
                     }
                 }
-
             }
             return Texture2D.redTexture;
         }
