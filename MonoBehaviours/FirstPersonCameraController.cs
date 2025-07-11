@@ -49,6 +49,11 @@ namespace FirstPersonCameraContinued.MonoBehaviours
             return _model.Rotation;
         }
 
+        public CameraMode GetMode()
+        {
+            return _model.Mode;
+        }
+
         private FirstPersonCameraSystem _firstPersonCameraSystem;
         private FirstPersonCameraActivatedUISystem _firstPersonCameraActivatedUISystem;
         private TerrainSystem terrainSystem;

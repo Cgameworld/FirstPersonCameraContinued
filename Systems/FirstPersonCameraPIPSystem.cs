@@ -91,6 +91,10 @@ namespace FirstPersonCameraContinued
                         positon = pos;
                         rotation = rot;
                 }
+                if (m_PipCorner == PiPCorner.TopRight)
+                {
+                    m_PipDisplay.GetComponent<RectTransform>().anchoredPosition = CalculateTopRightOffset();
+                }
 
                 SetPiPPosition(positon.x, positon.y, positon.z, rotation);
 
@@ -248,33 +252,7 @@ namespace FirstPersonCameraContinued
                 case PiPCorner.TopRight:
                     anchorMin = anchorMax = new Vector2(1, 1);
                     pivot = new Vector2(1, 1);
-
-                    int infoBoxYOffset = 0;
-                    int otherYOffset = 0;
-
-                    if (Mod.FirstPersonModSettings != null)
-                    {
-                        if (Mod.FirstPersonModSettings.ShowInfoBox) {
-
-                            if (Mod.FirstPersonModSettings.InfoBoxSize == Enums.InfoBoxSize.Small)
-                            {
-                                infoBoxYOffset = -88;
-                            }
-                            else if (Mod.FirstPersonModSettings.InfoBoxSize == Enums.InfoBoxSize.Large)
-                            {
-                                infoBoxYOffset = -101;
-                            }
-                            else
-                            {
-                                infoBoxYOffset = -94;
-                            }
-                        }
-                        if (Mod.FirstPersonModSettings.ShowGameUI)
-                        {
-                            otherYOffset = -50;
-                        }
-                    }
-                    anchoredPosition = new Vector2(-12, -12 + infoBoxYOffset + otherYOffset);
+                    anchoredPosition = CalculateTopRightOffset();
                     break;
 
                 default:
@@ -302,6 +280,36 @@ namespace FirstPersonCameraContinued
 
             CreateMarkerOverlay();
         }
+
+        private Vector2 CalculateTopRightOffset()
+        {
+            int baseX = -12;
+            int baseY = -12;
+
+            if (CameraController == null || CameraController.GetMode() == Enums.CameraMode.Manual)
+            {
+                return new Vector2(baseX, baseY);
+            }
+
+            int infoBoxYOffset = 0;
+            int showUIOffset = 0;
+            if (Mod.FirstPersonModSettings != null)
+            {
+                if (Mod.FirstPersonModSettings.ShowInfoBox)
+                {
+                    switch (Mod.FirstPersonModSettings.InfoBoxSize)
+                    {
+                        case Enums.InfoBoxSize.Small: infoBoxYOffset = -88; break;
+                        case Enums.InfoBoxSize.Large: infoBoxYOffset = -101; break;
+                        default: infoBoxYOffset = -94; break;
+                    }
+                }
+                if (Mod.FirstPersonModSettings.ShowGameUI)
+                    showUIOffset = -50;
+            }
+            return new Vector2(baseX, baseY + infoBoxYOffset + showUIOffset);
+        }
+
 
         public void UpdateCameraPosition(Vector3 position, Quaternion rotation)
         {
