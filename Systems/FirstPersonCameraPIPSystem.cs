@@ -286,16 +286,12 @@ namespace FirstPersonCameraContinued
             int baseX = -12;
             int baseY = -12;
 
-            if (CameraController == null || CameraController.GetMode() == Enums.CameraMode.Manual)
-            {
-                return new Vector2(baseX, baseY);
-            }
-
             int infoBoxYOffset = 0;
             int showUIOffset = 0;
-            if (Mod.FirstPersonModSettings != null)
+
+            if (CameraController != null && Mod.FirstPersonModSettings != null)
             {
-                if (Mod.FirstPersonModSettings.ShowInfoBox)
+                if (Mod.FirstPersonModSettings.ShowInfoBox && CameraController.GetMode() != Enums.CameraMode.Manual)
                 {
                     switch (Mod.FirstPersonModSettings.InfoBoxSize)
                     {
@@ -305,7 +301,9 @@ namespace FirstPersonCameraContinued
                     }
                 }
                 if (Mod.FirstPersonModSettings.ShowGameUI)
+                {
                     showUIOffset = -50;
+                }
             }
             return new Vector2(baseX, baseY + infoBoxYOffset + showUIOffset);
         }
