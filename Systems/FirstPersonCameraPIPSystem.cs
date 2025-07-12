@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Colossal.Entities;
@@ -10,11 +11,14 @@ using FirstPersonCameraContinued.MonoBehaviours;
 using FirstPersonCameraContinued.Transforms;
 using Game;
 using Game.Common;
+using Game.Net;
 using Game.Notifications;
 using Game.Objects;
 using Game.Prefabs;
+using Game.Rendering;
 using Game.Simulation;
 using Game.Tools;
+using Game.Vehicles;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -53,6 +57,9 @@ namespace FirstPersonCameraContinued
 
         private GameObject m_MarkerOverlay;
         private RectTransform m_MarkerIcon;
+        private UndergroundViewSystem m_UndergroundViewSystem;
+
+        private bool _wasInTunnel = false;
         private FirstPersonCameraController CameraController
         {
             get;
@@ -74,6 +81,7 @@ namespace FirstPersonCameraContinued
             base.OnCreate();
             // Example on how to get a existing ECS System from the ECS World
             // this.simulation = World.GetExistingSystemManaged<SimulationSystem>();
+            m_UndergroundViewSystem = World.GetOrCreateSystemManaged<UndergroundViewSystem>();
         }
 
         protected override void OnUpdate()
@@ -99,8 +107,42 @@ namespace FirstPersonCameraContinued
                 SetPiPPosition(positon.x, positon.y, positon.z, rotation);
 
                 UpdateMarkerPosition();
+
+                bool isInTunnel = IsInTunnel(currentEntity);
+                Mod.log.Info("IsInTunnel? " + isInTunnel);
+
+                if (isInTunnel)
+                {
+                    ForceUndergroundViewOn();
+                }
+
             }
         }
+        public bool IsInTunnel(Entity entity)
+        {
+            if (EntityManager.TryGetComponent<CarCurrentLane>(entity, out var carCurrentLaneComponent) &&
+                EntityManager.TryGetComponent<Owner>(carCurrentLaneComponent.m_Lane, out var ownerComponent) &&
+                EntityManager.TryGetComponent<Composition>(ownerComponent.m_Owner, out var compositionComponent) &&
+                EntityManager.TryGetComponent<NetCompositionData>(compositionComponent.m_Edge, out var netData))
+            {
+                return (netData.m_Flags.m_General & CompositionFlags.General.Tunnel) != 0;
+            }
+
+            return false;
+        }
+        private void ForceUndergroundViewOn()
+        {
+            Mod.log.Info("ForceUndergroundView on");
+            if (m_UndergroundViewSystem != null)
+            {
+                var tunnelsOnProperty = typeof(UndergroundViewSystem).GetProperty("tunnelsOn");
+                if (tunnelsOnProperty != null && tunnelsOnProperty.CanWrite)
+                {
+                    tunnelsOnProperty.SetValue(m_UndergroundViewSystem, true);
+                }
+            }
+        }
+
         public void CreatePiPWindow()
         {
             DestroyPiPWindow();
@@ -163,6 +205,11 @@ namespace FirstPersonCameraContinued
             {
                 m_PipSize = Mod.FirstPersonModSettings.PIPSize;
                 aspectRatio = Mod.FirstPersonModSettings.PIPAspectRatio;
+            }
+
+            for (int i = 0; i < 32; i++)
+            {
+                Mod.log.Info($"Layer {i}: {LayerMask.LayerToName(i)}");
             }
 
             float screenScale = (float)Screen.height / 1080f;
