@@ -11,6 +11,7 @@ using FirstPersonCameraContinued.MonoBehaviours;
 using FirstPersonCameraContinued.Transforms;
 using Game;
 using Game.Common;
+using Game.Creatures;
 using Game.Net;
 using Game.Notifications;
 using Game.Objects;
@@ -120,12 +121,28 @@ namespace FirstPersonCameraContinued
         }
         public bool IsInTunnel(Entity entity)
         {
-            if (EntityManager.TryGetComponent<CarCurrentLane>(entity, out var carCurrentLaneComponent) &&
-                EntityManager.TryGetComponent<Owner>(carCurrentLaneComponent.m_Lane, out var ownerComponent) &&
-                EntityManager.TryGetComponent<Composition>(ownerComponent.m_Owner, out var compositionComponent) &&
-                EntityManager.TryGetComponent<NetCompositionData>(compositionComponent.m_Edge, out var netData))
+            if (EntityManager.TryGetComponent<CarCurrentLane>(entity, out var carLane) &&
+                EntityManager.TryGetComponent<Owner>(carLane.m_Lane, out var carOwner) &&
+                EntityManager.TryGetComponent<Composition>(carOwner.m_Owner, out var carComp) &&
+                EntityManager.TryGetComponent<NetCompositionData>(carComp.m_Edge, out var carNetData))
             {
-                return (netData.m_Flags.m_General & CompositionFlags.General.Tunnel) != 0;
+                return (carNetData.m_Flags.m_General & CompositionFlags.General.Tunnel) != 0;
+            }
+
+            if (EntityManager.TryGetComponent<TrainCurrentLane>(entity, out var trainLane) &&
+                EntityManager.TryGetComponent<Owner>(trainLane.m_Front.m_Lane, out var trainOwner) &&
+                EntityManager.TryGetComponent<Composition>(trainOwner.m_Owner, out var trainComp) &&
+                EntityManager.TryGetComponent<NetCompositionData>(trainComp.m_Edge, out var trainNetData))
+            {
+                return (trainNetData.m_Flags.m_General & CompositionFlags.General.Tunnel) != 0;
+            }
+
+            if (EntityManager.TryGetComponent<HumanCurrentLane>(entity, out var humanLane) &&
+                EntityManager.TryGetComponent<Owner>(humanLane.m_Lane, out var humanLaneOwner) &&
+                EntityManager.TryGetComponent<Composition>(humanLaneOwner.m_Owner, out var humanComp) &&
+                EntityManager.TryGetComponent<NetCompositionData>(humanComp.m_Edge, out var humanNetData))
+            {
+                return (humanNetData.m_Flags.m_General & CompositionFlags.General.Tunnel) != 0;
             }
 
             return false;
