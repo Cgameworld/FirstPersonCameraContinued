@@ -109,10 +109,7 @@ namespace FirstPersonCameraContinued
 
                 UpdateMarkerPosition();
 
-                bool isInTunnel = IsInTunnel(currentEntity);
-                Mod.log.Info("IsInTunnel? " + isInTunnel);
-
-                if (isInTunnel)
+                if (IsInTunnel(currentEntity))
                 {
                     ForceUndergroundViewOn();
                 }
@@ -149,7 +146,6 @@ namespace FirstPersonCameraContinued
         }
         private void ForceUndergroundViewOn()
         {
-            Mod.log.Info("ForceUndergroundView on");
             if (m_UndergroundViewSystem != null)
             {
                 var tunnelsOnProperty = typeof(UndergroundViewSystem).GetProperty("tunnelsOn");
