@@ -119,30 +119,51 @@ namespace FirstPersonCameraContinued
         public bool IsInTunnel(Entity entity)
         {
             if (EntityManager.TryGetComponent<CarCurrentLane>(entity, out var carLane) &&
-                EntityManager.TryGetComponent<Owner>(carLane.m_Lane, out var carOwner) &&
-                EntityManager.TryGetComponent<Composition>(carOwner.m_Owner, out var carComp) &&
-                EntityManager.TryGetComponent<NetCompositionData>(carComp.m_Edge, out var carNetData))
+                EntityManager.TryGetComponent<Owner>(carLane.m_Lane, out var carOwner))
             {
-                return (carNetData.m_Flags.m_General & CompositionFlags.General.Tunnel) != 0;
+                if (CheckTunnelFlag(carOwner.m_Owner)) {
+                    return true;
+                }
+                else if (EntityManager.TryGetBuffer<Game.Net.ConnectedEdge>(carOwner.m_Owner, true, out var carConnectedEdge) && CheckTunnelFlag(carConnectedEdge[0].m_Edge)) {
+                    return true;
+                }
             }
 
             if (EntityManager.TryGetComponent<TrainCurrentLane>(entity, out var trainLane) &&
-                EntityManager.TryGetComponent<Owner>(trainLane.m_Front.m_Lane, out var trainOwner) &&
-                EntityManager.TryGetComponent<Composition>(trainOwner.m_Owner, out var trainComp) &&
-                EntityManager.TryGetComponent<NetCompositionData>(trainComp.m_Edge, out var trainNetData))
-            {
-                return (trainNetData.m_Flags.m_General & CompositionFlags.General.Tunnel) != 0;
+                EntityManager.TryGetComponent<Owner>(trainLane.m_Front.m_Lane, out var trainOwner)) 
+            { 
+                if (CheckTunnelFlag(trainOwner.m_Owner))
+                {
+                    return true;
+                }
+                else if (EntityManager.TryGetBuffer<Game.Net.ConnectedEdge>(trainOwner.m_Owner, true, out var carConnectedEdge) && CheckTunnelFlag(carConnectedEdge[0].m_Edge))
+                {
+                    return true;
+                }
             }
 
             if (EntityManager.TryGetComponent<HumanCurrentLane>(entity, out var humanLane) &&
-                EntityManager.TryGetComponent<Owner>(humanLane.m_Lane, out var humanLaneOwner) &&
-                EntityManager.TryGetComponent<Composition>(humanLaneOwner.m_Owner, out var humanComp) &&
-                EntityManager.TryGetComponent<NetCompositionData>(humanComp.m_Edge, out var humanNetData))
+                EntityManager.TryGetComponent<Owner>(humanLane.m_Lane, out var humanLaneOwner))
             {
-                return (humanNetData.m_Flags.m_General & CompositionFlags.General.Tunnel) != 0;
+                if (CheckTunnelFlag(humanLaneOwner.m_Owner))
+                {
+                    return true;
+                }
+                else if (EntityManager.TryGetBuffer<Game.Net.ConnectedEdge>(humanLaneOwner.m_Owner, true, out var carConnectedEdge) && CheckTunnelFlag(carConnectedEdge[0].m_Edge))
+                {
+                    return true;
+                }
             }
 
             return false;
+        }
+        private bool CheckTunnelFlag(Entity netOwner)
+        {
+            return
+         EntityManager.TryGetComponent<Composition>(netOwner, out var comp) &&
+         EntityManager.TryGetComponent<NetCompositionData>(comp.m_Edge, out var netData) &&
+         (netData.m_Flags.m_General & CompositionFlags.General.Tunnel) != 0;
+
         }
         private void ForceUndergroundViewOn()
         {
