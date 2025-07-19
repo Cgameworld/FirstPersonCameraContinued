@@ -116,6 +116,7 @@ namespace FirstPersonCameraContinued.Systems
             s_CameraController.TryMatchPosition(_cameraUpdateSystem.activeCameraController);
             _cameraUpdateSystem.activeCameraController = s_CameraController;
 
+            World.GetExistingSystemManaged<SelectedInfoUISystem>()?.SetSelection(Entity.Null);
         }
 
         public static void PauseGameFollow(bool pause)
