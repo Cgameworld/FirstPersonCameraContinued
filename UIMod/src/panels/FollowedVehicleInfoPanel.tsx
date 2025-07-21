@@ -47,14 +47,20 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
     }
 
     useEffect(() => {
-        requestAnimationFrame(() => {
+        const updateWidth = () => {
             if (speedDivRef.current) {
-                const width = speedDivRef.current?.offsetWidth;
-                if (width) {
+                const width = speedDivRef.current.offsetWidth;
+                console.log("speedDivRef:", width);
+                if (width > 0) {
                     setSpeedWidth(width / (window.innerWidth / 1920) + 40 + 5);
                 }
+                else {
+                    requestAnimationFrame(updateWidth);
+                }
             }
-        });
+        };
+
+        requestAnimationFrame(updateWidth);
     }, []);
 
     if (!showInfoPanel) {
