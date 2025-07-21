@@ -80,9 +80,10 @@ namespace FirstPersonCameraContinued.Systems
             {
                 if (phase == InputActionPhase.Performed)
                 {
+                    log.Info("Free camera activated via keybind");
                     CameraInput input = Controller.GetCameraInput();
                     input.Toggle();
-                    log.Info("Free camera activated via keybind");
+                    ClearEntitySelection();
                 }
             };
         }
@@ -93,6 +94,7 @@ namespace FirstPersonCameraContinued.Systems
             Controller.Toggle();
             CameraInput input = Controller.GetCameraInput();
             input.Enable();
+            ClearEntitySelection();
         }
 
         private void EnterFollow()
@@ -116,7 +118,7 @@ namespace FirstPersonCameraContinued.Systems
             s_CameraController.TryMatchPosition(_cameraUpdateSystem.activeCameraController);
             _cameraUpdateSystem.activeCameraController = s_CameraController;
 
-            World.GetExistingSystemManaged<SelectedInfoUISystem>()?.SetSelection(Entity.Null);
+            ClearEntitySelection();
         }
 
         public static void PauseGameFollow(bool pause)
@@ -126,6 +128,10 @@ namespace FirstPersonCameraContinued.Systems
                 var setSimulationPausedMethod = typeof(TimeUISystem).GetMethod("SetSimulationPaused", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                 setSimulationPausedMethod.Invoke(World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TimeUISystem>(), new object[] { pause });
             }
+        }
+        private void ClearEntitySelection()
+        {
+            World.GetExistingSystemManaged<SelectedInfoUISystem>()?.SetSelection(Entity.Null);
         }
 
         public void EnterFollowRandomVehicle(bool firstTimeEntry = true)

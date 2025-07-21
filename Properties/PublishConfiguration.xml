@@ -94,8 +94,8 @@ If you like this mod be sure to leave an upvote! Thanks
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
 # v1.4.5
-* Fixed issue with cims (stopped being followed after vehicle change) 
-* Added more robust entity window check
+* Fixed issue with infobox speed section width not being set
+* Added more robust entity deselection
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />
