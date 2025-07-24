@@ -68,6 +68,8 @@ namespace FirstPersonCameraContinued
         }
 
         public bool ShowPIPUndergroundSetting;
+        public bool ShowPIPMarkerSetting;
+
         private readonly EntityFollower _entityFollower;
 
         public enum PiPCorner
@@ -189,6 +191,7 @@ namespace FirstPersonCameraContinued
             {
                 CameraController = cameraControllerObj.GetComponent<FirstPersonCameraController>();
                 ShowPIPUndergroundSetting = Mod.FirstPersonModSettings.ShowPIPUndergroundView;
+                ShowPIPMarkerSetting = Mod.FirstPersonModSettings.ShowPIPMarker;
             }
 
 
@@ -361,7 +364,10 @@ namespace FirstPersonCameraContinued
             border.effectColor = new Color(1f, 1f, 1f, 0.8f);
             border.effectDistance = new Vector2(2, 2);
 
-            CreateMarkerOverlay();
+            if (ShowPIPMarkerSetting)
+            {
+                CreateMarkerOverlay();
+            }
         }
 
         private Vector2 CalculateTopRightOffset()

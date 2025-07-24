@@ -11,7 +11,7 @@ using Unity.Entities;
 namespace FirstPersonCameraContinued
 {
     [FileLocation(nameof(FirstPersonCameraContinued))]
-    [SettingsUIShowGroupName(CameraSettingsGroup, KeybindingSettingsGroup, OtherSettingsGroup, UISettingsGroup, InfoBoxSettingsGroup, PIPGeneralSettingsGroup, PIPKeybindingSettingsGroup)]
+    [SettingsUIShowGroupName(CameraSettingsGroup, KeybindingSettingsGroup, OtherSettingsGroup, UISettingsGroup, InfoBoxSettingsGroup, PIPGeneralSettingsGroup, PIPFeatureSettingsGroup, PIPKeybindingSettingsGroup)]
     [SettingsUITabOrder(GeneralSettingsTab, UISettingsTab, PIPSettingsTab)]
     public class Setting : ModSetting
     {
@@ -24,6 +24,7 @@ namespace FirstPersonCameraContinued
         public const string InfoBoxSettingsGroup = "InfoBoxSettingsGroup";
         public const string PIPSettingsTab = "PIPSettingsTab";
         public const string PIPGeneralSettingsGroup = "PIPGeneralSettingsGroup";
+        public const string PIPFeatureSettingsGroup = "PIPFeatureSettingsGroup";
         public const string PIPKeybindingSettingsGroup = "PIPKeybindingSettingsGroup";
 
         private bool _showInfoBox;
@@ -147,7 +148,10 @@ namespace FirstPersonCameraContinued
         [SettingsUISection(PIPSettingsTab, PIPGeneralSettingsGroup)]
         public bool ShowPIPOnEnter { get; set; }
 
-        [SettingsUISection(PIPSettingsTab, PIPGeneralSettingsGroup)]
+        [SettingsUISection(PIPSettingsTab, PIPFeatureSettingsGroup)]
+        public bool ShowPIPMarker { get; set; }
+
+        [SettingsUISection(PIPSettingsTab, PIPFeatureSettingsGroup)]
         public bool ShowPIPUndergroundView { get; set; }
 
 
@@ -180,6 +184,7 @@ namespace FirstPersonCameraContinued
             PIPAspectRatio = 0.9f;
             PIPSize = 0.4f;
             ShowPIPOnEnter = false;
+            ShowPIPMarker = true;
             ShowPIPUndergroundView = true;
         }
 
