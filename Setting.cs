@@ -147,6 +147,10 @@ namespace FirstPersonCameraContinued
         [SettingsUISection(PIPSettingsTab, PIPGeneralSettingsGroup)]
         public bool ShowPIPOnEnter { get; set; }
 
+        [SettingsUISection(PIPSettingsTab, PIPGeneralSettingsGroup)]
+        public bool ShowPIPUndergroundView { get; set; }
+
+
         [SettingsUIMultilineText]
         [SettingsUISection(PIPSettingsTab, PIPKeybindingSettingsGroup)]
         public string PIPMultilineText => "Placeholder";
@@ -176,7 +180,7 @@ namespace FirstPersonCameraContinued
             PIPAspectRatio = 0.9f;
             PIPSize = 0.4f;
             ShowPIPOnEnter = false;
-
+            ShowPIPUndergroundView = true;
         }
 
        public void Unload()

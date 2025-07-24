@@ -65,5 +65,7 @@
 "Options.OPTION_DESCRIPTION:PIPSize","Configure size of the picture-in-picture window"
 "Options.OPTION:ShowPIPOnEnter","Show on Entry"
 "Options.OPTION_DESCRIPTION:ShowPIPOnEnter","Check to show the picture-in-picture window immediately when entering first person mode without needing to activate it with the P key"
+"Options.OPTION:ShowPIPUndergroundView","Show Underground Tunnel Overlay"
+"Options.OPTION_DESCRIPTION:ShowPIPUndergroundView","Check to show the underground tunnel view while a vehicle/cim is in a tunnel"
 "Options.GROUP:PIPKeybindingSettingsGroup","Keybinding"
 "Options.OPTION:PIPMultilineText","Picture-in-Picture Specific Keyboard Shortcuts:\nScroll Wheel - zoom view in/out\nCTRL + Scroll Wheel - increase/decrease PiP window size"

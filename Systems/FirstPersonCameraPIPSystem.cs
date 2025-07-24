@@ -67,6 +67,7 @@ namespace FirstPersonCameraContinued
             set;
         }
 
+        public bool ShowPIPUndergroundSetting;
         private readonly EntityFollower _entityFollower;
 
         public enum PiPCorner
@@ -109,7 +110,7 @@ namespace FirstPersonCameraContinued
 
                 UpdateMarkerPosition();
 
-                if (IsInTunnel(currentEntity))
+                if (IsInTunnel(currentEntity) && ShowPIPUndergroundSetting)
                 {
                     ForceUndergroundViewOn();
                 }
@@ -184,9 +185,10 @@ namespace FirstPersonCameraContinued
             InitializePiP();
 
             var cameraControllerObj = GameObject.Find(nameof(FirstPersonCameraController));
-            if (cameraControllerObj != null)
+            if (cameraControllerObj != null && Mod.FirstPersonModSettings != null)
             {
                 CameraController = cameraControllerObj.GetComponent<FirstPersonCameraController>();
+                ShowPIPUndergroundSetting = Mod.FirstPersonModSettings.ShowPIPUndergroundView;
             }
 
 
