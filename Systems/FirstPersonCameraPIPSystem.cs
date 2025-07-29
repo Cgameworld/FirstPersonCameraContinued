@@ -59,7 +59,7 @@ namespace FirstPersonCameraContinued
         private GameObject m_MarkerOverlay;
         private RectTransform m_MarkerIcon;
         private UndergroundViewSystem m_UndergroundViewSystem;
-
+        private TerrainSystem m_TerrainSystem;
         private bool _wasInTunnel = false;
         private FirstPersonCameraController CameraController
         {
@@ -86,6 +86,7 @@ namespace FirstPersonCameraContinued
             // Example on how to get a existing ECS System from the ECS World
             // this.simulation = World.GetExistingSystemManaged<SimulationSystem>();
             m_UndergroundViewSystem = World.GetOrCreateSystemManaged<UndergroundViewSystem>();
+            m_TerrainSystem = World.GetOrCreateSystemManaged<TerrainSystem>();
         }
 
         protected override void OnUpdate()
@@ -102,6 +103,10 @@ namespace FirstPersonCameraContinued
                     
                         positon = pos;
                         rotation = rot;
+
+                    var heightData = m_TerrainSystem.GetHeightData();
+                    float terrainY = TerrainUtils.SampleHeight(ref heightData, positon);
+                    Mod.log.Info("current position: " + positon + " | terrain pos output: " + terrainY + " | isBelow? " + (positon.y < terrainY));
                 }
                 if (m_PipCorner == PiPCorner.TopRight)
                 {
