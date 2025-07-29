@@ -100,13 +100,17 @@ namespace FirstPersonCameraContinued
                 if (currentEntity != Entity.Null)
                 {
                     CameraController.GetTransformer().GetEntityFollower().TryGetPosition(out float3 pos, out _, out quaternion rot, out _);
-                    
-                        positon = pos;
-                        rotation = rot;
 
-                    var heightData = m_TerrainSystem.GetHeightData();
-                    float terrainY = TerrainUtils.SampleHeight(ref heightData, positon);
-                    Mod.log.Info("current position: " + positon + " | terrain pos output: " + terrainY + " | isBelow? " + (positon.y < terrainY));
+                    // prevent camera from clipping under terrain
+                    TerrainHeightData heightData = m_TerrainSystem.GetHeightData();
+                    float terrainY = TerrainUtils.SampleHeight(ref heightData, pos);
+                    if (pos.y < terrainY)
+                    {
+                        pos.y = terrainY;
+                    }
+
+                    positon = pos;
+                    rotation = rot;
                 }
                 if (m_PipCorner == PiPCorner.TopRight)
                 {
