@@ -48,6 +48,8 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
         formattedSpeed = Math.round(parsedSpeed * 1.8) + " km/h";
     }
 
+    let formattedResources = Math.round(parsedResources*100) + "%";
+
     useEffect(() => {
         const updateWidth = () => {
             if (speedDivRef.current) {
@@ -112,7 +114,7 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
             {parsedResources !== -1 && !onlyShowSpeed && (
                 <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
                     <div className={`fpcc-info-label ${infoBoxSizeClass}`}>{translation.resourcesLabel}</div>
-                    <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{parsedResources}</div>
+                    <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{formattedResources}</div>
                 </div>
             )}
         </div>

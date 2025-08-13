@@ -129,9 +129,12 @@ namespace FirstPersonCameraContinued.Systems
             }
 
             int totalPassengers = -1;
-            int totalResourceAmount = -1;
+            float totalResourcePercentage = -1;
 
-            if (EntityManager.HasComponent<Game.Vehicles.PassengerTransport>(currentEntity) || EntityManager.HasComponent<Game.Vehicles.CargoTransport>(currentEntity))
+            int totalResourceAmount = 0;
+            int totalResourceCapacity = 0;
+
+            if (EntityManager.HasComponent<Game.Vehicles.PassengerTransport>(currentEntity) || EntityManager.HasComponent<Game.Vehicles.CargoTransport>(currentEntity) || EntityManager.HasComponent<Game.Vehicles.TrainCurrentLane>(currentEntity))
             {
                 if (EntityManager.TryGetComponent<Game.Vehicles.Controller>(currentEntity, out var controllerComponent))
                 {
@@ -147,11 +150,11 @@ namespace FirstPersonCameraContinued.Systems
                             }
                             //count total cargo
                             if (EntityManager.TryGetBuffer<Game.Economy.Resources>(layoutElementBuffer[i].m_Vehicle,true, out var resourceBuffer)){
-                                if (totalResourceAmount == -1) totalResourceAmount = 0;
                                 for (int j = 0; j< resourceBuffer.Length; j++)
                                 {
                                     totalResourceAmount += resourceBuffer[j].m_Amount;
                                 }
+                                totalResourceCapacity += 100000;
                             }
                         }
                     }
@@ -165,8 +168,14 @@ namespace FirstPersonCameraContinued.Systems
                 }
             }
 
+            totalResourcePercentage = totalResourceCapacity > 0 ? 
+                (float)totalResourceAmount/totalResourceCapacity: -1;
+
+            //Mod.log.Info(totalResourceCapacity + " | " + totalResourceAmount);
+            //Mod.log.Info("totalResourcePercentage: " + totalResourcePercentage);
+
             followedEntityInfo.passengers = totalPassengers;
-            followedEntityInfo.resources = totalResourceAmount;
+            followedEntityInfo.resources = totalResourcePercentage;
 
             //		m_CitizenNameQuery = GetEntityQuery(ComponentType.ReadOnly<Citizen>(), ComponentType.ReadOnly<PrefabRef>(), ComponentType.Exclude<RandomLocalizationIndex>());
 
