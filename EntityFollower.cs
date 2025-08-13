@@ -65,6 +65,15 @@ namespace FirstPersonCameraContinued
                     _model.FollowEntity = housePet.m_CurrentBuilding;
                 }
             }
+
+
+            // switch back to following cim entity after exiting vehicle
+            if (_entityManager.TryGetComponent<Game.Creatures.Resident>(_model.LastFollowEntity, out var lastEntityResident) && lastEntityResident.m_Flags.HasFlag(ResidentFlags.Disembarking))
+            {
+                //Mod.log.Info("Cim Disembarking " + _model.FollowEntity);
+                _model.FollowEntity = _model.LastFollowEntity;
+            }
+
         }
 
         /// <summary>
