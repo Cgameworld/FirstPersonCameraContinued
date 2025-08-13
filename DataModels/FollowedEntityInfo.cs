@@ -11,6 +11,7 @@ namespace FirstPersonCameraContinued.DataModels
         public float currentSpeed;
         public int unitsSystem;
         public int passengers;
+        public int resources;
         public string? vehicleType;
         public string? citizenName;
         public string? citizenAction;

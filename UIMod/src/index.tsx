@@ -57,6 +57,7 @@ const register: ModRegistrar = (moduleRegistry) => {
             nameLabel: translate("FirstPersonCameraContinued.NameLabel"),
             speedLabel: translate("FirstPersonCameraContinued.SpeedLabel"),
             vehicleTypeLabel: translate("FirstPersonCameraContinued.VehicleTypeLabel"),
+            resourcesLabel: translate("FirstPersonCameraContinued.ResourceLabel"),
             actionLabel: translate("FirstPersonCameraContinued.ActionLabel"),
             passengersLabel: translate("FirstPersonCameraContinued.PassengersLabel")
         };

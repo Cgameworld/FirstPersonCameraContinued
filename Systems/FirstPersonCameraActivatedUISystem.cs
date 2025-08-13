@@ -110,6 +110,7 @@ namespace FirstPersonCameraContinued.Systems
                         unitsSystem = -1,
                         passengers = -1,
                         currentSpeed = -1,
+                        resources = -1,
                     };
                     
                     this.followedEntityInfo = JsonConvert.SerializeObject(followedEntityInfo);
@@ -127,36 +128,45 @@ namespace FirstPersonCameraContinued.Systems
                 followedEntityInfo.currentSpeed = new Vector3(movingComponent.m_Velocity.x, movingComponent.m_Velocity.y, movingComponent.m_Velocity.z).magnitude;
             }
 
-            //get passenger numbers if bus, tram, metro, etc
-            if (EntityManager.HasComponent<Game.Vehicles.PassengerTransport>(currentEntity))
+            int totalPassengers = -1;
+            int totalResourceAmount = -1;
+
+            if (EntityManager.HasComponent<Game.Vehicles.PassengerTransport>(currentEntity) || EntityManager.HasComponent<Game.Vehicles.CargoTransport>(currentEntity))
             {
                 if (EntityManager.TryGetComponent<Game.Vehicles.Controller>(currentEntity, out var controllerComponent))
                 {
                     if (EntityManager.TryGetBuffer<Game.Vehicles.LayoutElement>(controllerComponent.m_Controller, false, out var layoutElementBuffer))
                     {
-                        int totalPassengers = 0;
                         for (int i = 0; i < layoutElementBuffer.Length; i++)
                         {
-                            if (EntityManager.TryGetBuffer<Game.Vehicles.Passenger>(layoutElementBuffer[i].m_Vehicle, false, out var passengerBuffer))
+                            //count passengers
+                            if (EntityManager.TryGetBuffer<Game.Vehicles.Passenger>(layoutElementBuffer[i].m_Vehicle, true, out var passengerBuffer))
                             {
+                                if (totalPassengers == -1) totalPassengers = 0;
                                 totalPassengers += passengerBuffer.Length;
                             }
+                            //count total cargo
+                            if (EntityManager.TryGetBuffer<Game.Economy.Resources>(layoutElementBuffer[i].m_Vehicle,true, out var resourceBuffer)){
+                                if (totalResourceAmount == -1) totalResourceAmount = 0;
+                                for (int j = 0; j< resourceBuffer.Length; j++)
+                                {
+                                    totalResourceAmount += resourceBuffer[j].m_Amount;
+                                }
+                            }
                         }
-                        followedEntityInfo.passengers = totalPassengers;
                     }
                 }
                 else
                 {
                     if (EntityManager.TryGetBuffer<Game.Vehicles.Passenger>(currentEntity, false, out var passengerBuffer))
                     {
-                        followedEntityInfo.passengers = passengerBuffer.Length;
+                        totalPassengers = passengerBuffer.Length;
                     }
                 }
             }
-            else
-            {
-                followedEntityInfo.passengers = -1;
-            }
+
+            followedEntityInfo.passengers = totalPassengers;
+            followedEntityInfo.resources = totalResourceAmount;
 
             //		m_CitizenNameQuery = GetEntityQuery(ComponentType.ReadOnly<Citizen>(), ComponentType.ReadOnly<PrefabRef>(), ComponentType.Exclude<RandomLocalizationIndex>());
 
@@ -203,6 +213,7 @@ namespace FirstPersonCameraContinued.Systems
                 currentSpeed = -1,
                 unitsSystem = -1,
                 passengers = -1,
+                resources = -1,
                 vehicleType = "none",
                 citizenName = "none",
                 citizenAction = "none",

@@ -9,6 +9,7 @@ interface TranslationProps {
     nameLabel: string | null;
     speedLabel: string | null;
     vehicleTypeLabel: string | null;
+    resourcesLabel: string | null;
     actionLabel: string | null;
     passengersLabel: string | null;
 }
@@ -34,6 +35,7 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
     const parsedSpeed = JSON.parse(followedEntityInfo).currentSpeed;
     const parsedUnits = JSON.parse(followedEntityInfo).unitsSystem;
     const parsedPassengers = JSON.parse(followedEntityInfo).passengers;
+    const parsedResources = JSON.parse(followedEntityInfo).resources;
     const vehicleType = JSON.parse(followedEntityInfo).vehicleType;
     const citizenName = JSON.parse(followedEntityInfo).citizenName;
     const citizenAction = JSON.parse(followedEntityInfo).citizenAction;
@@ -105,6 +107,12 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
                 <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
                     <div className={`fpcc-info-label ${infoBoxSizeClass}`}>{translation.passengersLabel}</div>
                     <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{parsedPassengers}</div>
+                </div>
+            )}
+            {parsedResources !== -1 && !onlyShowSpeed && (
+                <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
+                    <div className={`fpcc-info-label ${infoBoxSizeClass}`}>{translation.resourcesLabel}</div>
+                    <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{parsedResources}</div>
                 </div>
             )}
         </div>
