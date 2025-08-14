@@ -165,6 +165,25 @@ namespace FirstPersonCameraContinued.Systems
                     {
                         totalPassengers = passengerBuffer.Length;
                     }
+
+                }
+            }
+
+            //get delivery truck resource info - not working with game dummy data!
+            if (EntityManager.TryGetComponent<Game.Vehicles.DeliveryTruck>(currentEntity, out var deliveryTruckComponent))
+            {
+                if (EntityManager.TryGetBuffer<Game.Vehicles.LayoutElement>(currentEntity, false, out var layoutElementBuffer))
+                {
+                    foreach (var layoutElement in layoutElementBuffer)
+                    {
+                        if (EntityManager.TryGetComponent<Game.Vehicles.DeliveryTruck>(layoutElement.m_Vehicle, out var deliveryTruckSinglePart) && EntityManager.TryGetComponent<Game.Prefabs.PrefabRef>(layoutElement.m_Vehicle, out var prefabRefSinglePart) && EntityManager.TryGetComponent<Game.Prefabs.DeliveryTruckData>(prefabRefSinglePart.m_Prefab, out var deliveryTruckDataSinglePart))
+                        {
+                            totalResourceAmount += deliveryTruckSinglePart.m_Amount;
+                            Mod.log.Info($"Added {deliveryTruckSinglePart.m_Amount} to resource amount, new total: {totalResourceAmount}");
+                            totalResourceCapacity += deliveryTruckDataSinglePart.m_CargoCapacity;
+                            Mod.log.Info($"Added {deliveryTruckDataSinglePart.m_CargoCapacity} to capacity, new total: {totalResourceCapacity}");
+                        }
+                    }
                 }
             }
 
