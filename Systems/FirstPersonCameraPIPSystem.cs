@@ -193,8 +193,6 @@ namespace FirstPersonCameraContinued
         {
             DestroyPiPWindow();
 
-            InitializePiP();
-
             var cameraControllerObj = GameObject.Find(nameof(FirstPersonCameraController));
             if (cameraControllerObj != null && Mod.FirstPersonModSettings != null)
             {
@@ -203,7 +201,7 @@ namespace FirstPersonCameraContinued
                 ShowPIPMarkerSetting = Mod.FirstPersonModSettings.ShowPIPMarker;
             }
 
-
+            InitializePiP();
             //Mod.log.Info("CameraControllertransfrom: " + positon);
             //SetPiPPosition(positon.x, positon.y+10f,positon.z,0f,0f,0f);
             //SetPiPPosition(-701f, 600f, -1477f, 0f, 0f, 0f);
@@ -474,6 +472,8 @@ namespace FirstPersonCameraContinued
                     return iconComponent.m_Location;
                 }
             }
+
+            markerEntities.Dispose();
 
             return float3.zero;
         }
