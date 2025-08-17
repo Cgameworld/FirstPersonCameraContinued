@@ -12,6 +12,7 @@
 "FirstPersonCameraContinued.SpeedLabel","Speed"
 "FirstPersonCameraContinued.VehicleTypeLabel","Vehicle Type"
 "FirstPersonCameraContinued.ActionLabel","Action"
+"FirstPersonCameraContinued.ResourceLabel","Cargo Capacity"
 "FirstPersonCameraContinued.PassengersLabel","Passengers"
 "Options.TAB:GeneralSettingsTab","General"
 "Options.TAB:UISettingsTab","UI"

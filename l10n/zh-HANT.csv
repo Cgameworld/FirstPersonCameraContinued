@@ -1,4 +1,4 @@
-"Options.SECTION:[cgameworld.FirstPersonCameraContinued","第一人稱鏡頭（延伸）"
+"Options.SECTION:[cgameworld.FirstPersonCameraContinued","第一人稱鏡頭(繼續)"
 "FirstPersonCameraContinued.ToastTextEnter","按ESC退出"
 "FirstPersonCameraContinued.ToastTextRandomModeCimEnter","按下 ENTER 鍵以跟隨另一個任意市民"
 "FirstPersonCameraContinued.ToastTextRandomModeVehicleEnter","按下 ENTER 鍵以跟隨另一個任意載具"
@@ -12,6 +12,7 @@
 "FirstPersonCameraContinued.SpeedLabel","速度"
 "FirstPersonCameraContinued.VehicleTypeLabel","載具類型"
 "FirstPersonCameraContinued.ActionLabel","動作"
+"FirstPersonCameraContinued.ResourceLabel","貨物承載量"
 "FirstPersonCameraContinued.PassengersLabel","乘客"
 "Options.TAB:GeneralSettingsTab","一般"
 "Options.TAB:UISettingsTab","使用者介面"
