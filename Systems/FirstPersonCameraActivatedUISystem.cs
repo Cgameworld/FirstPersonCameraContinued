@@ -1,27 +1,17 @@
 ﻿using Colossal.Entities;
 using Colossal.UI.Binding;
 using FirstPersonCameraContinued.DataModels;
-using FirstPersonCameraContinued.Enums;
 using FirstPersonCameraContinued.MonoBehaviours;
-using FirstPersonCameraContinued.Transforms;
-using Game.Citizens;
-using Game.Common;
 using Game.Prefabs;
-using Game.Rendering;
 using Game.SceneFlow;
 using Game.UI;
 using Game.UI.InGame;
 using Game.Vehicles;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Scripting.APIUpdating;
-using static Game.UI.InGame.VehiclesSection;
 
 namespace FirstPersonCameraContinued.Systems
 {
@@ -169,23 +159,12 @@ namespace FirstPersonCameraContinued.Systems
                 }
             }
 
-            //get delivery truck resource info - not working with game dummy data!
-            if (EntityManager.TryGetComponent<Game.Vehicles.DeliveryTruck>(currentEntity, out var deliveryTruckComponent))
+            //count total cargo (trucks)
+            if (TryGetDeliveryTruckCargo(currentEntity, EntityManager, out var amount, out var capacity))
             {
-                if (EntityManager.TryGetBuffer<Game.Vehicles.LayoutElement>(currentEntity, false, out var layoutElementBuffer))
-                {
-                    foreach (var layoutElement in layoutElementBuffer)
-                    {
-                        if (EntityManager.TryGetComponent<Game.Vehicles.DeliveryTruck>(layoutElement.m_Vehicle, out var deliveryTruckSinglePart) && EntityManager.TryGetComponent<Game.Prefabs.PrefabRef>(layoutElement.m_Vehicle, out var prefabRefSinglePart) && EntityManager.TryGetComponent<Game.Prefabs.DeliveryTruckData>(prefabRefSinglePart.m_Prefab, out var deliveryTruckDataSinglePart))
-                        {
-                            totalResourceAmount += deliveryTruckSinglePart.m_Amount;
-                            Mod.log.Info($"Added {deliveryTruckSinglePart.m_Amount} to resource amount, new total: {totalResourceAmount}");
-                            totalResourceCapacity += deliveryTruckDataSinglePart.m_CargoCapacity;
-                            Mod.log.Info($"Added {deliveryTruckDataSinglePart.m_CargoCapacity} to capacity, new total: {totalResourceCapacity}");
-                        }
-                    }
-                }
-            }
+                totalResourceAmount = amount;
+                totalResourceCapacity = capacity;
+            }          
 
             totalResourcePercentage = totalResourceCapacity > 0 ? 
                 (float)totalResourceAmount/totalResourceCapacity: -1;
@@ -196,7 +175,7 @@ namespace FirstPersonCameraContinued.Systems
             followedEntityInfo.passengers = totalPassengers;
             followedEntityInfo.resources = totalResourcePercentage;
 
-            //		m_CitizenNameQuery = GetEntityQuery(ComponentType.ReadOnly<Citizen>(), ComponentType.ReadOnly<PrefabRef>(), ComponentType.Exclude<RandomLocalizationIndex>());
+            //m_CitizenNameQuery = GetEntityQuery(ComponentType.ReadOnly<Citizen>(), ComponentType.ReadOnly<PrefabRef>(), ComponentType.Exclude<RandomLocalizationIndex>());
 
             //if ped
             if (EntityManager.TryGetComponent<Game.Creatures.Resident>(currentEntity, out var residentComponent) && EntityManager.TryGetComponent<Game.Prefabs.PrefabRef>(currentEntity, out var prefabRefComponent))
@@ -232,6 +211,68 @@ namespace FirstPersonCameraContinued.Systems
 
             this.followedEntityInfo = JsonConvert.SerializeObject(followedEntityInfo);
             followedEntityInfoBinding.Update();
+        }
+
+        public static bool TryGetDeliveryTruckCargo(
+            in Entity root, EntityManager em,
+            out int amount, out int capacity)
+        {
+            amount = 0;
+            capacity = 0;
+
+            if (!em.Exists(root) || !em.HasComponent<Vehicle>(root))
+                return false;
+
+            if (em.TryGetBuffer(root, true, out DynamicBuffer<LayoutElement> layout) && layout.Length > 0)
+            {
+                for (int i = 0; i < layout.Length; i++)
+                {
+                    var vehicle = layout[i].m_Vehicle;
+
+                    if (em.TryGetComponent<Game.Vehicles.DeliveryTruck>(vehicle, out var dt))
+                    {
+                        if ((dt.m_State & DeliveryTruckFlags.Loaded) != 0)
+                            amount += dt.m_Amount;
+                    }
+
+                    if (em.TryGetComponent<PrefabRef>(vehicle, out var pr))
+                    {
+                        var prefab = pr.m_Prefab;
+                        if (em.TryGetComponent<DeliveryTruckData>(prefab, out var dtData))
+                            capacity += dtData.m_CargoCapacity;
+                    }
+                }
+
+                return capacity > 0;
+            }
+
+            // Single-unit case
+
+            if (em.TryGetComponent<Game.Vehicles.DeliveryTruck>(root, out var singleDt))
+            {
+                if ((singleDt.m_State & DeliveryTruckFlags.Loaded) != 0)
+                    amount = singleDt.m_Amount;
+            }
+
+            Entity prefabEntity = Entity.Null;
+
+            if (em.TryGetComponent<Controller>(root, out var controller) &&
+                em.TryGetComponent<PrefabRef>(controller.m_Controller, out var controllerPrefabRef))
+            {
+                prefabEntity = controllerPrefabRef.m_Prefab;
+            }
+            else if (em.TryGetComponent<PrefabRef>(root, out var selfPrefabRef))
+            {
+                prefabEntity = selfPrefabRef.m_Prefab;
+            }
+
+            if (prefabEntity != Entity.Null)
+            {
+                if (em.TryGetComponent<DeliveryTruckData>(prefabEntity, out var dtData))
+                    capacity = dtData.m_CargoCapacity;
+            }
+
+            return capacity > 0 || amount > 0;
         }
 
         public string SetFollowedEntityDefaults()
