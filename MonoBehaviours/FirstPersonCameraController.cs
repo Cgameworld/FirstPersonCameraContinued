@@ -52,14 +52,14 @@ namespace FirstPersonCameraContinued.MonoBehaviours
         private float storedLODScale;
         private float storedAmbienceVolume;
 
-        private readonly CameraDataModel _model;
-        private readonly CameraInput _input;
-        private readonly CameraTransformer _transformer;
-        private readonly VirtualCameraRig _rig;
-        private readonly CameraRaycaster _raycaster;
-        private readonly CameraUpdateSystem _cameraUpdateSystem;
+        private CameraDataModel _model;
+        private CameraInput _input;
+        private CameraTransformer _transformer;
+        private VirtualCameraRig _rig;
+        private CameraRaycaster _raycaster;
+        private CameraUpdateSystem _cameraUpdateSystem;
 
-        public FirstPersonCameraController( )
+        public void Awake()
         {
             _model = new CameraDataModel( );
             _input = new CameraInput( _model );

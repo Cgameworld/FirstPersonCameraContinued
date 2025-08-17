@@ -96,6 +96,7 @@ If you like this mod be sure to leave an upvote! Thanks
 # v1.4.6
 * Fixed issue with camera not switching back to following cim after exiting vehicle
 * Added cargo train capacity to infobox
+* Fixed issue with error thrown in Development Build mode
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />
