@@ -31,6 +31,7 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
     const showInfoPanel = JSON.parse(uiSettingsGroupOptions).ShowInfoBox;
     const onlyShowSpeed = JSON.parse(uiSettingsGroupOptions).OnlyShowSpeed;
     const infoBoxSize = JSON.parse(uiSettingsGroupOptions).InfoBoxSize;
+    const setUnits = JSON.parse(uiSettingsGroupOptions).SetUnits;
 
     const parsedSpeed = JSON.parse(followedEntityInfo).currentSpeed;
     const parsedUnits = JSON.parse(followedEntityInfo).unitsSystem;
@@ -42,10 +43,18 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
 
     let formattedSpeed: string;
 
-    if (parsedUnits == 1) {
-        formattedSpeed = Math.round(parsedSpeed * 1.26) + " mph";
-    } else {
-        formattedSpeed = Math.round(parsedSpeed * 1.8) + " km/h";
+    const toMph = (s: number) => Math.round(s * 1.26) + " mph";
+    const toKmh = (s: number) => Math.round(s * 1.8) + " km/h";
+
+    //if mod unit override is off
+    if (setUnits === 0) {
+        formattedSpeed = parsedUnits === 1 ? toMph(parsedSpeed) : toKmh(parsedSpeed);
+    }
+    else if (setUnits === 2) {
+        formattedSpeed = toMph(parsedSpeed)
+    }
+    else {
+        formattedSpeed = toKmh(parsedSpeed)
     }
 
     let formattedResources = Math.round(parsedResources*100) + "%";

@@ -26,6 +26,7 @@ namespace FirstPersonCameraContinued
         private bool _showInfoBox;
         private bool _onlyShowSpeed;
         private InfoBoxSize _infoBoxSize;
+        private ModUnits _setUnits;
 
         public Setting(IMod mod) : base(mod)
         {
@@ -129,6 +130,17 @@ namespace FirstPersonCameraContinued
             }
         }
 
+        [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
+        public Enums.ModUnits SetUnits
+        {
+            get => _setUnits;
+            set
+            {
+                _setUnits = value;
+                SetUISettingsGroup();
+            }
+        }
+
         private void SetUISettingsGroup()
         {
             World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<FirstPersonCameraActivatedUISystem>().SetUISettingsGroupOptions();
@@ -150,6 +162,7 @@ namespace FirstPersonCameraContinued
             ShowInfoBox = true;
             OnlyShowSpeed = false;
             InfoBoxSize = Enums.InfoBoxSize.Default;
+            SetUnits = Enums.ModUnits.GameSetting;
         }
 
        public void Unload()

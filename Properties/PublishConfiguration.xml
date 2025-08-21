@@ -94,11 +94,9 @@ If you like this mod be sure to leave an upvote! Thanks
 	<Dependency Id="74417" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
-# v1.4.6
-* Fixed issue with camera not switching back to following cim after exiting vehicle
-* Added cargo capacity to the infobox
-* Fixed error thrown when game is in Development Build mode
-* Updated translations 
+# v1.4.7
+* added setting unit override
+* Updated translations? 
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />

@@ -325,6 +325,7 @@ namespace FirstPersonCameraContinued.Systems
         public bool ShowInfoBox { get; set; }
         public bool OnlyShowSpeed { get; set; }
         public int InfoBoxSize { get; set; }
+        public int SetUnits { get; set; }
 
         public static UISettingsGroup FromModSettings()
         {
@@ -334,7 +335,8 @@ namespace FirstPersonCameraContinued.Systems
                 {
                     ShowInfoBox = true,
                     OnlyShowSpeed = false,
-                    InfoBoxSize = 1
+                    InfoBoxSize = 1,
+                    SetUnits = 0
                 };
             }
 
@@ -342,7 +344,8 @@ namespace FirstPersonCameraContinued.Systems
             {
                 ShowInfoBox = Mod.FirstPersonModSettings.ShowInfoBox,
                 OnlyShowSpeed = Mod.FirstPersonModSettings.OnlyShowSpeed,
-                InfoBoxSize = ((int)Mod.FirstPersonModSettings.InfoBoxSize)
+                InfoBoxSize = (int)Mod.FirstPersonModSettings.InfoBoxSize,
+                SetUnits = (int)Mod.FirstPersonModSettings.SetUnits               
             };
         }
     }
