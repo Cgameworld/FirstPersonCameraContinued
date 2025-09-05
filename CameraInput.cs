@@ -9,6 +9,7 @@ using Game.UI.InGame;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -267,10 +268,23 @@ namespace FirstPersonCameraContinued
             foreach (var action in TemporaryActions)
                 action.Enable();
 
-
+            //block main game keybindings
             ProxyActionMap shortcutsProxyMap = InputManager.instance.FindActionMap("Shortcuts");
-            shortcutsProxyMapBarrier = new InputBarrier("Disable Shortcuts Map", shortcutsProxyMap, InputManager.DeviceType.All);
-            shortcutsProxyMapBarrier.blocked = true;
+            HashSet<string> allow = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Speed 1",
+                "Speed 2",
+                "Speed 3"
+            };
+
+            List<ProxyAction> actionsToBlock = shortcutsProxyMap.actions.Where(kv => !allow.Contains(kv.Key)).Select(kv => kv.Value).ToList();
+
+            shortcutsProxyMapBarrier = new InputBarrier(
+                "Disable Shortcuts Map",
+                actionsToBlock,
+                InputManager.DeviceType.Keyboard | InputManager.DeviceType.Gamepad,
+                blocked: true
+            );
         }
 
         public void SetEntity(Entity entity)
