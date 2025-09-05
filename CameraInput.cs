@@ -2,6 +2,7 @@
 using FirstPersonCameraContinued.DataModels;
 using FirstPersonCameraContinued.Enums;
 using FirstPersonCameraContinued.Systems;
+using Game.Input;
 using Game.Rendering;
 using Game.SceneFlow;
 using Game.UI.InGame;
@@ -66,6 +67,7 @@ namespace FirstPersonCameraContinued
         private readonly CameraDataModel _model;
         private static bool firstGameSpeedChangeEvent = true;
         private static bool gameIsPausedState;
+        private InputBarrier shortcutsProxyMapBarrier;
 
         internal CameraInput(CameraDataModel model)
         {
@@ -231,8 +233,8 @@ namespace FirstPersonCameraContinued
             action = new InputAction("FPSController_Escape", binding: "<Keyboard>/escape");
             action.performed += ctx =>
             {
-                if (_model.Mode == CameraMode.Follow)
-                    OnUnfollow?.Invoke();
+                // if (_model.Mode == CameraMode.Follow)
+                //    OnUnfollow?.Invoke();
 
                 Disable();
                 OnToggle?.Invoke();
@@ -264,6 +266,11 @@ namespace FirstPersonCameraContinued
 
             foreach (var action in TemporaryActions)
                 action.Enable();
+
+
+            ProxyActionMap shortcutsProxyMap = InputManager.instance.FindActionMap("Shortcuts");
+            shortcutsProxyMapBarrier = new InputBarrier("Disable Shortcuts Map", shortcutsProxyMap, InputManager.DeviceType.All);
+            shortcutsProxyMapBarrier.blocked = true;
         }
 
         public void SetEntity(Entity entity)
@@ -278,6 +285,9 @@ namespace FirstPersonCameraContinued
         {
             foreach (var action in TemporaryActions)
                 action.Disable();
+
+            shortcutsProxyMapBarrier.blocked = false;
+            shortcutsProxyMapBarrier.Dispose();
         }
 
         /// <summary>
@@ -295,6 +305,7 @@ namespace FirstPersonCameraContinued
 
             OnToggle?.Invoke();
         }
+
 
         /// <summary>
         /// Right click event for follow mechanics
