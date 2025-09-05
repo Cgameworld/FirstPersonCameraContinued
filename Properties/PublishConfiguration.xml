@@ -95,8 +95,11 @@ If you like this mod be sure to leave an upvote! Thanks
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
 # v1.4.7
+* Followed cim/vehicles are now focused after pressing ESC
 * Added override for displayed units in infobox settings
 * Fixed issue where displayed speed was 0 while a cim was riding a motorcycle
+
+- need to fix right click highlight not working??
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />
