@@ -66,7 +66,6 @@ Help translate this mod via Crowdin: https://crowdin.com/project/cs2-first-perso
 
 # Notes
 
-- Hold the right mouse button but don't release while in free camera first person mode to view the highlighted object before going into follow mode
 - Enter first person free camera mode in the editor by using the keyboard shortcut
 - Unsubscribe from the First Person Camera Temporary Reupload by Nyoko, or the original First Person Camera mod by H3llb0und to prevent compatibility issues
 
@@ -98,8 +97,6 @@ If you like this mod be sure to leave an upvote! Thanks
 * Followed cim/vehicles are now focused after pressing ESC
 * Added override for displayed units in infobox settings
 * Fixed issue where displayed speed was 0 while a cim was riding a motorcycle
-
-- need to fix right click highlight not working??
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />

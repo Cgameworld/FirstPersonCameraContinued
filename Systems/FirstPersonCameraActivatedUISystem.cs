@@ -184,18 +184,24 @@ namespace FirstPersonCameraContinued.Systems
             //if ped
             if (EntityManager.TryGetComponent<Game.Creatures.Resident>(currentEntity, out var residentComponent) && EntityManager.TryGetComponent<Game.Prefabs.PrefabRef>(currentEntity, out var prefabRefComponent))
             {
-                MethodInfo method = typeof(NameSystem).GetMethod("GetCitizenName", BindingFlags.NonPublic | BindingFlags.Instance);
-                var name = (NameSystem.Name)method.Invoke(World.GetExistingSystemManaged<NameSystem>(), new object[] { residentComponent.m_Citizen, prefabRefComponent.m_Prefab });
+                try
+                {
+                    MethodInfo method = typeof(NameSystem).GetMethod("GetCitizenName", BindingFlags.NonPublic | BindingFlags.Instance);
+                    var name = (NameSystem.Name)method.Invoke(World.GetExistingSystemManaged<NameSystem>(), new object[] { residentComponent.m_Citizen, prefabRefComponent.m_Prefab });
 
-                var nameArgs = (string[])name.GetType().GetField("m_NameArgs", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(name);
-                string firstNameLocalizationID = nameArgs[1];
-                string lastNameLocalizationID = nameArgs[3];
+                    var nameArgs = (string[])name.GetType().GetField("m_NameArgs", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(name);
+                    string firstNameLocalizationID = nameArgs[1];
+                    string lastNameLocalizationID = nameArgs[3];
 
-                string firstName = GameManager.instance.localizationManager.activeDictionary.TryGetValue(firstNameLocalizationID, out var first) ? first : firstNameLocalizationID;
-                string lastName = GameManager.instance.localizationManager.activeDictionary.TryGetValue(lastNameLocalizationID, out var last) ? last : lastNameLocalizationID;
-
-                //Mod.log.Info("Citizen Name: " + firstName + " " + lastName);
-                followedEntityInfo.citizenName = firstName + " " + lastName;
+                    string firstName = GameManager.instance.localizationManager.activeDictionary.TryGetValue(firstNameLocalizationID, out var first) ? first : firstNameLocalizationID;
+                    string lastName = GameManager.instance.localizationManager.activeDictionary.TryGetValue(lastNameLocalizationID, out var last) ? last : lastNameLocalizationID;
+                    //Mod.log.Info("Citizen Name: " + firstName + " " + lastName);
+                    followedEntityInfo.citizenName = firstName + " " + lastName;
+                }
+                catch
+                {
+                    followedEntityInfo.citizenName = "Unknown";
+                }
 
                 //get what citizen is doing
                 string citizenActionEnum = Enum.GetName(typeof(CitizenStateKey), CitizenUIUtils.GetStateKey(EntityManager, residentComponent.m_Citizen));
