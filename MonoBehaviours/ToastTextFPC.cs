@@ -5,7 +5,7 @@ using UnityEngine;
 public class ToastTextFPC : MonoBehaviour
 {
     private float fadeInDuration = 0f;
-    private float displayDuration = 3.2f;
+    private float displayDuration;
     private float fadeOutDuration = 0.3f;
     private float timer = 0f;
     private bool fadingIn = true;
@@ -16,9 +16,10 @@ public class ToastTextFPC : MonoBehaviour
 
     private float lineSpacingMultiplier = 1.35f;
 
-    public void Initialize(string text)
+    public void Initialize(string text, float duration = 3.2f)
     {
         displayedText = text;
+        displayDuration = duration;
     }
 
     private void Start()

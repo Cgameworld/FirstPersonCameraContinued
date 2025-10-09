@@ -54,6 +54,16 @@ namespace FirstPersonCameraContinued.MonoBehaviours
             return _model.Mode;
         }
 
+        public VirtualCameraRig GetRig()
+        {
+            return _rig;
+        }
+
+        public int CurrentZoomLevel{
+            get;
+            set;
+        }
+
         private FirstPersonCameraSystem _firstPersonCameraSystem;
         private FirstPersonCameraActivatedUISystem _firstPersonCameraActivatedUISystem;
         private TerrainSystem terrainSystem;
@@ -147,6 +157,7 @@ namespace FirstPersonCameraContinued.MonoBehaviours
             if (_model.IsTransitioningIn)
             {
                 IsActive = true;
+                CurrentZoomLevel = 1;
                 _firstPersonCameraSystem.EntryInfo.Activated = true;
                 _firstPersonCameraActivatedUISystem.SetActive();
             }
@@ -223,6 +234,7 @@ namespace FirstPersonCameraContinued.MonoBehaviours
                 IsActive = false; // Update the IsActive status to off now
                 _firstPersonCameraSystem.EntryInfo.Activated = false;
                 _firstPersonCameraSystem.EntryInfo.RandomFollow = false;
+                CurrentZoomLevel = 1;
                 _firstPersonCameraActivatedUISystem.SetInactive();
                 _model.Mode = CameraMode.Disabled;
             }

@@ -1,16 +1,18 @@
-﻿using FirstPersonCameraContinued.MonoBehaviours;
+﻿using cohtml.Net;
+using Colossal.UI;
+using FirstPersonCamera.Helpers;
 using FirstPersonCameraContinued.DataModels;
+using FirstPersonCameraContinued.Enums;
+using FirstPersonCameraContinued.MonoBehaviours;
 using Game;
 using Game.Common;
 using Game.Rendering;
 using Game.SceneFlow;
 using Game.Tools;
+using System.Collections;
+using System.Net;
 using Unity.Entities;
 using UnityEngine;
-using cohtml.Net;
-using FirstPersonCameraContinued.Enums;
-using Colossal.UI;
-using System.Net;
 
 namespace FirstPersonCameraContinued.Systems
 {
@@ -136,6 +138,39 @@ namespace FirstPersonCameraContinued.Systems
                     _firstPersonCameraActivatedUISystem.DisableCrosshair();
                 }
             }
+        }
+
+        public void ToggleZoom()
+        {
+            int z = Controller.CurrentZoomLevel;
+            //z = z switch { < 3 => 3, < 10 => 10, _ => 1 };
+            z = z switch { < 3 => 3, _ => 1 };
+            Controller.CurrentZoomLevel = z;
+            Controller.GetRig().UpdateFOV(z);
+            StaticCoroutine.Start(StartZoomToast());
+        }
+
+        public IEnumerator StartZoomToast()
+        {
+            yield return new WaitForEndOfFrame();
+
+            if (GameObject.Find("toastTextFPC"))
+            {
+                GameObject.Destroy(GameObject.Find("toastTextFPC"));
+            }
+
+            GameObject toastTextFPC = new GameObject("toastTextFPC");
+            ToastTextFPC toastComponent = toastTextFPC.AddComponent<ToastTextFPC>();
+            if (Controller.CurrentZoomLevel == 3)
+            {
+                toastComponent.Initialize("Zoom Activated", Mathf.Infinity);
+            }
+            else
+            {
+                toastComponent.Initialize("", 0);
+            }
+
+                yield break;
         }
 
         /// <summary>

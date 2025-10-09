@@ -1,11 +1,13 @@
 ﻿using FirstPersonCamera.Helpers;
 using FirstPersonCameraContinued.DataModels;
 using FirstPersonCameraContinued.Enums;
+using FirstPersonCameraContinued.MonoBehaviours;
 using FirstPersonCameraContinued.Systems;
 using Game.Input;
 using Game.Rendering;
 using Game.SceneFlow;
 using Game.UI.InGame;
+using Game.Vehicles;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -216,6 +218,17 @@ namespace FirstPersonCameraContinued
             // We only want these actions to occur whilst the controller is active
             TemporaryActions.Add(action);
 
+            // Create the input action (toggle zoom effect)
+            action = new InputAction("FPSController_HeightDown");
+            action.AddBinding("<Keyboard>/z");
+            action.performed += ctx =>
+            {
+               World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraSystem>().ToggleZoom();
+            };
+            action.Disable();
+
+            // We only want these actions to occur whilst the controller is active
+            TemporaryActions.Add(action);
 
             //zoom in out pip window
             action = new InputAction("FPSController_ScrollWheel", binding: "<Mouse>/scroll/y");
