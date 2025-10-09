@@ -447,22 +447,24 @@ namespace FirstPersonCameraContinued
 
             GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastPIPWindow", out string pipWindowText);
 
+            GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastZoom", out string zoomText);
+
             if (entryInfo.RandomFollow)
             {
                 if (entryInfo.RandomMode == RandomMode.Cim)
                 {
                     GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextRandomModeCimEnter", out string randomModeText);
-                    toastComponent.Initialize(entryText + "\n" + randomModeText + "\n" + pipWindowText);
+                    toastComponent.Initialize(entryText + "\n" + randomModeText + "\n" + pipWindowText + "\n" + zoomText);
                 }
                 else {
                     GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextRandomModeVehicleEnter", out string randomModeText);
-                    toastComponent.Initialize(entryText + "\n" + randomModeText + "\n" + pipWindowText);
+                    toastComponent.Initialize(entryText + "\n" + randomModeText + "\n" + pipWindowText + "\n" + zoomText);
                 }
 
             }
             else
             {
-                toastComponent.Initialize(entryText + "\n" + pipWindowText);
+                toastComponent.Initialize(entryText + "\n" + pipWindowText + "\n" + zoomText);
             }
 
             yield break;

@@ -143,7 +143,6 @@ namespace FirstPersonCameraContinued.Systems
         public void ToggleZoom()
         {
             int z = Controller.CurrentZoomLevel;
-            //z = z switch { < 3 => 3, < 10 => 10, _ => 1 };
             z = z switch { < 3 => 3, _ => 1 };
             Controller.CurrentZoomLevel = z;
             Controller.GetRig().UpdateFOV(z);
@@ -161,16 +160,16 @@ namespace FirstPersonCameraContinued.Systems
 
             GameObject toastTextFPC = new GameObject("toastTextFPC");
             ToastTextFPC toastComponent = toastTextFPC.AddComponent<ToastTextFPC>();
-            if (Controller.CurrentZoomLevel == 3)
+            if (Controller.CurrentZoomLevel > 1)
             {
-                toastComponent.Initialize("Zoom Activated", Mathf.Infinity);
+                toastComponent.Initialize("Zoom Activated");
             }
             else
             {
-                toastComponent.Initialize("", 0);
+                toastComponent.Initialize("Zoom Disabled");
             }
-
-                yield break;
+            
+            yield break;
         }
 
         /// <summary>
