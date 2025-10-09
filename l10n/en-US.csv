@@ -4,6 +4,8 @@
 "FirstPersonCameraContinued.ToastTextRandomModeVehicleEnter","Press ENTER to follow another random vehicle"
 "FirstPersonCameraContinued.ToastPIPWindow","Press P to toggle picture-in-picture window"
 "FirstPersonCameraContinued.ToastZoom","Press Z to toggle zoom"
+"FirstPersonCameraContinued.ToastTextZoomActivated","Zoom Activated"
+"FirstPersonCameraContinued.ToastTextZoomDeactivated","Zoom Deactivated"
 "FirstPersonCameraContinued.TooltipMainCameraIcon","Click to select a first person mode"
 "FirstPersonCameraContinued.EnterFreeCamera","Enter Free Camera"
 "FirstPersonCameraContinued.FollowRandomCim","Follow Random Cim"

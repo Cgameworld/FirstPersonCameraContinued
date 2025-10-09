@@ -153,20 +153,21 @@ namespace FirstPersonCameraContinued.Systems
         {
             yield return new WaitForEndOfFrame();
 
-            if (GameObject.Find("toastTextFPC"))
-            {
-                GameObject.Destroy(GameObject.Find("toastTextFPC"));
-            }
+            GameObject.Destroy(GameObject.Find("toastTextFPC"));
 
             GameObject toastTextFPC = new GameObject("toastTextFPC");
             ToastTextFPC toastComponent = toastTextFPC.AddComponent<ToastTextFPC>();
+
+            GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextZoomActivated", out string zoomActivatedText);
+            GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextZoomDeactivated", out string zoomDeactivatedText);
+
             if (Controller.CurrentZoomLevel > 1)
             {
-                toastComponent.Initialize("Zoom Activated");
+                toastComponent.Initialize(zoomActivatedText);
             }
             else
             {
-                toastComponent.Initialize("Zoom Disabled");
+                toastComponent.Initialize(zoomDeactivatedText);
             }
             
             yield break;

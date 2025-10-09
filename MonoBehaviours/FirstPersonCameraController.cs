@@ -235,6 +235,7 @@ namespace FirstPersonCameraContinued.MonoBehaviours
                 _firstPersonCameraSystem.EntryInfo.Activated = false;
                 _firstPersonCameraSystem.EntryInfo.RandomFollow = false;
                 CurrentZoomLevel = 1;
+                GameObject.Destroy(GameObject.Find("toastTextFPC"));
                 _firstPersonCameraActivatedUISystem.SetInactive();
                 _model.Mode = CameraMode.Disabled;
             }
