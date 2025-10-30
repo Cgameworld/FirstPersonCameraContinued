@@ -248,6 +248,13 @@ namespace FirstPersonCameraContinued.Transforms
                 return true;
             }
 
+            if (_entityManager.HasComponent<Game.Vehicles.WorkVehicle>(entity))
+            {
+                vehicleType = VehicleType.WorkVehicle;
+                translatedVehicleType = GetVehicleLocalizedString("SubServices.NAME[ZonesExtractors]",true);
+                return true;
+            } 
+
             if (_entityManager.HasComponent<Game.Vehicles.Ambulance>(entity))
             {
                 vehicleType = VehicleType.Ambulance;
@@ -352,6 +359,12 @@ namespace FirstPersonCameraContinued.Transforms
                         {
                             vehicleType = VehicleType.Aircraft;
                             translatedVehicleType = GetVehicleLocalizedString("Editor.ASSET_CATEGORY_TITLE[Vehicles/Services/Aircraft]", true);
+                            return true;
+                        }
+                        if (transportType == Game.Prefabs.TransportType.Ferry)
+                        {
+                            vehicleType = VehicleType.Ferry;
+                            translatedVehicleType = GetVehicleLocalizedString("SubServices.NAME[TransportationFerry]", true);
                             return true;
                         }
                     }
