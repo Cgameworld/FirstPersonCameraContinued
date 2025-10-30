@@ -47,7 +47,7 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
 
             pivot += forward * ((bounds.max.z - bounds.min.z) * offset.z + model.PositionFollowOffset.y);
 
-            if (isTrain || model.ScopeVehicle == VehicleType.Bus || model.ScopeVehicle == VehicleType.Ship)
+            if (isTrain || model.ScopeVehicle == VehicleType.Bus || model.ScopeVehicle == VehicleType.Ship || model.ScopeVehicle == VehicleType.Ferry)
             {
                 model.Position = pos + new float3(0f, offset.y + userHeightOffset, 0f) + (forward * (offset.z + model.PositionFollowOffset.y));
             }
@@ -133,6 +133,11 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
             {
                 y = 22f;
                 z = 28f;
+            }
+            else if (model.ScopeVehicle == VehicleType.Ferry)
+            {
+                y = 4.4f;
+                z = 12.3f;
             }
             else if (scope == CameraScope.UnknownVehicle)
             {
