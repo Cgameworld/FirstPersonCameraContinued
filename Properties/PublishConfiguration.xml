@@ -93,7 +93,8 @@ If you like this mod be sure to leave an upvote! Thanks
 	<Dependency Id="74417" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
-# v1.4.10
+# v1.5?
+
 * Fix for citizen name not resolving in infobox
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->

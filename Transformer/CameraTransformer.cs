@@ -208,6 +208,26 @@ namespace FirstPersonCameraContinued.Transforms
                 }
             }
 
+            if (_entityManager.HasComponent<Game.Vehicles.Bicycle>(entity))
+            {
+                if (_entityManager.TryGetComponent<Game.Prefabs.PrefabRef>(entity, out var prefabRefComponentBike))
+                {
+                    if (_entityManager.HasComponent<Game.Prefabs.SelectedSoundData>(prefabRefComponentBike))
+                    {
+                        vehicleType = VehicleType.Bicycle;
+                        GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.Bicycle", out string bicycleTranslateText);
+                        translatedVehicleType = bicycleTranslateText;
+                        return true;
+                    }
+                    else
+                    {
+                        vehicleType = VehicleType.ElectricScooter;
+                        translatedVehicleType = GetVehicleLocalizedString("Assets.NAME[ElectricScooter01]", true);
+                        return true;
+                    }
+                }
+            }
+
             if (_entityManager.HasComponent<Game.Vehicles.CarTrailer>(entity))
             {
                 vehicleType = VehicleType.CarTrailer;
