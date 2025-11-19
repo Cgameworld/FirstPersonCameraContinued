@@ -7,6 +7,7 @@
 "FirstPersonCameraContinued.FollowRandomCim","Follow Random Cim"
 "FirstPersonCameraContinued.FollowRandomVehicle","Follow Random Vehicle"
 "FirstPersonCameraContinued.FollowRandomTransit","Follow Random Transit"
+"FirstPersonCameraContinued.FollowRandomBicycle","Follow Random Bicycle"
 "FirstPersonCameraContinued.TooltipFollowCamera","Follow the selected item in first person camera mode."
 "FirstPersonCameraContinued.NameLabel","Name"
 "FirstPersonCameraContinued.SpeedLabel","Speed"

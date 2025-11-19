@@ -71,6 +71,7 @@ namespace FirstPersonCameraContinued.Systems
             this.AddBinding(new TriggerBinding("fpc", "RandomCimFPC", () => EnterFollowRandomCim()));
             this.AddBinding(new TriggerBinding("fpc", "RandomVehicleFPC", () => EnterFollowRandomVehicle()));
             this.AddBinding(new TriggerBinding("fpc", "RandomTransitFPC", () => EnterFollowRandomTransit()));
+            this.AddBinding(new TriggerBinding("fpc", "RandomBicycleFPC", () => EnterFollowRandomBicycle()));
 
             m_ButtonAction = Mod.FirstPersonModSettings.GetAction(Mod.kButtonActionName);
 
