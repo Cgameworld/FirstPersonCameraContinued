@@ -289,11 +289,11 @@ const register: ModRegistrar = (moduleRegistry) => {
                                     <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("RandomVehicleFPC")}>
                                         <div className="right_k3O row_S2v">{uiTextFollowRandomVehicle}</div>
                                     </div>
-                                    <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("RandomBicycleFPC")}>
-                                        <div className="right_k3O row_S2v">{uiTextFollowRandomBicycle}</div>
-                                    </div>
                                     <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("RandomTransitFPC")}>
                                         <div className="right_k3O row_S2v">{uiTextFollowRandomTransit}</div>
+                                    </div>
+                                    <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("RandomBicycleFPC")}>
+                                        <div className="right_k3O row_S2v">{uiTextFollowRandomBicycle}</div>
                                     </div>
                                 </div>
                             </div>

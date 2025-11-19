@@ -93,8 +93,9 @@ If you like this mod be sure to leave an upvote! Thanks
 	<Dependency Id="74417" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
-# v1.5?
-
+# v1.5
+* Support for 1.4.2f1 Bike Patch
+* Added "Follow Random Bicycle" option
 * Fix for citizen name not resolving in infobox
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->

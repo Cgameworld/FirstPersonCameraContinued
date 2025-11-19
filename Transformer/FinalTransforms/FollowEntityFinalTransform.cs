@@ -99,6 +99,15 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
                         break;
                 }
             }
+            else if (model.ScopeVehicle == VehicleType.Bicycle)
+            {
+                y = 0.85f;
+            }
+            else if (model.ScopeVehicle == VehicleType.ElectricScooter)
+            {
+                y = 1.05f;
+                z = 0.4f;
+            }
             else if (scope == CameraScope.Truck)
             {
                 z = 0.53f;
@@ -124,7 +133,7 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
                 y = 1.8f;
                 z = 5.7f;
             }
-            else if (model.ScopeVehicle == VehicleType.Train || model.ScopeVehicle == VehicleType.CargoTrain ||  model.ScopeVehicle == VehicleType.Subway)
+            else if (model.ScopeVehicle == VehicleType.Train || model.ScopeVehicle == VehicleType.CargoTrain || model.ScopeVehicle == VehicleType.Subway)
             {
                 y = 2f;
                 z = 10f;
