@@ -248,6 +248,48 @@ namespace FirstPersonCameraContinued.Systems
                 tries++;
             }
         }
+
+        public void EnterFollowRandomBicycle(bool firstTimeEntry = true)
+        {
+            EntityQuery query = GetEntityQuery(new EntityQueryDesc()
+            {
+                All = new ComponentType[1] { ComponentType.ReadOnly<Bicycle>() },
+                None = new ComponentType[3] {
+            ComponentType.ReadOnly<Deleted>(),
+            ComponentType.ReadOnly<Temp>(),
+            ComponentType.ReadOnly<TripSource>()
+        }
+            });
+
+            ComponentLookup<Game.Prefabs.PrefabRef> prefabRefLookup = GetComponentLookup<Game.Prefabs.PrefabRef>(true);
+            ComponentLookup<Game.Prefabs.SelectedSoundData> selectedSoundLookup = GetComponentLookup<Game.Prefabs.SelectedSoundData>(true);
+
+            int tries = 0;
+            while (tries < 100)
+            {
+                Entity randomEntity = GetRandomEntityFromQuery(query);
+                if (randomEntity == Entity.Null)
+                {
+                    Mod.log.Info("No valid entities found to follow.");
+                    break;
+                }
+
+                if (prefabRefLookup.HasComponent(randomEntity))
+                {
+                    var prefabRefComponentBike = prefabRefLookup[randomEntity];
+                    var prefabEntity = prefabRefComponentBike.m_Prefab;
+
+                    if (selectedSoundLookup.HasComponent(prefabEntity))
+                    {
+                        ConfigureRandomEnterFollow(firstTimeEntry, RandomMode.Bicycle, randomEntity);
+                        break;
+                    }
+                }
+
+                tries++;
+            }
+        }
+
         private void ConfigureRandomEnterFollow(bool firstTimeEntry, RandomMode randomMode, Entity randomEntity)
         {
             _selectedEntity = randomEntity;

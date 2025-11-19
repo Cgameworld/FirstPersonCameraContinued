@@ -175,6 +175,10 @@ namespace FirstPersonCameraContinued
                     {
                         firstPersonCameraUISystem.EnterFollowRandomTransit(false);
                     }
+                    else if (entryInfo.RandomMode == RandomMode.Bicycle)
+                    {
+                        firstPersonCameraUISystem.EnterFollowRandomBicycle(false);
+                    }
                 }
             };
             action.Disable();
