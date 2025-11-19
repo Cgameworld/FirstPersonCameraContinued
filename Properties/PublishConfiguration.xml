@@ -86,7 +86,7 @@ If you like this mod be sure to leave an upvote! Thanks
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/first-person-camera-continued.1669532/" />
 	<!--Version of the mod-->
-	<ModVersion Value="1.4.10" />
+	<ModVersion Value="1.5" />
 	<!--Recommended version of the base game to use the mod-->
 	<GameVersion Value="1.*" />
 	<!--Dependency for the mod, can be set multiple times-->
@@ -97,6 +97,7 @@ If you like this mod be sure to leave an upvote! Thanks
 * Support for 1.4.2f1 Bike Patch
 * Added "Follow Random Bicycle" option
 * Fix for citizen name not resolving in infobox
+* Updated translations
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />

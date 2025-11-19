@@ -146,7 +146,7 @@ namespace FirstPersonCameraContinued.DataModels
         /// <summary>
         /// The citizen scope age
         /// </summary>
-        public CitizenAge ScopeCitizen
+        public CitizenAge? ScopeCitizen
         {
             get;
             set;

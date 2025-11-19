@@ -79,10 +79,8 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
             var y = 0.5f;
             var scope = model.Scope;
 
-            if (scope == CameraScope.Citizen)
+            if (model.ScopeCitizen is CitizenAge age)
             {
-                var age = model.ScopeCitizen;
-
                 switch (age)
                 {
                     case CitizenAge.Child:
@@ -98,15 +96,6 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
                         y = 0.75f;
                         break;
                 }
-            }
-            else if (model.ScopeVehicle == VehicleType.Bicycle)
-            {
-                y = 0.85f;
-            }
-            else if (model.ScopeVehicle == VehicleType.ElectricScooter)
-            {
-                y = 1.05f;
-                z = 0.4f;
             }
             else if (scope == CameraScope.Truck)
             {
@@ -161,6 +150,17 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
             {
                 y = 0f;
                 z = 0.01f;
+            }
+
+
+            if (model.ScopeVehicle == VehicleType.Bicycle)
+            {
+                y = 0.85f;
+            }
+            if (model.ScopeVehicle == VehicleType.ElectricScooter)
+            {
+                y = 1.05f;
+                z = 0.4f;
             }
 
             return new float3(0f, y, z);
