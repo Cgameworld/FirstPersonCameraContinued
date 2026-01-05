@@ -329,7 +329,6 @@ namespace FirstPersonCameraContinued.Systems
             CurrentRoute currentRoute;
             if (!EntityManager.TryGetComponent<CurrentRoute>(vehicleEntity, out currentRoute))
             {
-                // for some vehicles, CurrentRoute might be on the original entity
                 if (!EntityManager.TryGetComponent<CurrentRoute>(currentEntity, out currentRoute))
                 {
                     lineStationInfo = "";
@@ -354,6 +353,17 @@ namespace FirstPersonCameraContinued.Systems
                 return;
             }
 
+            // get line color as rgb() format for cohtml compatibility
+            string lineColorStr = "rgb(255, 255, 255)";
+            if (EntityManager.TryGetComponent<Game.Routes.Color>(routeEntity, out var routeColor))
+            {
+                var color = routeColor.m_Color;
+                int r = Math.Clamp((int)(color.r * 255), 0, 255);
+                int g = Math.Clamp((int)(color.g * 255), 0, 255);
+                int b = Math.Clamp((int)(color.b * 255), 0, 255);
+                lineColorStr = $"rgb({r}, {g}, {b})";
+            }
+
             // get vehicle position
             float3 vehiclePosition = float3.zero;
             if (EntityManager.TryGetComponent<Game.Objects.Transform>(vehicleEntity, out var vehicleTransform))
@@ -365,21 +375,19 @@ namespace FirstPersonCameraContinued.Systems
                 vehiclePosition = interpolatedTransform.m_Position;
             }
 
-            // collect unique stops (transit lines loop so we see each stop twice - once going, once returning)
-            var stationList = new List<(string name, float3 position, Entity stopEntity)>();
+            // collect unique stops with raw street names and road edge info
+            var stationList = new List<(string streetName, string crossStreet, float3 position, Entity stopEntity)>();
             var seenStops = new HashSet<Entity>();
 
             for (int i = 0; i < waypoints.Length; i++)
             {
                 Entity waypointEntity = waypoints[i].m_Waypoint;
 
-                // get connected stop entity
                 if (!EntityManager.TryGetComponent<Connected>(waypointEntity, out var connected))
                     continue;
 
                 Entity stopEntity = connected.m_Connected;
 
-                // skip if not a transport stop or already seen
                 if (!EntityManager.HasComponent<Game.Routes.TransportStop>(stopEntity))
                     continue;
 
@@ -388,7 +396,6 @@ namespace FirstPersonCameraContinued.Systems
 
                 seenStops.Add(stopEntity);
 
-                // get stop position
                 float3 stopPosition = float3.zero;
                 if (EntityManager.TryGetComponent<Game.Objects.Transform>(stopEntity, out var stopTransform))
                 {
@@ -399,10 +406,8 @@ namespace FirstPersonCameraContinued.Systems
                     stopPosition = positionComponent.m_Position;
                 }
 
-                // get street name for stop
-                string stopName = GetStopStreetName(stopEntity);
-
-                stationList.Add((stopName, stopPosition, stopEntity));
+                var (streetName, crossStreet) = GetStopStreetAndCrossStreet(stopEntity);
+                stationList.Add((streetName, crossStreet, stopPosition, stopEntity));
             }
 
             if (stationList.Count == 0)
@@ -412,15 +417,21 @@ namespace FirstPersonCameraContinued.Systems
                 return;
             }
 
-            // try to find vehicle's target waypoint (where it's heading)
+            // find duplicates and format names
+            var nameCount = new Dictionary<string, int>();
+            foreach (var station in stationList)
+            {
+                string baseName = RemoveStreetSuffix(station.streetName);
+                nameCount[baseName] = nameCount.GetValueOrDefault(baseName, 0) + 1;
+            }
+
+            // try to find vehicle's target waypoint
             int targetStationIndex = -1;
             if (EntityManager.TryGetComponent<Target>(vehicleEntity, out var target) && target.m_Target != Entity.Null)
             {
-                // get the stop entity connected to the target waypoint
                 if (EntityManager.TryGetComponent<Connected>(target.m_Target, out var targetConnected))
                 {
                     Entity targetStopEntity = targetConnected.m_Connected;
-                    // find which station this stop corresponds to
                     for (int i = 0; i < stationList.Count; i++)
                     {
                         if (stationList[i].stopEntity == targetStopEntity)
@@ -432,7 +443,6 @@ namespace FirstPersonCameraContinued.Systems
                 }
             }
 
-            // if no target found, use closest stop to vehicle as fallback
             if (targetStationIndex < 0)
             {
                 float closestDistance = float.MaxValue;
@@ -447,80 +457,162 @@ namespace FirstPersonCameraContinued.Systems
                 }
             }
 
-            // reorder stations starting from closest/target
+            // build result with formatted names
             var result = new LineStationInfo();
             result.currentStopIndex = 0;
+            result.lineColor = lineColorStr;
 
             for (int i = 0; i < stationList.Count; i++)
             {
                 int index = (targetStationIndex + i) % stationList.Count;
-                result.stations.Add(new StationData { name = stationList[index].name });
+                var station = stationList[index];
+
+                string baseName = RemoveStreetSuffix(station.streetName);
+                string displayName;
+
+                // add cross street if there are duplicates
+                if (nameCount[baseName] > 1 && !string.IsNullOrEmpty(station.crossStreet))
+                {
+                    string crossBase = RemoveStreetSuffix(station.crossStreet);
+                    displayName = $"{baseName}/\n{crossBase}";
+                }
+                else
+                {
+                    displayName = AbbreviateStreetName(station.streetName);
+                }
+
+                result.stations.Add(new StationData { name = displayName });
             }
 
             lineStationInfo = JsonConvert.SerializeObject(result);
             lineStationInfoBinding.Update();
         }
 
-        private string GetStopStreetName(Entity stopEntity)
+        private (string streetName, string crossStreet) GetStopStreetAndCrossStreet(Entity stopEntity)
         {
-            // try to get street name from nearby road via building component
+            Entity roadEdge = Entity.Null;
+            string streetName = "";
+
+            // try building's road edge
             if (EntityManager.TryGetComponent<Building>(stopEntity, out var building) && building.m_RoadEdge != Entity.Null)
             {
-                if (EntityManager.TryGetComponent<Aggregated>(building.m_RoadEdge, out var aggregated))
-                {
-                    try
-                    {
-                        string streetName = nameSystem.GetRenderedLabelName(aggregated.m_Aggregate);
-                        if (!string.IsNullOrEmpty(streetName))
-                            return streetName;
-                    }
-                    catch { }
-                }
+                roadEdge = building.m_RoadEdge;
+                streetName = GetRoadName(roadEdge);
             }
 
-            // try to get owner building and its road edge
-            if (EntityManager.TryGetComponent<Owner>(stopEntity, out var owner) && owner.m_Owner != Entity.Null)
+            // try owner building
+            if (string.IsNullOrEmpty(streetName) && EntityManager.TryGetComponent<Owner>(stopEntity, out var owner) && owner.m_Owner != Entity.Null)
             {
                 if (EntityManager.TryGetComponent<Building>(owner.m_Owner, out var ownerBuilding) && ownerBuilding.m_RoadEdge != Entity.Null)
                 {
-                    if (EntityManager.TryGetComponent<Aggregated>(ownerBuilding.m_RoadEdge, out var aggregated))
-                    {
-                        try
-                        {
-                            string streetName = nameSystem.GetRenderedLabelName(aggregated.m_Aggregate);
-                            if (!string.IsNullOrEmpty(streetName))
-                                return streetName;
-                        }
-                        catch { }
-                    }
+                    roadEdge = ownerBuilding.m_RoadEdge;
+                    streetName = GetRoadName(roadEdge);
                 }
             }
 
-            // try to get attached road
-            if (EntityManager.TryGetComponent<Attached>(stopEntity, out var attached) && attached.m_Parent != Entity.Null)
+            // try attached road
+            if (string.IsNullOrEmpty(streetName) && EntityManager.TryGetComponent<Attached>(stopEntity, out var attached) && attached.m_Parent != Entity.Null)
             {
-                if (EntityManager.TryGetComponent<Aggregated>(attached.m_Parent, out var aggregated))
+                roadEdge = attached.m_Parent;
+                streetName = GetRoadName(roadEdge);
+            }
+
+            // fallback to stop name
+            if (string.IsNullOrEmpty(streetName))
+            {
+                try { streetName = nameSystem.GetRenderedLabelName(stopEntity); } catch { }
+                if (string.IsNullOrEmpty(streetName)) streetName = "Stop";
+            }
+
+            // find cross street
+            string crossStreet = "";
+            if (roadEdge != Entity.Null)
+            {
+                crossStreet = FindCrossStreet(roadEdge, streetName);
+            }
+
+            return (streetName, crossStreet);
+        }
+
+        private string GetRoadName(Entity roadEdge)
+        {
+            if (EntityManager.TryGetComponent<Aggregated>(roadEdge, out var aggregated))
+            {
+                try
                 {
-                    try
-                    {
-                        string streetName = nameSystem.GetRenderedLabelName(aggregated.m_Aggregate);
-                        if (!string.IsNullOrEmpty(streetName))
-                            return streetName;
-                    }
-                    catch { }
+                    return nameSystem.GetRenderedLabelName(aggregated.m_Aggregate);
+                }
+                catch { }
+            }
+            return "";
+        }
+
+        private string FindCrossStreet(Entity roadEdge, string mainStreetName)
+        {
+            if (!EntityManager.TryGetComponent<Edge>(roadEdge, out var edge))
+                return "";
+
+            // check connected edges at start node
+            string crossStreet = FindCrossStreetAtNode(edge.m_Start, mainStreetName);
+            if (!string.IsNullOrEmpty(crossStreet))
+                return crossStreet;
+
+            // check connected edges at end node
+            return FindCrossStreetAtNode(edge.m_End, mainStreetName);
+        }
+
+        private string FindCrossStreetAtNode(Entity node, string mainStreetName)
+        {
+            if (!EntityManager.TryGetBuffer<ConnectedEdge>(node, true, out var connectedEdges))
+                return "";
+
+            foreach (var connectedEdge in connectedEdges)
+            {
+                string edgeName = GetRoadName(connectedEdge.m_Edge);
+                if (!string.IsNullOrEmpty(edgeName) && edgeName != mainStreetName)
+                {
+                    return edgeName;
                 }
             }
+            return "";
+        }
 
-            // fallback: use the stop's name directly
-            try
+        private string RemoveStreetSuffix(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return name;
+
+            string[] suffixes = { " Street", " St", " Avenue", " Ave", " Boulevard", " Blvd",
+                                  " Road", " Rd", " Drive", " Dr", " Lane", " Ln",
+                                  " Court", " Ct", " Place", " Pl", " Way", " Circle", " Cir",
+                                  " Highway", " Hwy", " Parkway", " Pkwy", " Terrace", " Ter" };
+
+            foreach (var suffix in suffixes)
             {
-                string stopName = nameSystem.GetRenderedLabelName(stopEntity);
-                if (!string.IsNullOrEmpty(stopName))
-                    return stopName;
+                if (name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+                {
+                    return name.Substring(0, name.Length - suffix.Length);
+                }
             }
-            catch { }
+            return name;
+        }
 
-            return "Stop";
+        private string AbbreviateStreetName(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return name;
+
+            return name
+                .Replace(" Street", " St")
+                .Replace(" Avenue", " Ave")
+                .Replace(" Boulevard", " Blvd")
+                .Replace(" Road", " Rd")
+                .Replace(" Drive", " Dr")
+                .Replace(" Lane", " Ln")
+                .Replace(" Court", " Ct")
+                .Replace(" Place", " Pl")
+                .Replace(" Circle", " Cir")
+                .Replace(" Highway", " Hwy")
+                .Replace(" Parkway", " Pkwy")
+                .Replace(" Terrace", " Ter");
         }
 
         public string SetFollowedEntityDefaults()

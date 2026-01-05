@@ -38,7 +38,6 @@
 
 .fpcc-stopstrip-progress-bar {
     height: 10rem;
-    background-color: #ff0000;
     width: 100%;
 }
 
@@ -47,7 +46,10 @@
     flex-direction: column;
     align-items: center;
     z-index: 2;
-    width: 50rem;
+    flex: 1;
+    min-width: 80rem;
+    max-width: 160rem;
+    padding: 0 5rem;
 }
 
 .fpcc-stopstrip-station-dot {
@@ -56,9 +58,9 @@
     background-color: white;
     border: 5rem solid #000;
     border-radius: 50%;
-    margin-bottom: 8rem;
     box-sizing: content-box;
     will-change: background-color;
+    flex-shrink: 0;
 
     &.blink-red {
         background-color: #ff0000;
@@ -67,8 +69,12 @@
 
 .fpcc-stopstrip-station-name {
     color: var(--textColorDim);
-    font-size: 24rem;
+    font-size: 20rem;
     font-weight: bold;
-    white-space: nowrap;
+    text-align: center;
+    line-height: 1.2;
+    height: 48rem;
+    margin-top: 8rem;
+    white-space: pre-line;
     text-shadow: 0px 0px 35rem rgba(0, 0, 0, 0.85);
 }

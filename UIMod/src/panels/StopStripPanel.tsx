@@ -9,6 +9,7 @@ interface StationData {
 interface LineStationInfo {
     stations: StationData[];
     currentStopIndex: number;
+    lineColor: string;
 }
 
 const LineStationInfo$ = bindValue<string>('fpc', 'LineStationInfo');
@@ -69,12 +70,13 @@ const StopStripPanel: React.FC = () => {
     }
 
     const stations = lineStationInfo.stations;
+    const lineColor = lineStationInfo.lineColor || 'rgb(255, 255, 255)';
 
     return (
         <div className="fpcc-stopstrip-container">
             <div className="fpcc-stopstrip-progress-track">
                 <div className="fpcc-stopstrip-progress-bar-container">
-                    <div className="fpcc-stopstrip-progress-bar"></div>
+                    <div className="fpcc-stopstrip-progress-bar" style={{ backgroundColor: lineColor }}></div>
                 </div>
                 {stations.map((station, index) => (
                     <div key={index} className="fpcc-stopstrip-station">
