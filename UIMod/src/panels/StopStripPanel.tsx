@@ -1,5 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { bindValue, useValue } from "cs2/api";
 import 'style/StopStripPanel.scss';
+
+interface StationData {
+    name: string;
+}
+
+interface LineStationInfo {
+    stations: StationData[];
+    currentStopIndex: number;
+}
+
+const LineStationInfo$ = bindValue<string>('fpc', 'LineStationInfo');
 
 const StopStripPanel: React.FC = () => {
     const [currentStop, setCurrentStop] = useState(0);
@@ -7,8 +19,26 @@ const StopStripPanel: React.FC = () => {
     const blinkTimeoutRef = useRef<number | null>(null);
     const isComponentMounted = useRef(true);
 
+    const lineStationInfoStr = useValue(LineStationInfo$);
+
+    const lineStationInfo: LineStationInfo | null = React.useMemo(() => {
+        if (!lineStationInfoStr || lineStationInfoStr === "") {
+            return null;
+        }
+        try {
+            return JSON.parse(lineStationInfoStr) as LineStationInfo;
+        } catch {
+            return null;
+        }
+    }, [lineStationInfoStr]);
+
     useEffect(() => {
-        // Set mounted flag
+        if (lineStationInfo) {
+            setCurrentStop(lineStationInfo.currentStopIndex);
+        }
+    }, [lineStationInfo]);
+
+    useEffect(() => {
         isComponentMounted.current = true;
 
         const startBlinking = () => {
@@ -16,11 +46,9 @@ const StopStripPanel: React.FC = () => {
 
             setIsBlinking(true);
 
-            // Use timeout instead of interval for more precise control
             blinkTimeoutRef.current = window.setTimeout(() => {
                 if (isComponentMounted.current) {
                     setIsBlinking(false);
-                    // Schedule next blink
                     blinkTimeoutRef.current = window.setTimeout(startBlinking, 1000);
                 }
             }, 1000);
@@ -28,7 +56,6 @@ const StopStripPanel: React.FC = () => {
 
         startBlinking();
 
-        // Cleanup function
         return () => {
             isComponentMounted.current = false;
             if (blinkTimeoutRef.current !== null) {
@@ -37,35 +64,12 @@ const StopStripPanel: React.FC = () => {
         };
     }, []);
 
-    /*
-    const stations = [
-        { name: 'Elk Grove' },
-        { name: 'Lindbergh/Lafayette' },
-        { name: 'Lindbergh/Myrtle' },
-        { name: 'Vermont/Hawthorne' },
-        { name: 'Lake/Beech' },
-        { name: 'Bedford/Manor Highway' },
-        { name: 'Briar Rose/Foggy' },
-    ]
-    */
+    if (!lineStationInfo || lineStationInfo.stations.length === 0) {
+        return null;
+    }
 
-    const stations = [
-        { name: '188 Elk Grove' },
-        { name: '201 Riverside Park' },
-        { name: '156 Cedar Hills' },
-        { name: '342 Maple Valley' },
-        { name: '275 Pinecrest' },
-        { name: '433 Highland Junction' },
-        { name: '167 Oakwood' },
-        { name: '299 Willow Springs' },
-        { name: '544 Evergreen Plaza' },
-        { name: '122 Redwood Heights' },
-        { name: '398 Birchwood' },
-        { name: '543 Aspen Grove' },
-        { name: '455 Sycamore Square' },
-        { name: '321 Magnolia Park' },
-        { name: '177 Cherry Blossom' }
-    ];
+    const stations = lineStationInfo.stations;
+
     return (
         <div className="fpcc-stopstrip-container">
             <div className="fpcc-stopstrip-progress-track">

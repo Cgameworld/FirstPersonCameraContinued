@@ -2,7 +2,15 @@
 using Colossal.UI.Binding;
 using FirstPersonCameraContinued.DataModels;
 using FirstPersonCameraContinued.MonoBehaviours;
+using FirstPersonCameraContinued.Transforms;
+using Game.Buildings;
+using Game.Citizens;
+using Game.Common;
+using Game.Net;
+using Game.Objects;
 using Game.Prefabs;
+using Game.Rendering;
+using Game.Routes;
 using Game.SceneFlow;
 using Game.UI;
 using Game.UI.InGame;
@@ -11,6 +19,7 @@ using Newtonsoft.Json;
 using System;
 using System.Reflection;
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace FirstPersonCameraContinued.Systems
@@ -36,6 +45,11 @@ namespace FirstPersonCameraContinued.Systems
         private GetterValueBinding<bool> isEnteredBinding;
         private bool isEntered;
 
+        private GetterValueBinding<string> lineStationInfoBinding;
+        private string lineStationInfo = "";
+
+        private NameSystem nameSystem;
+
         private static string serializedUISettingsGroupOptions;
 
         protected override void OnCreate()
@@ -55,6 +69,11 @@ namespace FirstPersonCameraContinued.Systems
 
             this.uiSettingsGroupOptionsBinding = new GetterValueBinding<string>("fpc", "UISettingsGroupOptions", () => serializedUISettingsGroupOptions);
             AddBinding(this.uiSettingsGroupOptionsBinding);
+
+            this.lineStationInfoBinding = new GetterValueBinding<string>("fpc", "LineStationInfo", () => lineStationInfo);
+            AddBinding(this.lineStationInfoBinding);
+
+            nameSystem = World.GetOrCreateSystemManaged<NameSystem>();
 
             isObjectsSystemsInitalized = false;
         }
@@ -91,6 +110,7 @@ namespace FirstPersonCameraContinued.Systems
                 if (currentEntity != Entity.Null)
                 {
                     UpdateFollowedEntityInfo(currentEntity);
+                    UpdateLineStationInfo(currentEntity);
                 }
 
                 else
@@ -102,9 +122,12 @@ namespace FirstPersonCameraContinued.Systems
                         currentSpeed = -1,
                         resources = -1,
                     };
-                    
+
                     this.followedEntityInfo = JsonConvert.SerializeObject(followedEntityInfo);
                     followedEntityInfoBinding.Update();
+
+                    lineStationInfo = "";
+                    lineStationInfoBinding.Update();
                 }
 
             }
@@ -283,6 +306,221 @@ namespace FirstPersonCameraContinued.Systems
             }
 
             return capacity > 0 || amount > 0;
+        }
+
+        private void UpdateLineStationInfo(Entity currentEntity)
+        {
+            // only process for transit vehicles with a route
+            if (!EntityManager.HasComponent<Game.Vehicles.PublicTransport>(currentEntity))
+            {
+                lineStationInfo = "";
+                lineStationInfoBinding.Update();
+                return;
+            }
+
+            // get the controller entity for multi-car vehicles
+            Entity vehicleEntity = currentEntity;
+            if (EntityManager.TryGetComponent<Game.Vehicles.Controller>(currentEntity, out var controllerComponent))
+            {
+                vehicleEntity = controllerComponent.m_Controller;
+            }
+
+            // get route from vehicle - try controller first, then the vehicle itself
+            CurrentRoute currentRoute;
+            if (!EntityManager.TryGetComponent<CurrentRoute>(vehicleEntity, out currentRoute))
+            {
+                // for some vehicles, CurrentRoute might be on the original entity
+                if (!EntityManager.TryGetComponent<CurrentRoute>(currentEntity, out currentRoute))
+                {
+                    lineStationInfo = "";
+                    lineStationInfoBinding.Update();
+                    return;
+                }
+            }
+
+            Entity routeEntity = currentRoute.m_Route;
+            if (routeEntity == Entity.Null)
+            {
+                lineStationInfo = "";
+                lineStationInfoBinding.Update();
+                return;
+            }
+
+            // get route waypoints
+            if (!EntityManager.TryGetBuffer<RouteWaypoint>(routeEntity, true, out var waypoints) || waypoints.Length == 0)
+            {
+                lineStationInfo = "";
+                lineStationInfoBinding.Update();
+                return;
+            }
+
+            // get vehicle position
+            float3 vehiclePosition = float3.zero;
+            if (EntityManager.TryGetComponent<Game.Objects.Transform>(vehicleEntity, out var vehicleTransform))
+            {
+                vehiclePosition = vehicleTransform.m_Position;
+            }
+            else if (EntityManager.TryGetComponent<InterpolatedTransform>(vehicleEntity, out var interpolatedTransform))
+            {
+                vehiclePosition = interpolatedTransform.m_Position;
+            }
+
+            // collect unique stops (transit lines loop so we see each stop twice - once going, once returning)
+            var stationList = new List<(string name, float3 position, Entity stopEntity)>();
+            var seenStops = new HashSet<Entity>();
+
+            for (int i = 0; i < waypoints.Length; i++)
+            {
+                Entity waypointEntity = waypoints[i].m_Waypoint;
+
+                // get connected stop entity
+                if (!EntityManager.TryGetComponent<Connected>(waypointEntity, out var connected))
+                    continue;
+
+                Entity stopEntity = connected.m_Connected;
+
+                // skip if not a transport stop or already seen
+                if (!EntityManager.HasComponent<Game.Routes.TransportStop>(stopEntity))
+                    continue;
+
+                if (seenStops.Contains(stopEntity))
+                    continue;
+
+                seenStops.Add(stopEntity);
+
+                // get stop position
+                float3 stopPosition = float3.zero;
+                if (EntityManager.TryGetComponent<Game.Objects.Transform>(stopEntity, out var stopTransform))
+                {
+                    stopPosition = stopTransform.m_Position;
+                }
+                else if (EntityManager.TryGetComponent<Position>(waypointEntity, out var positionComponent))
+                {
+                    stopPosition = positionComponent.m_Position;
+                }
+
+                // get street name for stop
+                string stopName = GetStopStreetName(stopEntity);
+
+                stationList.Add((stopName, stopPosition, stopEntity));
+            }
+
+            if (stationList.Count == 0)
+            {
+                lineStationInfo = "";
+                lineStationInfoBinding.Update();
+                return;
+            }
+
+            // try to find vehicle's target waypoint (where it's heading)
+            int targetStationIndex = -1;
+            if (EntityManager.TryGetComponent<Target>(vehicleEntity, out var target) && target.m_Target != Entity.Null)
+            {
+                // get the stop entity connected to the target waypoint
+                if (EntityManager.TryGetComponent<Connected>(target.m_Target, out var targetConnected))
+                {
+                    Entity targetStopEntity = targetConnected.m_Connected;
+                    // find which station this stop corresponds to
+                    for (int i = 0; i < stationList.Count; i++)
+                    {
+                        if (stationList[i].stopEntity == targetStopEntity)
+                        {
+                            targetStationIndex = i;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // if no target found, use closest stop to vehicle as fallback
+            if (targetStationIndex < 0)
+            {
+                float closestDistance = float.MaxValue;
+                for (int i = 0; i < stationList.Count; i++)
+                {
+                    float distance = math.distance(vehiclePosition, stationList[i].position);
+                    if (distance < closestDistance)
+                    {
+                        closestDistance = distance;
+                        targetStationIndex = i;
+                    }
+                }
+            }
+
+            // reorder stations starting from closest/target
+            var result = new LineStationInfo();
+            result.currentStopIndex = 0;
+
+            for (int i = 0; i < stationList.Count; i++)
+            {
+                int index = (targetStationIndex + i) % stationList.Count;
+                result.stations.Add(new StationData { name = stationList[index].name });
+            }
+
+            lineStationInfo = JsonConvert.SerializeObject(result);
+            lineStationInfoBinding.Update();
+        }
+
+        private string GetStopStreetName(Entity stopEntity)
+        {
+            // try to get street name from nearby road via building component
+            if (EntityManager.TryGetComponent<Building>(stopEntity, out var building) && building.m_RoadEdge != Entity.Null)
+            {
+                if (EntityManager.TryGetComponent<Aggregated>(building.m_RoadEdge, out var aggregated))
+                {
+                    try
+                    {
+                        string streetName = nameSystem.GetRenderedLabelName(aggregated.m_Aggregate);
+                        if (!string.IsNullOrEmpty(streetName))
+                            return streetName;
+                    }
+                    catch { }
+                }
+            }
+
+            // try to get owner building and its road edge
+            if (EntityManager.TryGetComponent<Owner>(stopEntity, out var owner) && owner.m_Owner != Entity.Null)
+            {
+                if (EntityManager.TryGetComponent<Building>(owner.m_Owner, out var ownerBuilding) && ownerBuilding.m_RoadEdge != Entity.Null)
+                {
+                    if (EntityManager.TryGetComponent<Aggregated>(ownerBuilding.m_RoadEdge, out var aggregated))
+                    {
+                        try
+                        {
+                            string streetName = nameSystem.GetRenderedLabelName(aggregated.m_Aggregate);
+                            if (!string.IsNullOrEmpty(streetName))
+                                return streetName;
+                        }
+                        catch { }
+                    }
+                }
+            }
+
+            // try to get attached road
+            if (EntityManager.TryGetComponent<Attached>(stopEntity, out var attached) && attached.m_Parent != Entity.Null)
+            {
+                if (EntityManager.TryGetComponent<Aggregated>(attached.m_Parent, out var aggregated))
+                {
+                    try
+                    {
+                        string streetName = nameSystem.GetRenderedLabelName(aggregated.m_Aggregate);
+                        if (!string.IsNullOrEmpty(streetName))
+                            return streetName;
+                    }
+                    catch { }
+                }
+            }
+
+            // fallback: use the stop's name directly
+            try
+            {
+                string stopName = nameSystem.GetRenderedLabelName(stopEntity);
+                if (!string.IsNullOrEmpty(stopName))
+                    return stopName;
+            }
+            catch { }
+
+            return "Stop";
         }
 
         public string SetFollowedEntityDefaults()
