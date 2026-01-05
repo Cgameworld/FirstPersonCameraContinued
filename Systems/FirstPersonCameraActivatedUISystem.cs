@@ -1,4 +1,5 @@
 ﻿using Colossal.Entities;
+using Colossal.Mathematics;
 using Colossal.UI.Binding;
 using FirstPersonCameraContinued.DataModels;
 using FirstPersonCameraContinued.MonoBehaviours;
@@ -434,8 +435,6 @@ namespace FirstPersonCameraContinued.Systems
                 seenPositions.Add(allWaypoints[i].position);
             }
 
-            Mod.log.Info($"Strip map: {allWaypoints.Count} waypoints, midpoint at {midpointIndex}, showing {midpointIndex} unique stations");
-
             // get first half stations (outbound trip) - these are the unique stations
             var firstHalfStations = new List<(string streetName, string crossStreet, float3 position, Entity stopEntity)>();
             for (int i = 0; i < midpointIndex; i++)
@@ -468,13 +467,11 @@ namespace FirstPersonCameraContinued.Systems
             // determine direction: if target is in second half, we're going back (inbound)
             bool goingInbound = targetWaypointIndex >= midpointIndex;
 
-            // find current station (within buffer of vehicle)
-            // need to check both outbound and inbound platform positions since they differ
+            // find current station - check if vehicle is within station bounds
             int currentStationIdx = -1;
-            float stationBuffer = 30f;
-            float closestDist = stationBuffer;
+            float closestDist = float.MaxValue;
+            const float maxStationDistance = 100f; // max distance to consider "at station"
 
-            // check against all waypoint positions (both directions)
             for (int i = 0; i < firstHalfStations.Count; i++)
             {
                 // check outbound position
@@ -498,7 +495,13 @@ namespace FirstPersonCameraContinued.Systems
                 }
             }
 
-            Mod.log.Info($"Strip map: currentStationIdx={currentStationIdx}, closestDist={closestDist:F1}, goingInbound={goingInbound}");
+            // only mark as at station if within max distance
+            if (closestDist > maxStationDistance)
+            {
+                currentStationIdx = -1;
+            }
+
+            Mod.log.Info($"Strip map: stations={firstHalfStations.Count}, currentIdx={currentStationIdx}, dist={closestDist:F1}, inbound={goingInbound}");
 
             // find duplicates for cross street logic
             var nameCount = new Dictionary<string, int>();
