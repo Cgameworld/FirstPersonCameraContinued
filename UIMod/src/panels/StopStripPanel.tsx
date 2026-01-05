@@ -35,7 +35,7 @@ const StopStripPanel: React.FC = () => {
 
     useEffect(() => {
         if (lineStationInfo) {
-            setCurrentStop(lineStationInfo.currentStopIndex);
+            setCurrentStop(lineStationInfo.currentStopIndex ?? -1);
         }
     }, [lineStationInfo]);
 

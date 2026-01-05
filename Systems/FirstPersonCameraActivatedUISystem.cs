@@ -353,7 +353,7 @@ namespace FirstPersonCameraContinued.Systems
                 return;
             }
 
-            // get line color as rgb() format for cohtml compatibility
+            // get line color
             string lineColorStr = "rgb(255, 255, 255)";
             if (EntityManager.TryGetComponent<Game.Routes.Color>(routeEntity, out var routeColor))
             {
@@ -375,10 +375,8 @@ namespace FirstPersonCameraContinued.Systems
                 vehiclePosition = interpolatedTransform.m_Position;
             }
 
-            // collect unique stops with raw street names and road edge info
-            var stationList = new List<(string streetName, string crossStreet, float3 position, Entity stopEntity)>();
-            var seenStops = new HashSet<Entity>();
-
+            // collect all waypoint data with stop positions
+            var allWaypoints = new List<(Entity waypointEntity, Entity stopEntity, float3 position, int waypointIndex)>();
             for (int i = 0; i < waypoints.Length; i++)
             {
                 Entity waypointEntity = waypoints[i].m_Waypoint;
@@ -391,11 +389,6 @@ namespace FirstPersonCameraContinued.Systems
                 if (!EntityManager.HasComponent<Game.Routes.TransportStop>(stopEntity))
                     continue;
 
-                if (seenStops.Contains(stopEntity))
-                    continue;
-
-                seenStops.Add(stopEntity);
-
                 float3 stopPosition = float3.zero;
                 if (EntityManager.TryGetComponent<Game.Objects.Transform>(stopEntity, out var stopTransform))
                 {
@@ -406,86 +399,156 @@ namespace FirstPersonCameraContinued.Systems
                     stopPosition = positionComponent.m_Position;
                 }
 
-                var (streetName, crossStreet) = GetStopStreetAndCrossStreet(stopEntity);
-                stationList.Add((streetName, crossStreet, stopPosition, stopEntity));
+                allWaypoints.Add((waypointEntity, stopEntity, stopPosition, i));
             }
 
-            if (stationList.Count == 0)
+            if (allWaypoints.Count == 0)
             {
                 lineStationInfo = "";
                 lineStationInfoBinding.Update();
                 return;
             }
 
-            // find duplicates and format names
+            // find the midpoint where we see a duplicate station (by position proximity)
+            // this marks where the line turns around - each platform side may be a different entity
+            // so we use position-based matching (within 50 units = same station)
+            var seenPositions = new List<float3>();
+            int midpointIndex = allWaypoints.Count;
+            for (int i = 0; i < allWaypoints.Count; i++)
+            {
+                bool isDuplicate = false;
+                foreach (var pos in seenPositions)
+                {
+                    if (math.distance(pos, allWaypoints[i].position) < 50f)
+                    {
+                        isDuplicate = true;
+                        break;
+                    }
+                }
+
+                if (isDuplicate)
+                {
+                    midpointIndex = i;
+                    break;
+                }
+                seenPositions.Add(allWaypoints[i].position);
+            }
+
+            Mod.log.Info($"Strip map: {allWaypoints.Count} waypoints, midpoint at {midpointIndex}, showing {midpointIndex} unique stations");
+
+            // get first half stations (outbound trip) - these are the unique stations
+            var firstHalfStations = new List<(string streetName, string crossStreet, float3 position, Entity stopEntity)>();
+            for (int i = 0; i < midpointIndex; i++)
+            {
+                var (streetName, crossStreet) = GetStopStreetAndCrossStreet(allWaypoints[i].stopEntity);
+                firstHalfStations.Add((streetName, crossStreet, allWaypoints[i].position, allWaypoints[i].stopEntity));
+            }
+
+            if (firstHalfStations.Count == 0)
+            {
+                lineStationInfo = "";
+                lineStationInfoBinding.Update();
+                return;
+            }
+
+            // get vehicle's target waypoint index to determine direction
+            int targetWaypointIndex = -1;
+            if (EntityManager.TryGetComponent<Target>(vehicleEntity, out var target) && target.m_Target != Entity.Null)
+            {
+                for (int i = 0; i < allWaypoints.Count; i++)
+                {
+                    if (allWaypoints[i].waypointEntity == target.m_Target)
+                    {
+                        targetWaypointIndex = allWaypoints[i].waypointIndex;
+                        break;
+                    }
+                }
+            }
+
+            // determine direction: if target is in second half, we're going back (inbound)
+            bool goingInbound = targetWaypointIndex >= midpointIndex;
+
+            // find current station (within buffer of vehicle)
+            // need to check both outbound and inbound platform positions since they differ
+            int currentStationIdx = -1;
+            float stationBuffer = 30f;
+            float closestDist = stationBuffer;
+
+            // check against all waypoint positions (both directions)
+            for (int i = 0; i < firstHalfStations.Count; i++)
+            {
+                // check outbound position
+                float dist = math.distance(vehiclePosition, firstHalfStations[i].position);
+                if (dist < closestDist)
+                {
+                    closestDist = dist;
+                    currentStationIdx = i;
+                }
+
+                // also check inbound position (mirror waypoint in second half)
+                int inboundIdx = midpointIndex + (midpointIndex - 1 - i);
+                if (inboundIdx >= 0 && inboundIdx < allWaypoints.Count)
+                {
+                    float distInbound = math.distance(vehiclePosition, allWaypoints[inboundIdx].position);
+                    if (distInbound < closestDist)
+                    {
+                        closestDist = distInbound;
+                        currentStationIdx = i;
+                    }
+                }
+            }
+
+            Mod.log.Info($"Strip map: currentStationIdx={currentStationIdx}, closestDist={closestDist:F1}, goingInbound={goingInbound}");
+
+            // find duplicates for cross street logic
             var nameCount = new Dictionary<string, int>();
-            foreach (var station in stationList)
+            foreach (var station in firstHalfStations)
             {
                 string baseName = RemoveStreetSuffix(station.streetName);
                 nameCount[baseName] = nameCount.GetValueOrDefault(baseName, 0) + 1;
             }
 
-            // try to find vehicle's target waypoint
-            int targetStationIndex = -1;
-            if (EntityManager.TryGetComponent<Target>(vehicleEntity, out var target) && target.m_Target != Entity.Null)
-            {
-                if (EntityManager.TryGetComponent<Connected>(target.m_Target, out var targetConnected))
-                {
-                    Entity targetStopEntity = targetConnected.m_Connected;
-                    for (int i = 0; i < stationList.Count; i++)
-                    {
-                        if (stationList[i].stopEntity == targetStopEntity)
-                        {
-                            targetStationIndex = i;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (targetStationIndex < 0)
-            {
-                float closestDistance = float.MaxValue;
-                for (int i = 0; i < stationList.Count; i++)
-                {
-                    float distance = math.distance(vehiclePosition, stationList[i].position);
-                    if (distance < closestDistance)
-                    {
-                        closestDistance = distance;
-                        targetStationIndex = i;
-                    }
-                }
-            }
-
-            // build result with formatted names
+            // build result - order based on direction
             var result = new LineStationInfo();
-            result.currentStopIndex = 0;
             result.lineColor = lineColorStr;
 
-            for (int i = 0; i < stationList.Count; i++)
+            if (goingInbound)
             {
-                int index = (targetStationIndex + i) % stationList.Count;
-                var station = stationList[index];
-
-                string baseName = RemoveStreetSuffix(station.streetName);
-                string displayName;
-
-                // add cross street if there are duplicates
-                if (nameCount[baseName] > 1 && !string.IsNullOrEmpty(station.crossStreet))
+                // going back to start - reverse the list
+                for (int i = firstHalfStations.Count - 1; i >= 0; i--)
                 {
-                    string crossBase = RemoveStreetSuffix(station.crossStreet);
-                    displayName = $"{baseName}/\n{crossBase}";
+                    var station = firstHalfStations[i];
+                    string displayName = FormatStationName(station.streetName, station.crossStreet, nameCount);
+                    result.stations.Add(new StationData { name = displayName });
                 }
-                else
+                // adjust current station index for reversed order
+                result.currentStopIndex = currentStationIdx >= 0 ? (firstHalfStations.Count - 1 - currentStationIdx) : -1;
+            }
+            else
+            {
+                // going outbound - normal order
+                for (int i = 0; i < firstHalfStations.Count; i++)
                 {
-                    displayName = AbbreviateStreetName(station.streetName);
+                    var station = firstHalfStations[i];
+                    string displayName = FormatStationName(station.streetName, station.crossStreet, nameCount);
+                    result.stations.Add(new StationData { name = displayName });
                 }
-
-                result.stations.Add(new StationData { name = displayName });
+                result.currentStopIndex = currentStationIdx;
             }
 
             lineStationInfo = JsonConvert.SerializeObject(result);
             lineStationInfoBinding.Update();
+        }
+
+        private string FormatStationName(string streetName, string crossStreet, Dictionary<string, int> nameCount)
+        {
+            string baseName = RemoveStreetSuffix(streetName);
+            if (nameCount.GetValueOrDefault(baseName, 0) > 1 && !string.IsNullOrEmpty(crossStreet))
+            {
+                string crossBase = RemoveStreetSuffix(crossStreet);
+                return $"{baseName}/\n{crossBase}";
+            }
+            return AbbreviateStreetName(streetName);
         }
 
         private (string streetName, string crossStreet) GetStopStreetAndCrossStreet(Entity stopEntity)
