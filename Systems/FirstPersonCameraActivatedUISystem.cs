@@ -506,7 +506,7 @@ namespace FirstPersonCameraContinued.Systems
                 currentStationIdx = -1;
             }
 
-            Mod.log.Info($"Strip map: stations={firstHalfStations.Count}, currentIdx={currentStationIdx}, dist={closestDist:F1}, inbound={goingInbound}");
+            //Mod.log.Info($"Strip map: stations={firstHalfStations.Count}, currentIdx={currentStationIdx}, dist={closestDist:F1}, inbound={goingInbound}");
 
             // find duplicates for cross street logic
             var nameCount = new Dictionary<string, int>();
@@ -599,7 +599,12 @@ namespace FirstPersonCameraContinued.Systems
             string crossStreet = "";
             if (roadEdge != Entity.Null)
             {
-                crossStreet = FindCrossStreet(roadEdge, streetName);
+                float3 stopPosition = float3.zero;
+                if (EntityManager.TryGetComponent<Game.Objects.Transform>(stopEntity, out var stopTransform))
+                {
+                    stopPosition = stopTransform.m_Position;
+                }
+                crossStreet = FindCrossStreet(roadEdge, streetName, stopPosition);
             }
 
             return (streetName, crossStreet);
@@ -618,18 +623,89 @@ namespace FirstPersonCameraContinued.Systems
             return "";
         }
 
-        private string FindCrossStreet(Entity roadEdge, string mainStreetName)
+        private float3 GetNodePosition(Entity node)
+        {
+            if (EntityManager.TryGetComponent<Game.Net.Node>(node, out var nodeComponent))
+            {
+                return nodeComponent.m_Position;
+            }
+            return float3.zero;
+        }
+
+        private string FindCrossStreet(Entity roadEdge, string mainStreetName, float3 stopPosition)
         {
             if (!EntityManager.TryGetComponent<Edge>(roadEdge, out var edge))
                 return "";
 
-            // check connected edges at start node
-            string crossStreet = FindCrossStreetAtNode(edge.m_Start, mainStreetName);
+            float3 startPos = GetNodePosition(edge.m_Start);
+            float3 endPos = GetNodePosition(edge.m_End);
+            float distToStart = math.distance(stopPosition, startPos);
+            float distToEnd = math.distance(stopPosition, endPos);
+
+            Entity closerNode = distToStart <= distToEnd ? edge.m_Start : edge.m_End;
+            Entity fartherNode = distToStart <= distToEnd ? edge.m_End : edge.m_Start;
+
+            string crossStreet = FindCrossStreetAtNode(closerNode, mainStreetName);
             if (!string.IsNullOrEmpty(crossStreet))
                 return crossStreet;
 
-            // check connected edges at end node
-            return FindCrossStreetAtNode(edge.m_End, mainStreetName);
+            crossStreet = FindCrossStreetAtNode(fartherNode, mainStreetName);
+            if (!string.IsNullOrEmpty(crossStreet))
+                return crossStreet;
+
+            // walk along connected edges to find nearest cross street
+            crossStreet = WalkEdgesToFindCrossStreet(closerNode, roadEdge, mainStreetName, 5);
+            if (!string.IsNullOrEmpty(crossStreet))
+                return crossStreet;
+
+            return WalkEdgesToFindCrossStreet(fartherNode, roadEdge, mainStreetName, 5);
+        }
+
+        private string WalkEdgesToFindCrossStreet(Entity startNode, Entity excludeEdge, string mainStreetName, int maxHops)
+        {
+            Entity currentNode = startNode;
+            Entity previousEdge = excludeEdge;
+
+            for (int hop = 0; hop < maxHops; hop++)
+            {
+                if (!EntityManager.TryGetBuffer<ConnectedEdge>(currentNode, true, out var connectedEdges))
+                    return "";
+
+                Entity nextEdge = Entity.Null;
+                Entity nextNode = Entity.Null;
+
+                foreach (var connectedEdge in connectedEdges)
+                {
+                    if (connectedEdge.m_Edge == previousEdge)
+                        continue;
+
+                    string edgeName = GetRoadName(connectedEdge.m_Edge);
+
+                    if (!string.IsNullOrEmpty(edgeName) && edgeName != mainStreetName)
+                        return edgeName;
+
+                    if (edgeName == mainStreetName && nextEdge == Entity.Null)
+                    {
+                        nextEdge = connectedEdge.m_Edge;
+                        if (EntityManager.TryGetComponent<Edge>(nextEdge, out var edgeComp))
+                        {
+                            nextNode = edgeComp.m_Start == currentNode ? edgeComp.m_End : edgeComp.m_Start;
+                        }
+                    }
+                }
+
+                if (nextEdge == Entity.Null || nextNode == Entity.Null)
+                    return "";
+
+                previousEdge = nextEdge;
+                currentNode = nextNode;
+
+                string crossStreet = FindCrossStreetAtNode(currentNode, mainStreetName);
+                if (!string.IsNullOrEmpty(crossStreet))
+                    return crossStreet;
+            }
+
+            return "";
         }
 
         private string FindCrossStreetAtNode(Entity node, string mainStreetName)
