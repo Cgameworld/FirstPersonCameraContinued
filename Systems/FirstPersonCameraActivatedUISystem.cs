@@ -465,8 +465,9 @@ namespace FirstPersonCameraContinued.Systems
                 }
             }
 
-            // determine direction: if target is in second half, we're going back (inbound)
-            bool goingInbound = targetWaypointIndex >= midpointIndex;
+            // determine direction: if target is in second half or first waypoint, we're going back (inbound)
+            // keep inbound display until vehicle passes the first station (midpoint in display terms)
+            bool goingInbound = targetWaypointIndex >= midpointIndex || targetWaypointIndex == 0;
 
             // find current station - check if vehicle is within station bounds
             int currentStationIdx = -1;
