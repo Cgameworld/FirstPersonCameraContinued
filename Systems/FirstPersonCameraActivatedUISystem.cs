@@ -483,15 +483,18 @@ namespace FirstPersonCameraContinued.Systems
                     currentStationIdx = i;
                 }
 
-                // also check inbound position (mirror waypoint in second half)
-                int inboundIdx = midpointIndex + (midpointIndex - 1 - i);
-                if (inboundIdx >= 0 && inboundIdx < allWaypoints.Count)
+                // check inbound position by finding matching station in second half by position
+                for (int j = midpointIndex; j < allWaypoints.Count; j++)
                 {
-                    float distInbound = math.distance(vehiclePosition, allWaypoints[inboundIdx].position);
-                    if (distInbound < closestDist)
+                    if (math.distance(firstHalfStations[i].position, allWaypoints[j].position) < 50f)
                     {
-                        closestDist = distInbound;
-                        currentStationIdx = i;
+                        float distInbound = math.distance(vehiclePosition, allWaypoints[j].position);
+                        if (distInbound < closestDist)
+                        {
+                            closestDist = distInbound;
+                            currentStationIdx = i;
+                        }
+                        break;
                     }
                 }
             }
