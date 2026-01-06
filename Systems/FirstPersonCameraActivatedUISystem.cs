@@ -18,6 +18,7 @@ using Game.UI.InGame;
 using Game.Vehicles;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Unity.Entities;
 using Unity.Mathematics;
