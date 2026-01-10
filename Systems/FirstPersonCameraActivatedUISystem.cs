@@ -2,6 +2,7 @@
 using Colossal.Mathematics;
 using Colossal.UI.Binding;
 using FirstPersonCameraContinued.DataModels;
+using FirstPersonCameraContinued.Enums;
 using FirstPersonCameraContinued.MonoBehaviours;
 using FirstPersonCameraContinued.Transforms;
 using Game.Buildings;
@@ -318,6 +319,28 @@ namespace FirstPersonCameraContinued.Systems
                 lineStationInfo = "";
                 lineStationInfoBinding.Update();
                 return;
+            }
+
+            var showStopStripSetting = Mod.FirstPersonModSettings?.ShowStopStrip ?? ShowStopStrip.MetroOnly;
+
+            if (showStopStripSetting == ShowStopStrip.Never)
+            {
+                lineStationInfo = "";
+                lineStationInfoBinding.Update();
+                return;
+            }
+
+            if (showStopStripSetting == ShowStopStrip.MetroOnly)
+            {
+                if (CameraController.GetTransformer().CheckForVehicleScope(out var vehicleType, out _))
+                {
+                    if (vehicleType != Enums.VehicleType.Subway)
+                    {
+                        lineStationInfo = "";
+                        lineStationInfoBinding.Update();
+                        return;
+                    }
+                }
             }
 
             // get the controller entity for multi-car vehicles
@@ -813,6 +836,7 @@ namespace FirstPersonCameraContinued.Systems
         public bool OnlyShowSpeed { get; set; }
         public int InfoBoxSize { get; set; }
         public int SetUnits { get; set; }
+        public int ShowStopStrip { get; set; }
 
         public static UISettingsGroup FromModSettings()
         {
@@ -823,7 +847,8 @@ namespace FirstPersonCameraContinued.Systems
                     ShowInfoBox = true,
                     OnlyShowSpeed = false,
                     InfoBoxSize = 1,
-                    SetUnits = 0
+                    SetUnits = 0,
+                    ShowStopStrip = 0
                 };
             }
 
@@ -832,7 +857,8 @@ namespace FirstPersonCameraContinued.Systems
                 ShowInfoBox = Mod.FirstPersonModSettings.ShowInfoBox,
                 OnlyShowSpeed = Mod.FirstPersonModSettings.OnlyShowSpeed,
                 InfoBoxSize = (int)Mod.FirstPersonModSettings.InfoBoxSize,
-                SetUnits = (int)Mod.FirstPersonModSettings.SetUnits               
+                SetUnits = (int)Mod.FirstPersonModSettings.SetUnits,
+                ShowStopStrip = (int)Mod.FirstPersonModSettings.ShowStopStrip
             };
         }
     }

@@ -11,7 +11,7 @@ using Unity.Entities;
 namespace FirstPersonCameraContinued
 {
     [FileLocation(nameof(FirstPersonCameraContinued))]
-    [SettingsUIShowGroupName(CameraSettingsGroup, KeybindingSettingsGroup, OtherSettingsGroup, UISettingsGroup, InfoBoxSettingsGroup)]
+    [SettingsUIShowGroupName(CameraSettingsGroup, KeybindingSettingsGroup, OtherSettingsGroup, UISettingsGroup, InfoBoxSettingsGroup, StopStripSettingsGroup)]
     [SettingsUITabOrder(GeneralSettingsTab,UISettingsTab)]
     public class Setting : ModSetting
     {
@@ -22,11 +22,13 @@ namespace FirstPersonCameraContinued
         public const string UISettingsTab = "UISettingsTab";
         public const string UISettingsGroup = "UISettingsGroup";
         public const string InfoBoxSettingsGroup = "InfoBoxSettingsGroup";
+        public const string StopStripSettingsGroup = "StopStripSettingsGroup";
 
         private bool _showInfoBox;
         private bool _onlyShowSpeed;
         private InfoBoxSize _infoBoxSize;
         private ModUnits _setUnits;
+        private ShowStopStrip _showStopStrip;
 
         public Setting(IMod mod) : base(mod)
         {
@@ -141,6 +143,17 @@ namespace FirstPersonCameraContinued
             }
         }
 
+        [SettingsUISection(UISettingsTab, StopStripSettingsGroup)]
+        public Enums.ShowStopStrip ShowStopStrip
+        {
+            get => _showStopStrip;
+            set
+            {
+                _showStopStrip = value;
+                SetUISettingsGroup();
+            }
+        }
+
         private void SetUISettingsGroup()
         {
             World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<FirstPersonCameraActivatedUISystem>().SetUISettingsGroupOptions();
@@ -163,6 +176,7 @@ namespace FirstPersonCameraContinued
             OnlyShowSpeed = false;
             InfoBoxSize = Enums.InfoBoxSize.Default;
             SetUnits = Enums.ModUnits.GameSetting;
+            ShowStopStrip = Enums.ShowStopStrip.MetroOnly;
         }
 
        public void Unload()
