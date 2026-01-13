@@ -400,7 +400,7 @@ namespace FirstPersonCameraContinued.Systems
             var nameCount = new Dictionary<string, int>();
             foreach (var station in stations)
             {
-                string baseName = RemoveStreetSuffix(station.streetName);
+                string baseName = GetStreetBaseName(station.streetName);
                 nameCount[baseName] = nameCount.GetValueOrDefault(baseName, 0) + 1;
             }
 
@@ -578,13 +578,13 @@ namespace FirstPersonCameraContinued.Systems
 
         private string FormatStationName(string streetName, string crossStreet, Dictionary<string, int> nameCount)
         {
-            string baseName = RemoveStreetSuffix(streetName);
+            string baseName = GetStreetBaseName(streetName);
             if (nameCount.GetValueOrDefault(baseName, 0) > 1 && !string.IsNullOrEmpty(crossStreet))
             {
-                string crossBase = RemoveStreetSuffix(crossStreet);
+                string crossBase = GetStreetBaseName(crossStreet);
                 return $"{baseName}/\n{crossBase}";
             }
-            return AbbreviateStreetName(streetName);
+            return AbbreviateSuffix(streetName);
         }
 
         private (string streetName, string crossStreet) GetStopStreetAndCrossStreet(Entity stopEntity)
@@ -752,42 +752,42 @@ namespace FirstPersonCameraContinued.Systems
             return "";
         }
 
-        private string RemoveStreetSuffix(string name)
+        private static readonly (string full, string abbrev)[] StreetSuffixes =
+        {
+            (" Street", " St"), (" Avenue", " Ave"), (" Boulevard", " Blvd"),
+            (" Road", " Rd"), (" Drive", " Dr"), (" Lane", " Ln"),
+            (" Court", " Ct"), (" Place", " Pl"), (" Circle", " Cir"),
+            (" Highway", " Hwy"), (" Parkway", " Pkwy"), (" Terrace", " Ter"), (" Way", "")
+        };
+
+        private string GetStreetBaseName(string name)
         {
             if (string.IsNullOrEmpty(name)) return name;
 
-            string[] suffixes = { " Street", " St", " Avenue", " Ave", " Boulevard", " Blvd",
-                                  " Road", " Rd", " Drive", " Dr", " Lane", " Ln",
-                                  " Court", " Ct", " Place", " Pl", " Way", " Circle", " Cir",
-                                  " Highway", " Hwy", " Parkway", " Pkwy", " Terrace", " Ter" };
-
-            foreach (var suffix in suffixes)
+            foreach (var (full, abbrev) in StreetSuffixes)
             {
-                if (name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
-                {
-                    return name.Substring(0, name.Length - suffix.Length);
-                }
+                if (name.EndsWith(full, StringComparison.OrdinalIgnoreCase))
+                    return name.Substring(0, name.Length - full.Length);
+                if (!string.IsNullOrEmpty(abbrev) && name.EndsWith(abbrev, StringComparison.OrdinalIgnoreCase))
+                    return name.Substring(0, name.Length - abbrev.Length);
             }
             return name;
         }
 
-        private string AbbreviateStreetName(string name)
+        private string AbbreviateSuffix(string name)
         {
             if (string.IsNullOrEmpty(name)) return name;
 
-            return name
-                .Replace(" Street", " St")
-                .Replace(" Avenue", " Ave")
-                .Replace(" Boulevard", " Blvd")
-                .Replace(" Road", " Rd")
-                .Replace(" Drive", " Dr")
-                .Replace(" Lane", " Ln")
-                .Replace(" Court", " Ct")
-                .Replace(" Place", " Pl")
-                .Replace(" Circle", " Cir")
-                .Replace(" Highway", " Hwy")
-                .Replace(" Parkway", " Pkwy")
-                .Replace(" Terrace", " Ter");
+            foreach (var (full, abbrev) in StreetSuffixes)
+            {
+                if (name.EndsWith(full, StringComparison.OrdinalIgnoreCase))
+                {
+                    if (string.IsNullOrEmpty(abbrev))
+                        return name;
+                    return name.Substring(0, name.Length - full.Length) + abbrev;
+                }
+            }
+            return name;
         }
 
         public string SetFollowedEntityDefaults()
