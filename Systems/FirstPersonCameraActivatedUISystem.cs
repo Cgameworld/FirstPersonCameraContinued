@@ -313,91 +313,20 @@ namespace FirstPersonCameraContinued.Systems
 
         private void UpdateLineStationInfo(Entity currentEntity)
         {
-            // only process for transit vehicles with a route
-            if (!EntityManager.HasComponent<Game.Vehicles.PublicTransport>(currentEntity))
+            if (!ShouldShowStripMap(currentEntity))
             {
-                lineStationInfo = "";
-                lineStationInfoBinding.Update();
+                ClearLineStationInfo();
                 return;
             }
 
-            var showStopStripSetting = Mod.FirstPersonModSettings?.ShowStopStrip ?? ShowStopStrip.MetroOnly;
+            Entity vehicleEntity = GetControllerEntity(currentEntity);
 
-            if (showStopStripSetting == ShowStopStrip.Never)
+            if (!TryGetRouteData(vehicleEntity, currentEntity, out Entity routeEntity, out DynamicBuffer<RouteWaypoint> waypoints))
             {
-                lineStationInfo = "";
-                lineStationInfoBinding.Update();
+                ClearLineStationInfo();
                 return;
             }
 
-            if (showStopStripSetting == ShowStopStrip.MetroOnly)
-            {
-                if (CameraController.GetTransformer().CheckForVehicleScope(out var vehicleType, out _))
-                {
-                    if (vehicleType != Enums.VehicleType.Subway)
-                    {
-                        lineStationInfo = "";
-                        lineStationInfoBinding.Update();
-                        return;
-                    }
-                }
-            }
-
-            // get the controller entity for multi-car vehicles
-            Entity vehicleEntity = currentEntity;
-            if (EntityManager.TryGetComponent<Game.Vehicles.Controller>(currentEntity, out var controllerComponent))
-            {
-                vehicleEntity = controllerComponent.m_Controller;
-            }
-
-            // get route from vehicle - try controller first, then the vehicle itself
-            CurrentRoute currentRoute;
-            if (!EntityManager.TryGetComponent<CurrentRoute>(vehicleEntity, out currentRoute))
-            {
-                if (!EntityManager.TryGetComponent<CurrentRoute>(currentEntity, out currentRoute))
-                {
-                    lineStationInfo = "";
-                    lineStationInfoBinding.Update();
-                    return;
-                }
-            }
-
-            Entity routeEntity = currentRoute.m_Route;
-            if (routeEntity == Entity.Null)
-            {
-                lineStationInfo = "";
-                lineStationInfoBinding.Update();
-                return;
-            }
-
-            // get route waypoints
-            if (!EntityManager.TryGetBuffer<RouteWaypoint>(routeEntity, true, out var waypoints) || waypoints.Length == 0)
-            {
-                lineStationInfo = "";
-                lineStationInfoBinding.Update();
-                return;
-            }
-
-            // get line color
-            string lineColorStr = "rgb(255, 255, 255)";
-            if (EntityManager.TryGetComponent<Game.Routes.Color>(routeEntity, out var routeColor))
-            {
-                var color = routeColor.m_Color;
-                lineColorStr = $"rgb({color.r}, {color.g}, {color.b})";
-            }
-
-            // get vehicle position
-            float3 vehiclePosition = float3.zero;
-            if (EntityManager.TryGetComponent<Game.Objects.Transform>(vehicleEntity, out var vehicleTransform))
-            {
-                vehiclePosition = vehicleTransform.m_Position;
-            }
-            else if (EntityManager.TryGetComponent<InterpolatedTransform>(vehicleEntity, out var interpolatedTransform))
-            {
-                vehiclePosition = interpolatedTransform.m_Position;
-            }
-
-            // collect all waypoint data with stop positions
             var allWaypoints = new List<(Entity waypointEntity, Entity stopEntity, float3 position, int waypointIndex)>();
             for (int i = 0; i < waypoints.Length; i++)
             {
@@ -411,52 +340,18 @@ namespace FirstPersonCameraContinued.Systems
                 if (!EntityManager.HasComponent<Game.Routes.TransportStop>(stopEntity))
                     continue;
 
-                float3 stopPosition = float3.zero;
-                if (EntityManager.TryGetComponent<Game.Objects.Transform>(stopEntity, out var stopTransform))
-                {
-                    stopPosition = stopTransform.m_Position;
-                }
-                else if (EntityManager.TryGetComponent<Position>(waypointEntity, out var positionComponent))
-                {
-                    stopPosition = positionComponent.m_Position;
-                }
-
+                float3 stopPosition = GetStopPosition(stopEntity, waypointEntity);
                 allWaypoints.Add((waypointEntity, stopEntity, stopPosition, i));
             }
 
             if (allWaypoints.Count == 0)
             {
-                lineStationInfo = "";
-                lineStationInfoBinding.Update();
+                ClearLineStationInfo();
                 return;
             }
 
-            // find the midpoint where we see a duplicate station (by position proximity)
-            // this marks where the line turns around - each platform side may be a different entity
-            // so we use position-based matching (within 50 units = same station)
-            var seenPositions = new List<float3>();
-            int midpointIndex = allWaypoints.Count;
-            for (int i = 0; i < allWaypoints.Count; i++)
-            {
-                bool isDuplicate = false;
-                foreach (var pos in seenPositions)
-                {
-                    if (math.distance(pos, allWaypoints[i].position) < 50f)
-                    {
-                        isDuplicate = true;
-                        break;
-                    }
-                }
+            int midpointIndex = FindRouteMidpoint(allWaypoints);
 
-                if (isDuplicate)
-                {
-                    midpointIndex = i;
-                    break;
-                }
-                seenPositions.Add(allWaypoints[i].position);
-            }
-
-            // get first half stations (outbound trip) - these are the unique stations
             var firstHalfStations = new List<(string streetName, string crossStreet, float3 position, Entity stopEntity)>();
             for (int i = 0; i < midpointIndex; i++)
             {
@@ -466,37 +361,187 @@ namespace FirstPersonCameraContinued.Systems
 
             if (firstHalfStations.Count == 0)
             {
-                lineStationInfo = "";
-                lineStationInfoBinding.Update();
+                ClearLineStationInfo();
                 return;
             }
 
-            // get vehicle's target waypoint index to determine direction
-            int targetWaypointIndex = -1;
-            if (EntityManager.TryGetComponent<Target>(vehicleEntity, out var target) && target.m_Target != Entity.Null)
+            float3 vehiclePosition = float3.zero;
+            if (EntityManager.TryGetComponent<Game.Objects.Transform>(vehicleEntity, out var vehicleTransform))
+                vehiclePosition = vehicleTransform.m_Position;
+            else if (EntityManager.TryGetComponent<InterpolatedTransform>(vehicleEntity, out var interpolatedTransform))
+                vehiclePosition = interpolatedTransform.m_Position;
+
+            int targetWaypointIndex = GetTargetWaypointIndex(vehicleEntity, allWaypoints);
+            bool goingInbound = targetWaypointIndex >= midpointIndex || targetWaypointIndex == 0;
+
+            int currentStationIdx = FindCurrentStationIndex(vehiclePosition, firstHalfStations, allWaypoints, midpointIndex);
+
+            var result = BuildLineStationResult(
+                routeEntity,
+                firstHalfStations,
+                goingInbound,
+                currentStationIdx
+            );
+
+            lineStationInfo = JsonConvert.SerializeObject(result);
+            lineStationInfoBinding.Update();
+        }
+        private LineStationInfo BuildLineStationResult(
+    Entity routeEntity,
+    List<(string streetName, string crossStreet, float3 position, Entity stopEntity)> stations,
+    bool goingInbound,
+    int currentStationIdx)
+        {
+            var result = new LineStationInfo
             {
-                for (int i = 0; i < allWaypoints.Count; i++)
+                lineColor = GetLineColor(routeEntity)
+            };
+
+            var nameCount = new Dictionary<string, int>();
+            foreach (var station in stations)
+            {
+                string baseName = RemoveStreetSuffix(station.streetName);
+                nameCount[baseName] = nameCount.GetValueOrDefault(baseName, 0) + 1;
+            }
+
+            if (goingInbound)
+            {
+                for (int i = stations.Count - 1; i >= 0; i--)
                 {
-                    if (allWaypoints[i].waypointEntity == target.m_Target)
-                    {
-                        targetWaypointIndex = allWaypoints[i].waypointIndex;
-                        break;
-                    }
+                    string displayName = FormatStationName(stations[i].streetName, stations[i].crossStreet, nameCount);
+                    result.stations.Add(new StationData { name = displayName });
+                }
+                result.currentStopIndex = currentStationIdx >= 0 ? (stations.Count - 1 - currentStationIdx) : -1;
+            }
+            else
+            {
+                for (int i = 0; i < stations.Count; i++)
+                {
+                    string displayName = FormatStationName(stations[i].streetName, stations[i].crossStreet, nameCount);
+                    result.stations.Add(new StationData { name = displayName });
+                }
+                result.currentStopIndex = currentStationIdx;
+            }
+
+            return result;
+        }
+
+        private void ClearLineStationInfo()
+        {
+            lineStationInfo = "";
+            lineStationInfoBinding.Update();
+        }
+
+        private bool ShouldShowStripMap(Entity currentEntity)
+        {
+            if (!EntityManager.HasComponent<Game.Vehicles.PublicTransport>(currentEntity))
+                return false;
+
+            var showStopStripSetting = Mod.FirstPersonModSettings?.ShowStopStrip ?? ShowStopStrip.MetroOnly;
+
+            if (showStopStripSetting == ShowStopStrip.Never)
+                return false;
+
+            if (showStopStripSetting == ShowStopStrip.MetroOnly)
+            {
+                if (CameraController.GetTransformer().CheckForVehicleScope(out var vehicleType, out _))
+                {
+                    if (vehicleType != Enums.VehicleType.Subway)
+                        return false;
                 }
             }
 
-            // determine direction: if target is in second half or first waypoint, we're going back (inbound)
-            // keep inbound display until vehicle passes the first station (midpoint in display terms)
-            bool goingInbound = targetWaypointIndex >= midpointIndex || targetWaypointIndex == 0;
+            return true;
+        }
 
-            // find current station - check if vehicle is within station bounds
+        private Entity GetControllerEntity(Entity currentEntity)
+        {
+            if (EntityManager.TryGetComponent<Game.Vehicles.Controller>(currentEntity, out var controllerComponent))
+                return controllerComponent.m_Controller;
+            return currentEntity;
+        }
+
+        private bool TryGetRouteData(Entity vehicleEntity, Entity currentEntity, out Entity routeEntity, out DynamicBuffer<RouteWaypoint> waypoints)
+        {
+            routeEntity = Entity.Null;
+            waypoints = default;
+
+            CurrentRoute currentRoute;
+            if (!EntityManager.TryGetComponent<CurrentRoute>(vehicleEntity, out currentRoute))
+            {
+                if (!EntityManager.TryGetComponent<CurrentRoute>(currentEntity, out currentRoute))
+                    return false;
+            }
+
+            routeEntity = currentRoute.m_Route;
+            if (routeEntity == Entity.Null)
+                return false;
+
+            if (!EntityManager.TryGetBuffer<RouteWaypoint>(routeEntity, true, out waypoints) || waypoints.Length == 0)
+                return false;
+
+            return true;
+        }
+
+        private float3 GetStopPosition(Entity stopEntity, Entity waypointEntity)
+        {
+            if (EntityManager.TryGetComponent<Game.Objects.Transform>(stopEntity, out var stopTransform))
+                return stopTransform.m_Position;
+
+            if (EntityManager.TryGetComponent<Position>(waypointEntity, out var positionComponent))
+                return positionComponent.m_Position;
+
+            return float3.zero;
+        }
+
+        private int FindRouteMidpoint(List<(Entity waypointEntity, Entity stopEntity, float3 position, int waypointIndex)> allWaypoints)
+        {
+            const float sameStationThreshold = 50f;
+            var seenPositions = new List<float3>();
+
+            for (int i = 0; i < allWaypoints.Count; i++)
+            {
+                foreach (var pos in seenPositions)
+                {
+                    if (math.distance(pos, allWaypoints[i].position) < sameStationThreshold)
+                        return i;
+                }
+                seenPositions.Add(allWaypoints[i].position);
+            }
+
+            return allWaypoints.Count;
+        }
+
+        private int GetTargetWaypointIndex(
+            Entity vehicleEntity,
+            List<(Entity waypointEntity, Entity stopEntity, float3 position, int waypointIndex)> allWaypoints)
+        {
+            if (!EntityManager.TryGetComponent<Target>(vehicleEntity, out var target) || target.m_Target == Entity.Null)
+                return -1;
+
+            for (int i = 0; i < allWaypoints.Count; i++)
+            {
+                if (allWaypoints[i].waypointEntity == target.m_Target)
+                    return allWaypoints[i].waypointIndex;
+            }
+
+            return -1;
+        }
+
+        private int FindCurrentStationIndex(
+            float3 vehiclePosition,
+            List<(string streetName, string crossStreet, float3 position, Entity stopEntity)> firstHalfStations,
+            List<(Entity waypointEntity, Entity stopEntity, float3 position, int waypointIndex)> allWaypoints,
+            int midpointIndex)
+        {
+            const float maxStationDistance = 100f;
+            const float sameStationThreshold = 50f;
+
             int currentStationIdx = -1;
             float closestDist = float.MaxValue;
-            const float maxStationDistance = 100f; // max distance to consider "at station"
 
             for (int i = 0; i < firstHalfStations.Count; i++)
             {
-                // check outbound position
                 float dist = math.distance(vehiclePosition, firstHalfStations[i].position);
                 if (dist < closestDist)
                 {
@@ -504,10 +549,9 @@ namespace FirstPersonCameraContinued.Systems
                     currentStationIdx = i;
                 }
 
-                // check inbound position by finding matching station in second half by position
                 for (int j = midpointIndex; j < allWaypoints.Count; j++)
                 {
-                    if (math.distance(firstHalfStations[i].position, allWaypoints[j].position) < 50f)
+                    if (math.distance(firstHalfStations[i].position, allWaypoints[j].position) < sameStationThreshold)
                     {
                         float distInbound = math.distance(vehiclePosition, allWaypoints[j].position);
                         if (distInbound < closestDist)
@@ -520,52 +564,16 @@ namespace FirstPersonCameraContinued.Systems
                 }
             }
 
-            // only mark as at station if within max distance
-            if (closestDist > maxStationDistance)
+            return closestDist <= maxStationDistance ? currentStationIdx : -1;
+        }
+        private string GetLineColor(Entity routeEntity)
+        {
+            if (EntityManager.TryGetComponent<Game.Routes.Color>(routeEntity, out var routeColor))
             {
-                currentStationIdx = -1;
+                var color = routeColor.m_Color;
+                return $"rgb({color.r}, {color.g}, {color.b})";
             }
-
-            //Mod.log.Info($"Strip map: stations={firstHalfStations.Count}, currentIdx={currentStationIdx}, dist={closestDist:F1}, inbound={goingInbound}");
-
-            // find duplicates for cross street logic
-            var nameCount = new Dictionary<string, int>();
-            foreach (var station in firstHalfStations)
-            {
-                string baseName = RemoveStreetSuffix(station.streetName);
-                nameCount[baseName] = nameCount.GetValueOrDefault(baseName, 0) + 1;
-            }
-
-            // build result - order based on direction
-            var result = new LineStationInfo();
-            result.lineColor = lineColorStr;
-
-            if (goingInbound)
-            {
-                // going back to start - reverse the list
-                for (int i = firstHalfStations.Count - 1; i >= 0; i--)
-                {
-                    var station = firstHalfStations[i];
-                    string displayName = FormatStationName(station.streetName, station.crossStreet, nameCount);
-                    result.stations.Add(new StationData { name = displayName });
-                }
-                // adjust current station index for reversed order
-                result.currentStopIndex = currentStationIdx >= 0 ? (firstHalfStations.Count - 1 - currentStationIdx) : -1;
-            }
-            else
-            {
-                // going outbound - normal order
-                for (int i = 0; i < firstHalfStations.Count; i++)
-                {
-                    var station = firstHalfStations[i];
-                    string displayName = FormatStationName(station.streetName, station.crossStreet, nameCount);
-                    result.stations.Add(new StationData { name = displayName });
-                }
-                result.currentStopIndex = currentStationIdx;
-            }
-
-            lineStationInfo = JsonConvert.SerializeObject(result);
-            lineStationInfoBinding.Update();
+            return "rgb(255, 255, 255)";
         }
 
         private string FormatStationName(string streetName, string crossStreet, Dictionary<string, int> nameCount)
