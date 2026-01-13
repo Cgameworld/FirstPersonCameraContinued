@@ -352,8 +352,8 @@ namespace FirstPersonCameraContinued.Systems
                 return;
             }
 
-            bool isMetro = IsMetroVehicle();
-            int midpointIndex = isMetro ? FindRouteMidpoint(allWaypoints) : allWaypoints.Count;
+            bool isMetroOrTrain = IsMetroOrTrainVehicle();
+            int midpointIndex = isMetroOrTrain ? FindRouteMidpoint(allWaypoints) : allWaypoints.Count;
 
             var displayedStations = new List<(string streetName, string crossStreet, float3 position, Entity stopEntity)>();
             for (int i = 0; i < midpointIndex; i++)
@@ -375,7 +375,7 @@ namespace FirstPersonCameraContinued.Systems
                 vehiclePosition = interpolatedTransform.m_Position;
 
             int targetWaypointIndex = GetTargetWaypointIndex(vehicleEntity, allWaypoints);
-            bool goingInbound = isMetro && (targetWaypointIndex >= midpointIndex || targetWaypointIndex == 0);
+            bool goingInbound = isMetroOrTrain && (targetWaypointIndex >= midpointIndex || targetWaypointIndex == 0);
 
             bool isVehicleStopped = IsVehicleStopped(vehicleEntity);
             int currentStationIdx = FindCurrentStationIndex(vehicleEntity, displayedStations, allWaypoints, midpointIndex, isVehicleStopped);
@@ -385,7 +385,7 @@ namespace FirstPersonCameraContinued.Systems
                 displayedStations,
                 goingInbound,
                 currentStationIdx,
-                isMetro
+                isMetroOrTrain
             );
 
             lineStationInfo = JsonConvert.SerializeObject(result);
@@ -396,14 +396,14 @@ namespace FirstPersonCameraContinued.Systems
             List<(string streetName, string crossStreet, float3 position, Entity stopEntity)> stations,
             bool goingInbound,
             int currentStationIdx,
-            bool isMetro)
+            bool isMetroOrTrain)
         {
             var result = new LineStationInfo
             {
                 lineColor = GetLineColor(routeEntity)
             };
 
-            if (isMetro)
+            if (isMetroOrTrain)
             {
                 var nameCount = new Dictionary<string, int>();
                 foreach (var station in stations)
@@ -446,6 +446,11 @@ namespace FirstPersonCameraContinued.Systems
 
         private string GetVanillaStopName(Entity stopEntity)
         {
+            if (nameSystem.TryGetCustomName(stopEntity, out var customName))
+            {
+                return customName;
+            }
+
             if (BuildingUtils.GetAddress(EntityManager, stopEntity, out var road, out var number))
             {
                 string roadName = nameSystem.GetRenderedLabelName(road);
@@ -486,10 +491,10 @@ namespace FirstPersonCameraContinued.Systems
             return true;
         }
 
-        private bool IsMetroVehicle()
+        private bool IsMetroOrTrainVehicle()
         {
             if (CameraController.GetTransformer().CheckForVehicleScope(out var vehicleType, out _))
-                return vehicleType == Enums.VehicleType.Subway;
+                return vehicleType == Enums.VehicleType.Subway || vehicleType == Enums.VehicleType.Train;
             return false;
         }
 
