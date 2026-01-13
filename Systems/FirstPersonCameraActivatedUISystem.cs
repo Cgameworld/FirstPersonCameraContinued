@@ -383,10 +383,7 @@ namespace FirstPersonCameraContinued.Systems
             if (EntityManager.TryGetComponent<Game.Routes.Color>(routeEntity, out var routeColor))
             {
                 var color = routeColor.m_Color;
-                int r = Math.Clamp((int)(color.r * 255), 0, 255);
-                int g = Math.Clamp((int)(color.g * 255), 0, 255);
-                int b = Math.Clamp((int)(color.b * 255), 0, 255);
-                lineColorStr = $"rgb({r}, {g}, {b})";
+                lineColorStr = $"rgb({color.r}, {color.g}, {color.b})";
             }
 
             // get vehicle position
