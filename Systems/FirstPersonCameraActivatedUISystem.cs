@@ -144,7 +144,8 @@ namespace FirstPersonCameraContinued.Systems
                 followedEntityInfo.currentSpeed = new Vector3(movingComponent.m_Velocity.x, movingComponent.m_Velocity.y, movingComponent.m_Velocity.z).magnitude;
             }
 
-            if (EntityManager.TryGetComponent<Game.Creatures.CurrentVehicle>(currentEntity, out var currentVehicleComponent) && EntityManager.TryGetComponent<Game.Objects.Moving>(currentVehicleComponent.m_Vehicle, out var movingComponent2)){
+            if (EntityManager.TryGetComponent<Game.Creatures.CurrentVehicle>(currentEntity, out var currentVehicleComponent) && EntityManager.TryGetComponent<Game.Objects.Moving>(currentVehicleComponent.m_Vehicle, out var movingComponent2))
+            {
                 followedEntityInfo.currentSpeed = new Vector3(movingComponent2.m_Velocity.x, movingComponent2.m_Velocity.y, movingComponent2.m_Velocity.z).magnitude;
             }
 
@@ -169,8 +170,9 @@ namespace FirstPersonCameraContinued.Systems
                                 totalPassengers += passengerBuffer.Length;
                             }
                             //count total cargo
-                            if (EntityManager.TryGetBuffer<Game.Economy.Resources>(layoutElementBuffer[i].m_Vehicle,true, out var resourceBuffer)){
-                                for (int j = 0; j< resourceBuffer.Length; j++)
+                            if (EntityManager.TryGetBuffer<Game.Economy.Resources>(layoutElementBuffer[i].m_Vehicle, true, out var resourceBuffer))
+                            {
+                                for (int j = 0; j < resourceBuffer.Length; j++)
                                 {
                                     totalResourceAmount += resourceBuffer[j].m_Amount;
                                 }
@@ -194,10 +196,10 @@ namespace FirstPersonCameraContinued.Systems
             {
                 totalResourceAmount = amount;
                 totalResourceCapacity = capacity;
-            }          
+            }
 
-            totalResourcePercentage = totalResourceCapacity > 0 ? 
-                (float)totalResourceAmount/totalResourceCapacity: -1;
+            totalResourcePercentage = totalResourceCapacity > 0 ?
+                (float)totalResourceAmount / totalResourceCapacity : -1;
 
             //Mod.log.Info(totalResourceCapacity + " | " + totalResourceAmount);
             //Mod.log.Info("totalResourcePercentage: " + totalResourcePercentage);
@@ -213,7 +215,7 @@ namespace FirstPersonCameraContinued.Systems
                 try
                 {
                     MethodInfo method = typeof(NameSystem).GetMethod("GetCitizenName", BindingFlags.NonPublic | BindingFlags.Instance);
-                    var name = (NameSystem.Name)method.Invoke(World.GetExistingSystemManaged<NameSystem>(), new object[] { residentComponent.m_Citizen});
+                    var name = (NameSystem.Name)method.Invoke(World.GetExistingSystemManaged<NameSystem>(), new object[] { residentComponent.m_Citizen });
 
                     var nameArgs = (string[])name.GetType().GetField("m_NameArgs", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(name);
                     string firstNameLocalizationID = nameArgs[1];
@@ -375,56 +377,83 @@ namespace FirstPersonCameraContinued.Systems
             int targetWaypointIndex = GetTargetWaypointIndex(vehicleEntity, allWaypoints);
             bool goingInbound = isMetro && (targetWaypointIndex >= midpointIndex || targetWaypointIndex == 0);
 
-            int currentStationIdx = FindCurrentStationIndex(vehiclePosition, displayedStations, allWaypoints, midpointIndex);
+            bool isVehicleStopped = IsVehicleStopped(vehicleEntity);
+            int currentStationIdx = FindCurrentStationIndex(vehicleEntity, displayedStations, allWaypoints, midpointIndex, isVehicleStopped);
 
             var result = BuildLineStationResult(
                 routeEntity,
                 displayedStations,
                 goingInbound,
-                currentStationIdx
+                currentStationIdx,
+                isMetro
             );
 
             lineStationInfo = JsonConvert.SerializeObject(result);
             lineStationInfoBinding.Update();
         }
         private LineStationInfo BuildLineStationResult(
-    Entity routeEntity,
-    List<(string streetName, string crossStreet, float3 position, Entity stopEntity)> stations,
-    bool goingInbound,
-    int currentStationIdx)
+            Entity routeEntity,
+            List<(string streetName, string crossStreet, float3 position, Entity stopEntity)> stations,
+            bool goingInbound,
+            int currentStationIdx,
+            bool isMetro)
         {
             var result = new LineStationInfo
             {
                 lineColor = GetLineColor(routeEntity)
             };
 
-            var nameCount = new Dictionary<string, int>();
-            foreach (var station in stations)
+            if (isMetro)
             {
-                string baseName = GetStreetBaseName(station.streetName);
-                nameCount[baseName] = nameCount.GetValueOrDefault(baseName, 0) + 1;
-            }
-
-            if (goingInbound)
-            {
-                for (int i = stations.Count - 1; i >= 0; i--)
+                var nameCount = new Dictionary<string, int>();
+                foreach (var station in stations)
                 {
-                    string displayName = FormatStationName(stations[i].streetName, stations[i].crossStreet, nameCount);
-                    result.stations.Add(new StationData { name = displayName });
+                    string baseName = GetStreetBaseName(station.streetName);
+                    nameCount[baseName] = nameCount.GetValueOrDefault(baseName, 0) + 1;
                 }
-                result.currentStopIndex = currentStationIdx >= 0 ? (stations.Count - 1 - currentStationIdx) : -1;
+
+                if (goingInbound)
+                {
+                    for (int i = stations.Count - 1; i >= 0; i--)
+                    {
+                        string displayName = FormatStationName(stations[i].streetName, stations[i].crossStreet, nameCount);
+                        result.stations.Add(new StationData { name = displayName });
+                    }
+                    result.currentStopIndex = currentStationIdx >= 0 ? (stations.Count - 1 - currentStationIdx) : -1;
+                }
+                else
+                {
+                    for (int i = 0; i < stations.Count; i++)
+                    {
+                        string displayName = FormatStationName(stations[i].streetName, stations[i].crossStreet, nameCount);
+                        result.stations.Add(new StationData { name = displayName });
+                    }
+                    result.currentStopIndex = currentStationIdx;
+                }
             }
             else
             {
                 for (int i = 0; i < stations.Count; i++)
                 {
-                    string displayName = FormatStationName(stations[i].streetName, stations[i].crossStreet, nameCount);
+                    string displayName = GetGameStopName(stations[i].stopEntity);
                     result.stations.Add(new StationData { name = displayName });
                 }
                 result.currentStopIndex = currentStationIdx;
             }
 
             return result;
+        }
+
+        private string GetGameStopName(Entity stopEntity)
+        {
+            try
+            {
+                return nameSystem.GetRenderedLabelName(stopEntity);
+            }
+            catch
+            {
+                return "Stop";
+            }
         }
 
         private void ClearLineStationInfo()
@@ -536,43 +565,75 @@ namespace FirstPersonCameraContinued.Systems
             return -1;
         }
 
+        private bool IsVehicleStopped(Entity vehicleEntity)
+        {
+            const float stoppedThreshold = 0.5f;
+
+            if (EntityManager.TryGetComponent<Game.Objects.Moving>(vehicleEntity, out var moving))
+            {
+                float speed = math.length(moving.m_Velocity);
+                return speed < stoppedThreshold;
+            }
+
+            return false;
+        }
+
         private int FindCurrentStationIndex(
-            float3 vehiclePosition,
+            Entity vehicleEntity,
             List<(string streetName, string crossStreet, float3 position, Entity stopEntity)> displayedStations,
             List<(Entity waypointEntity, Entity stopEntity, float3 position, int waypointIndex)> allWaypoints,
-            int midpointIndex)
+            int midpointIndex,
+            bool isVehicleStopped)
         {
-            const float maxStationDistance = 100f;
-            const float sameStationThreshold = 50f;
+            if (!isVehicleStopped)
+                return -1;
 
-            int currentStationIdx = -1;
-            float closestDist = float.MaxValue;
+            if (!EntityManager.TryGetComponent<Target>(vehicleEntity, out var target) || target.m_Target == Entity.Null)
+                return -1;
 
-            for (int i = 0; i < displayedStations.Count; i++)
+            int targetListIndex = -1;
+            for (int i = 0; i < allWaypoints.Count; i++)
             {
-                float dist = math.distance(vehiclePosition, displayedStations[i].position);
-                if (dist < closestDist)
+                if (allWaypoints[i].waypointEntity == target.m_Target)
                 {
-                    closestDist = dist;
-                    currentStationIdx = i;
-                }
-
-                for (int j = midpointIndex; j < allWaypoints.Count; j++)
-                {
-                    if (math.distance(displayedStations[i].position, allWaypoints[j].position) < sameStationThreshold)
-                    {
-                        float distInbound = math.distance(vehiclePosition, allWaypoints[j].position);
-                        if (distInbound < closestDist)
-                        {
-                            closestDist = distInbound;
-                            currentStationIdx = i;
-                        }
-                        break;
-                    }
+                    targetListIndex = i;
+                    break;
                 }
             }
 
-            return closestDist <= maxStationDistance ? currentStationIdx : -1;
+            if (targetListIndex == -1)
+                return -1;
+
+            int prevStopIndex = targetListIndex - 1;
+            if (prevStopIndex < 0)
+                prevStopIndex = allWaypoints.Count - 1;
+
+            float3 vehiclePosition = float3.zero;
+            if (EntityManager.TryGetComponent<Game.Objects.Transform>(vehicleEntity, out var vehicleTransform))
+                vehiclePosition = vehicleTransform.m_Position;
+            else if (EntityManager.TryGetComponent<InterpolatedTransform>(vehicleEntity, out var interpolatedTransform))
+                vehiclePosition = interpolatedTransform.m_Position;
+
+            float distToTarget = math.distance(vehiclePosition, allWaypoints[targetListIndex].position);
+            float distToPrev = math.distance(vehiclePosition, allWaypoints[prevStopIndex].position);
+
+            int currentStopIndex = distToTarget < distToPrev ? targetListIndex : prevStopIndex;
+
+            if (currentStopIndex < displayedStations.Count)
+                return currentStopIndex;
+
+            const float sameStationThreshold = 50f;
+            Entity currentStopEntity = allWaypoints[currentStopIndex].stopEntity;
+            for (int i = 0; i < displayedStations.Count; i++)
+            {
+                if (displayedStations[i].stopEntity == currentStopEntity)
+                    return i;
+
+                if (math.distance(displayedStations[i].position, allWaypoints[currentStopIndex].position) < sameStationThreshold)
+                    return i;
+            }
+
+            return -1;
         }
         private string GetLineColor(Entity routeEntity)
         {
