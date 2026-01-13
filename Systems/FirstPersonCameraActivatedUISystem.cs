@@ -350,16 +350,17 @@ namespace FirstPersonCameraContinued.Systems
                 return;
             }
 
-            int midpointIndex = FindRouteMidpoint(allWaypoints);
+            bool isMetro = IsMetroVehicle();
+            int midpointIndex = isMetro ? FindRouteMidpoint(allWaypoints) : allWaypoints.Count;
 
-            var firstHalfStations = new List<(string streetName, string crossStreet, float3 position, Entity stopEntity)>();
+            var displayedStations = new List<(string streetName, string crossStreet, float3 position, Entity stopEntity)>();
             for (int i = 0; i < midpointIndex; i++)
             {
                 var (streetName, crossStreet) = GetStopStreetAndCrossStreet(allWaypoints[i].stopEntity);
-                firstHalfStations.Add((streetName, crossStreet, allWaypoints[i].position, allWaypoints[i].stopEntity));
+                displayedStations.Add((streetName, crossStreet, allWaypoints[i].position, allWaypoints[i].stopEntity));
             }
 
-            if (firstHalfStations.Count == 0)
+            if (displayedStations.Count == 0)
             {
                 ClearLineStationInfo();
                 return;
@@ -372,13 +373,13 @@ namespace FirstPersonCameraContinued.Systems
                 vehiclePosition = interpolatedTransform.m_Position;
 
             int targetWaypointIndex = GetTargetWaypointIndex(vehicleEntity, allWaypoints);
-            bool goingInbound = targetWaypointIndex >= midpointIndex || targetWaypointIndex == 0;
+            bool goingInbound = isMetro && (targetWaypointIndex >= midpointIndex || targetWaypointIndex == 0);
 
-            int currentStationIdx = FindCurrentStationIndex(vehiclePosition, firstHalfStations, allWaypoints, midpointIndex);
+            int currentStationIdx = FindCurrentStationIndex(vehiclePosition, displayedStations, allWaypoints, midpointIndex);
 
             var result = BuildLineStationResult(
                 routeEntity,
-                firstHalfStations,
+                displayedStations,
                 goingInbound,
                 currentStationIdx
             );
@@ -452,6 +453,13 @@ namespace FirstPersonCameraContinued.Systems
             }
 
             return true;
+        }
+
+        private bool IsMetroVehicle()
+        {
+            if (CameraController.GetTransformer().CheckForVehicleScope(out var vehicleType, out _))
+                return vehicleType == Enums.VehicleType.Subway;
+            return false;
         }
 
         private Entity GetControllerEntity(Entity currentEntity)
@@ -530,7 +538,7 @@ namespace FirstPersonCameraContinued.Systems
 
         private int FindCurrentStationIndex(
             float3 vehiclePosition,
-            List<(string streetName, string crossStreet, float3 position, Entity stopEntity)> firstHalfStations,
+            List<(string streetName, string crossStreet, float3 position, Entity stopEntity)> displayedStations,
             List<(Entity waypointEntity, Entity stopEntity, float3 position, int waypointIndex)> allWaypoints,
             int midpointIndex)
         {
@@ -540,9 +548,9 @@ namespace FirstPersonCameraContinued.Systems
             int currentStationIdx = -1;
             float closestDist = float.MaxValue;
 
-            for (int i = 0; i < firstHalfStations.Count; i++)
+            for (int i = 0; i < displayedStations.Count; i++)
             {
-                float dist = math.distance(vehiclePosition, firstHalfStations[i].position);
+                float dist = math.distance(vehiclePosition, displayedStations[i].position);
                 if (dist < closestDist)
                 {
                     closestDist = dist;
@@ -551,7 +559,7 @@ namespace FirstPersonCameraContinued.Systems
 
                 for (int j = midpointIndex; j < allWaypoints.Count; j++)
                 {
-                    if (math.distance(firstHalfStations[i].position, allWaypoints[j].position) < sameStationThreshold)
+                    if (math.distance(displayedStations[i].position, allWaypoints[j].position) < sameStationThreshold)
                     {
                         float distInbound = math.distance(vehiclePosition, allWaypoints[j].position);
                         if (distInbound < closestDist)
