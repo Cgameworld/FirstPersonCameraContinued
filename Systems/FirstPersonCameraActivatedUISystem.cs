@@ -453,7 +453,7 @@ namespace FirstPersonCameraContinued.Systems
 
             if (BuildingUtils.GetAddress(EntityManager, stopEntity, out var road, out var number))
             {
-                string roadName = nameSystem.GetRenderedLabelName(road);
+                string roadName = AbbreviateSuffix(nameSystem.GetRenderedLabelName(road));
                 if (!string.IsNullOrEmpty(roadName))
                 {
                     return $"{number} {roadName}";
