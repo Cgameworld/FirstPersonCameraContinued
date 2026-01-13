@@ -435,7 +435,7 @@ namespace FirstPersonCameraContinued.Systems
             {
                 for (int i = 0; i < stations.Count; i++)
                 {
-                    string displayName = GetGameStopName(stations[i].stopEntity);
+                    string displayName = GetVanillaStopName(stations[i].stopEntity);
                     result.stations.Add(new StationData { name = displayName });
                 }
                 result.currentStopIndex = currentStationIdx;
@@ -444,16 +444,18 @@ namespace FirstPersonCameraContinued.Systems
             return result;
         }
 
-        private string GetGameStopName(Entity stopEntity)
+        private string GetVanillaStopName(Entity stopEntity)
         {
-            try
+            if (BuildingUtils.GetAddress(EntityManager, stopEntity, out var road, out var number))
             {
-                return nameSystem.GetRenderedLabelName(stopEntity);
+                string roadName = nameSystem.GetRenderedLabelName(road);
+                if (!string.IsNullOrEmpty(roadName))
+                {
+                    return $"{number} {roadName}";
+                }
             }
-            catch
-            {
-                return "Stop";
-            }
+
+            return "Stop";
         }
 
         private void ClearLineStationInfo()
