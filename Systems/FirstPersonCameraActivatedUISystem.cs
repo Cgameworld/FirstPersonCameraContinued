@@ -416,7 +416,7 @@ namespace FirstPersonCameraContinued.Systems
                 {
                     for (int i = stations.Count - 1; i >= 0; i--)
                     {
-                        string displayName = FormatStationName(stations[i].streetName, stations[i].crossStreet, nameCount);
+                        string displayName = FormatStationName(stations[i].streetName, stations[i].crossStreet, nameCount, stations[i].stopEntity);
                         result.stations.Add(new StationData { name = displayName });
                     }
                     result.currentStopIndex = currentStationIdx >= 0 ? (stations.Count - 1 - currentStationIdx) : -1;
@@ -425,7 +425,7 @@ namespace FirstPersonCameraContinued.Systems
                 {
                     for (int i = 0; i < stations.Count; i++)
                     {
-                        string displayName = FormatStationName(stations[i].streetName, stations[i].crossStreet, nameCount);
+                        string displayName = FormatStationName(stations[i].streetName, stations[i].crossStreet, nameCount, stations[i].stopEntity);
                         result.stations.Add(new StationData { name = displayName });
                     }
                     result.currentStopIndex = currentStationIdx;
@@ -649,8 +649,21 @@ namespace FirstPersonCameraContinued.Systems
             return "rgb(255, 255, 255)";
         }
 
-        private string FormatStationName(string streetName, string crossStreet, Dictionary<string, int> nameCount)
+        private string FormatStationName(string streetName, string crossStreet, Dictionary<string, int> nameCount, Entity stopEntity)
         {
+            if (nameSystem.TryGetCustomName(stopEntity, out var customName))
+            {
+                return customName;
+            }
+
+            if (EntityManager.TryGetComponent<Owner>(stopEntity, out var owner) && owner.m_Owner != Entity.Null)
+            {
+                if (nameSystem.TryGetCustomName(owner.m_Owner, out var ownerCustomName))
+                {
+                    return ownerCustomName;
+                }
+            }
+
             string baseName = GetStreetBaseName(streetName);
             if (nameCount.GetValueOrDefault(baseName, 0) > 1 && !string.IsNullOrEmpty(crossStreet))
             {
