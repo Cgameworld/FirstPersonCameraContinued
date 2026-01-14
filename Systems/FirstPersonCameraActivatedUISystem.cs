@@ -574,12 +574,9 @@ namespace FirstPersonCameraContinued.Systems
 
         private bool IsVehicleStopped(Entity vehicleEntity)
         {
-            const float stoppedThreshold = 0.5f;
-
-            if (EntityManager.TryGetComponent<Game.Objects.Moving>(vehicleEntity, out var moving))
+            if (EntityManager.TryGetComponent<Game.Vehicles.PublicTransport>(vehicleEntity, out var transport))
             {
-                float speed = math.length(moving.m_Velocity);
-                return speed < stoppedThreshold;
+                return transport.m_State.HasFlag(PublicTransportFlags.Boarding);
             }
 
             return false;
