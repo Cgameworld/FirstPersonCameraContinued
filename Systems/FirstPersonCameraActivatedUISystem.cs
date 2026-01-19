@@ -21,6 +21,7 @@ using Game.Vehicles;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -375,7 +376,7 @@ namespace FirstPersonCameraContinued.Systems
             }
 
             float vehicleNormalizedPosition = GetVehicleNormalizedPosition(vehicleEntity, waypoints, routeSegments, cumulativeDistances, totalDistance);
-            Mod.log.Info($"Vehicle normalized position: {vehicleNormalizedPosition:F3}");
+           // Mod.log.Info($"Vehicle normalized position: {vehicleNormalizedPosition:F3}");
 
             float firstStationPosition = FindFirstStationPosition(allWaypoints);
             float midpointPosition = FindMidpointStationPosition(allWaypoints);
@@ -401,11 +402,17 @@ namespace FirstPersonCameraContinued.Systems
             var displayedStations = new List<(string streetName, string crossStreet, float3 position, Entity stopEntity)>();
             bool isMetroOrTrain = IsMetroOrTrainVehicle();
 
+           // Mod.log.Info($"Boundaries - first: {firstStationPosition:F3}, mid: {midpointPosition:F3}, last: {lastStationPosition:F3}");
+            //Mod.log.Info($"All station positions: {string.Join(", ", allWaypoints.Select(w => w.normalizedPosition.ToString("F3")))}");
+
+            bool routeWrapsForSecondHalf = lastStationPosition < midpointPosition;
+
             if (showFirstHalf)
             {
                 for (int i = 0; i < allWaypoints.Count; i++)
                 {
-                    if (allWaypoints[i].normalizedPosition <= midpointPosition)
+                    float pos = allWaypoints[i].normalizedPosition;
+                    if (pos <= midpointPosition)
                     {
                         var (streetName, crossStreet) = GetStopStreetAndCrossStreet(allWaypoints[i].stopEntity);
                         displayedStations.Add((streetName, crossStreet, allWaypoints[i].position, allWaypoints[i].stopEntity));
@@ -414,13 +421,32 @@ namespace FirstPersonCameraContinued.Systems
             }
             else
             {
+                int firstStationIndex = -1;
                 for (int i = 0; i < allWaypoints.Count; i++)
                 {
-                    if (allWaypoints[i].normalizedPosition >= midpointPosition)
+                    float pos = allWaypoints[i].normalizedPosition;
+
+                    if (pos <= firstStationPosition + 0.01f)
+                    {
+                        firstStationIndex = i;
+                        continue;
+                    }
+
+                    bool include = pos >= midpointPosition;
+                    if (routeWrapsForSecondHalf && pos <= lastStationPosition)
+                        include = true;
+
+                    if (include)
                     {
                         var (streetName, crossStreet) = GetStopStreetAndCrossStreet(allWaypoints[i].stopEntity);
                         displayedStations.Add((streetName, crossStreet, allWaypoints[i].position, allWaypoints[i].stopEntity));
                     }
+                }
+
+                if (firstStationIndex >= 0)
+                {
+                    var (streetName, crossStreet) = GetStopStreetAndCrossStreet(allWaypoints[firstStationIndex].stopEntity);
+                    displayedStations.Add((streetName, crossStreet, allWaypoints[firstStationIndex].position, allWaypoints[firstStationIndex].stopEntity));
                 }
             }
 
