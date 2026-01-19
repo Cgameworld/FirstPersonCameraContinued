@@ -377,9 +377,26 @@ namespace FirstPersonCameraContinued.Systems
             float vehicleNormalizedPosition = GetVehicleNormalizedPosition(vehicleEntity, waypoints, routeSegments, cumulativeDistances, totalDistance);
             Mod.log.Info($"Vehicle normalized position: {vehicleNormalizedPosition:F3}");
 
+            float firstStationPosition = FindFirstStationPosition(allWaypoints);
             float midpointPosition = FindMidpointStationPosition(allWaypoints);
+            float lastStationPosition = FindLastStationPosition(allWaypoints);
 
-            bool showFirstHalf = vehicleNormalizedPosition <= midpointPosition;
+            float targetNormalizedPosition = GetTargetNormalizedPosition(vehicleEntity, allWaypoints);
+            bool isMovingForward = IsVehicleMovingForward(vehicleNormalizedPosition, targetNormalizedPosition, firstStationPosition, lastStationPosition);
+
+            bool showFirstHalf;
+            if (vehicleNormalizedPosition <= midpointPosition)
+            {
+                showFirstHalf = true;
+            }
+            else if (vehicleNormalizedPosition >= midpointPosition)
+            {
+                showFirstHalf = false;
+            }
+            else
+            {
+                showFirstHalf = isMovingForward;
+            }
 
             var displayedStations = new List<(string streetName, string crossStreet, float3 position, Entity stopEntity)>();
             bool isMetroOrTrain = IsMetroOrTrainVehicle();
@@ -416,10 +433,12 @@ namespace FirstPersonCameraContinued.Systems
             bool isVehicleStopped = IsVehicleStopped(vehicleEntity);
             int currentStationIdx = FindCurrentStationIndexByPosition(vehicleEntity, displayedStations, allWaypoints, isVehicleStopped);
 
+            bool reverseStationOrder = !isMovingForward;
+
             var result = BuildLineStationResult(
                 routeEntity,
                 displayedStations,
-                !showFirstHalf,
+                reverseStationOrder,
                 currentStationIdx,
                 isMetroOrTrain
             );
@@ -511,6 +530,69 @@ namespace FirstPersonCameraContinued.Systems
             }
 
             return closestToHalf;
+        }
+
+        private float FindFirstStationPosition(List<(Entity waypointEntity, Entity stopEntity, float3 position, float normalizedPosition)> allWaypoints)
+        {
+            float closestToZero = 0f;
+            float smallestDiff = float.MaxValue;
+
+            foreach (var wp in allWaypoints)
+            {
+                float diff = wp.normalizedPosition;
+                if (diff < smallestDiff)
+                {
+                    smallestDiff = diff;
+                    closestToZero = wp.normalizedPosition;
+                }
+            }
+
+            return closestToZero;
+        }
+
+        private float FindLastStationPosition(List<(Entity waypointEntity, Entity stopEntity, float3 position, float normalizedPosition)> allWaypoints)
+        {
+            float closestToOne = 1f;
+            float smallestDiff = float.MaxValue;
+
+            foreach (var wp in allWaypoints)
+            {
+                float diff = 1f - wp.normalizedPosition;
+                if (diff < smallestDiff)
+                {
+                    smallestDiff = diff;
+                    closestToOne = wp.normalizedPosition;
+                }
+            }
+
+            return closestToOne;
+        }
+
+        private float GetTargetNormalizedPosition(Entity vehicleEntity, List<(Entity waypointEntity, Entity stopEntity, float3 position, float normalizedPosition)> allWaypoints)
+        {
+            if (!EntityManager.TryGetComponent<Target>(vehicleEntity, out var target) || target.m_Target == Entity.Null)
+                return 0f;
+
+            foreach (var wp in allWaypoints)
+            {
+                if (wp.waypointEntity == target.m_Target)
+                    return wp.normalizedPosition;
+            }
+
+            return 0f;
+        }
+
+        private bool IsVehicleMovingForward(float vehiclePosition, float targetPosition, float firstStationPosition, float lastStationPosition)
+        {
+            float wrapThreshold = 0.3f;
+
+            if (vehiclePosition > lastStationPosition - wrapThreshold && targetPosition < firstStationPosition + wrapThreshold)
+                return true;
+
+            if (vehiclePosition < firstStationPosition + wrapThreshold && targetPosition > lastStationPosition - wrapThreshold)
+                return false;
+
+            return targetPosition > vehiclePosition;
         }
 
         private int FindCurrentStationIndexByPosition(
