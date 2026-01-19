@@ -377,7 +377,9 @@ namespace FirstPersonCameraContinued.Systems
             float vehicleNormalizedPosition = GetVehicleNormalizedPosition(vehicleEntity, waypoints, routeSegments, cumulativeDistances, totalDistance);
             Mod.log.Info($"Vehicle normalized position: {vehicleNormalizedPosition:F3}");
 
-            bool showFirstHalf = vehicleNormalizedPosition <= 0.5f;
+            float midpointPosition = FindMidpointStationPosition(allWaypoints);
+
+            bool showFirstHalf = vehicleNormalizedPosition <= midpointPosition;
 
             var displayedStations = new List<(string streetName, string crossStreet, float3 position, Entity stopEntity)>();
             bool isMetroOrTrain = IsMetroOrTrainVehicle();
@@ -386,7 +388,7 @@ namespace FirstPersonCameraContinued.Systems
             {
                 for (int i = 0; i < allWaypoints.Count; i++)
                 {
-                    if (allWaypoints[i].normalizedPosition <= 0.5f)
+                    if (allWaypoints[i].normalizedPosition <= midpointPosition)
                     {
                         var (streetName, crossStreet) = GetStopStreetAndCrossStreet(allWaypoints[i].stopEntity);
                         displayedStations.Add((streetName, crossStreet, allWaypoints[i].position, allWaypoints[i].stopEntity));
@@ -397,7 +399,7 @@ namespace FirstPersonCameraContinued.Systems
             {
                 for (int i = 0; i < allWaypoints.Count; i++)
                 {
-                    if (allWaypoints[i].normalizedPosition > 0.5f)
+                    if (allWaypoints[i].normalizedPosition >= midpointPosition)
                     {
                         var (streetName, crossStreet) = GetStopStreetAndCrossStreet(allWaypoints[i].stopEntity);
                         displayedStations.Add((streetName, crossStreet, allWaypoints[i].position, allWaypoints[i].stopEntity));
@@ -491,6 +493,24 @@ namespace FirstPersonCameraContinued.Systems
 
             float vehicleDistance = cumulativeDistances[prevWaypointIndex] + segmentProgress;
             return math.clamp(vehicleDistance / totalDistance, 0f, 1f);
+        }
+
+        private float FindMidpointStationPosition(List<(Entity waypointEntity, Entity stopEntity, float3 position, float normalizedPosition)> allWaypoints)
+        {
+            float closestToHalf = 0.5f;
+            float smallestDiff = float.MaxValue;
+
+            foreach (var wp in allWaypoints)
+            {
+                float diff = math.abs(wp.normalizedPosition - 0.5f);
+                if (diff < smallestDiff)
+                {
+                    smallestDiff = diff;
+                    closestToHalf = wp.normalizedPosition;
+                }
+            }
+
+            return closestToHalf;
         }
 
         private int FindCurrentStationIndexByPosition(
