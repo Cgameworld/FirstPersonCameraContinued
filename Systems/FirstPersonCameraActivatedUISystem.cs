@@ -350,7 +350,7 @@ namespace FirstPersonCameraContinued.Systems
                 return;
             }
 
-            var allWaypoints = new List<(Entity waypointEntity, Entity stopEntity, float3 position, int waypointIndex, float normalizedPosition)>();
+            var allWaypoints = new List<(Entity waypointEntity, Entity stopEntity, float3 position, float normalizedPosition)>();
             for (int i = 0; i < waypoints.Length; i++)
             {
                 Entity waypointEntity = waypoints[i].m_Waypoint;
@@ -365,7 +365,7 @@ namespace FirstPersonCameraContinued.Systems
 
                 float3 stopPosition = GetStopPosition(stopEntity, waypointEntity);
                 float normalizedPos = i < cumulativeDistances.Count ? cumulativeDistances[i] / totalDistance : 1f;
-                allWaypoints.Add((waypointEntity, stopEntity, stopPosition, i, normalizedPos));
+                allWaypoints.Add((waypointEntity, stopEntity, stopPosition, normalizedPos));
             }
 
             if (allWaypoints.Count == 0)
@@ -412,7 +412,7 @@ namespace FirstPersonCameraContinued.Systems
             }
 
             bool isVehicleStopped = IsVehicleStopped(vehicleEntity);
-            int currentStationIdx = FindCurrentStationIndexByPosition(vehicleEntity, displayedStations, allWaypoints, isVehicleStopped, showFirstHalf);
+            int currentStationIdx = FindCurrentStationIndexByPosition(vehicleEntity, displayedStations, allWaypoints, isVehicleStopped);
 
             var result = BuildLineStationResult(
                 routeEntity,
@@ -496,9 +496,8 @@ namespace FirstPersonCameraContinued.Systems
         private int FindCurrentStationIndexByPosition(
             Entity vehicleEntity,
             List<(string streetName, string crossStreet, float3 position, Entity stopEntity)> displayedStations,
-            List<(Entity waypointEntity, Entity stopEntity, float3 position, int waypointIndex, float normalizedPosition)> allWaypoints,
-            bool isVehicleStopped,
-            bool showFirstHalf)
+            List<(Entity waypointEntity, Entity stopEntity, float3 position, float normalizedPosition)> allWaypoints,
+            bool isVehicleStopped)
         {
             if (!isVehicleStopped)
                 return -1;
@@ -535,13 +534,9 @@ namespace FirstPersonCameraContinued.Systems
             int currentStopIndex = distToTarget < distToPrev ? targetListIndex : prevStopIndex;
             Entity currentStopEntity = allWaypoints[currentStopIndex].stopEntity;
 
-            const float sameStationThreshold = 50f;
             for (int i = 0; i < displayedStations.Count; i++)
             {
                 if (displayedStations[i].stopEntity == currentStopEntity)
-                    return i;
-
-                if (math.distance(displayedStations[i].position, allWaypoints[currentStopIndex].position) < sameStationThreshold)
                     return i;
             }
 
