@@ -10,6 +10,7 @@ using Game.Citizens;
 using Game.Common;
 using Game.Net;
 using Game.Objects;
+using Game.Pathfind;
 using Game.Prefabs;
 using Game.Rendering;
 using Game.Routes;
@@ -329,7 +330,27 @@ namespace FirstPersonCameraContinued.Systems
                 return;
             }
 
-            var allWaypoints = new List<(Entity waypointEntity, Entity stopEntity, float3 position, int waypointIndex)>();
+            if (!EntityManager.TryGetBuffer<RouteSegment>(routeEntity, true, out var routeSegments))
+            {
+                ClearLineStationInfo();
+                return;
+            }
+
+            var cumulativeDistances = new List<float>();
+            float totalDistance = 0f;
+            for (int i = 0; i < routeSegments.Length; i++)
+            {
+                cumulativeDistances.Add(totalDistance);
+                totalDistance += GetSegmentLength(waypoints, routeSegments, i);
+            }
+
+            if (totalDistance == 0f)
+            {
+                ClearLineStationInfo();
+                return;
+            }
+
+            var allWaypoints = new List<(Entity waypointEntity, Entity stopEntity, float3 position, int waypointIndex, float normalizedPosition)>();
             for (int i = 0; i < waypoints.Length; i++)
             {
                 Entity waypointEntity = waypoints[i].m_Waypoint;
@@ -343,7 +364,8 @@ namespace FirstPersonCameraContinued.Systems
                     continue;
 
                 float3 stopPosition = GetStopPosition(stopEntity, waypointEntity);
-                allWaypoints.Add((waypointEntity, stopEntity, stopPosition, i));
+                float normalizedPos = i < cumulativeDistances.Count ? cumulativeDistances[i] / totalDistance : 1f;
+                allWaypoints.Add((waypointEntity, stopEntity, stopPosition, i, normalizedPos));
             }
 
             if (allWaypoints.Count == 0)
@@ -352,14 +374,35 @@ namespace FirstPersonCameraContinued.Systems
                 return;
             }
 
-            bool isMetroOrTrain = IsMetroOrTrainVehicle();
-            int midpointIndex = isMetroOrTrain ? FindRouteMidpoint(allWaypoints) : allWaypoints.Count;
+            float vehicleNormalizedPosition = GetVehicleNormalizedPosition(vehicleEntity, waypoints, routeSegments, cumulativeDistances, totalDistance);
+            Mod.log.Info($"Vehicle normalized position: {vehicleNormalizedPosition:F3}");
+
+            bool showFirstHalf = vehicleNormalizedPosition <= 0.5f;
 
             var displayedStations = new List<(string streetName, string crossStreet, float3 position, Entity stopEntity)>();
-            for (int i = 0; i < midpointIndex; i++)
+            bool isMetroOrTrain = IsMetroOrTrainVehicle();
+
+            if (showFirstHalf)
             {
-                var (streetName, crossStreet) = GetStopStreetAndCrossStreet(allWaypoints[i].stopEntity);
-                displayedStations.Add((streetName, crossStreet, allWaypoints[i].position, allWaypoints[i].stopEntity));
+                for (int i = 0; i < allWaypoints.Count; i++)
+                {
+                    if (allWaypoints[i].normalizedPosition <= 0.5f)
+                    {
+                        var (streetName, crossStreet) = GetStopStreetAndCrossStreet(allWaypoints[i].stopEntity);
+                        displayedStations.Add((streetName, crossStreet, allWaypoints[i].position, allWaypoints[i].stopEntity));
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < allWaypoints.Count; i++)
+                {
+                    if (allWaypoints[i].normalizedPosition > 0.5f)
+                    {
+                        var (streetName, crossStreet) = GetStopStreetAndCrossStreet(allWaypoints[i].stopEntity);
+                        displayedStations.Add((streetName, crossStreet, allWaypoints[i].position, allWaypoints[i].stopEntity));
+                    }
+                }
             }
 
             if (displayedStations.Count == 0)
@@ -368,28 +411,141 @@ namespace FirstPersonCameraContinued.Systems
                 return;
             }
 
-            float3 vehiclePosition = float3.zero;
-            if (EntityManager.TryGetComponent<Game.Objects.Transform>(vehicleEntity, out var vehicleTransform))
-                vehiclePosition = vehicleTransform.m_Position;
-            else if (EntityManager.TryGetComponent<InterpolatedTransform>(vehicleEntity, out var interpolatedTransform))
-                vehiclePosition = interpolatedTransform.m_Position;
-
-            int targetWaypointIndex = GetTargetWaypointIndex(vehicleEntity, allWaypoints);
-            bool goingInbound = isMetroOrTrain && (targetWaypointIndex >= midpointIndex || targetWaypointIndex == 0);
-
             bool isVehicleStopped = IsVehicleStopped(vehicleEntity);
-            int currentStationIdx = FindCurrentStationIndex(vehicleEntity, displayedStations, allWaypoints, midpointIndex, isVehicleStopped);
+            int currentStationIdx = FindCurrentStationIndexByPosition(vehicleEntity, displayedStations, allWaypoints, isVehicleStopped, showFirstHalf);
 
             var result = BuildLineStationResult(
                 routeEntity,
                 displayedStations,
-                goingInbound,
+                !showFirstHalf,
                 currentStationIdx,
                 isMetroOrTrain
             );
 
             lineStationInfo = JsonConvert.SerializeObject(result);
             lineStationInfoBinding.Update();
+        }
+
+        private float GetSegmentLength(DynamicBuffer<RouteWaypoint> waypoints, DynamicBuffer<RouteSegment> routeSegments, int segmentIndex)
+        {
+            int nextIndex = segmentIndex == waypoints.Length - 1 ? 0 : segmentIndex + 1;
+
+            if (EntityManager.TryGetComponent<PathInformation>(routeSegments[segmentIndex].m_Segment, out var pathInfo) && pathInfo.m_Destination != Entity.Null)
+            {
+                return pathInfo.m_Distance;
+            }
+
+            float3 pos1 = float3.zero;
+            float3 pos2 = float3.zero;
+
+            if (EntityManager.TryGetComponent<Position>(waypoints[segmentIndex].m_Waypoint, out var position1))
+                pos1 = position1.m_Position;
+            if (EntityManager.TryGetComponent<Position>(waypoints[nextIndex].m_Waypoint, out var position2))
+                pos2 = position2.m_Position;
+
+            return math.max(0f, math.distance(pos1, pos2));
+        }
+
+        private float GetVehicleNormalizedPosition(
+            Entity vehicleEntity,
+            DynamicBuffer<RouteWaypoint> waypoints,
+            DynamicBuffer<RouteSegment> routeSegments,
+            List<float> cumulativeDistances,
+            float totalDistance)
+        {
+            if (!EntityManager.TryGetComponent<Target>(vehicleEntity, out var target) || target.m_Target == Entity.Null)
+                return 0f;
+
+            if (!EntityManager.TryGetComponent<Waypoint>(target.m_Target, out var waypoint))
+                return 0f;
+
+            int targetWaypointIndex = waypoint.m_Index;
+            int prevWaypointIndex = targetWaypointIndex == 0 ? waypoints.Length - 1 : targetWaypointIndex - 1;
+
+            if (prevWaypointIndex >= cumulativeDistances.Count)
+                return 0f;
+
+            float3 vehiclePosition = float3.zero;
+            if (EntityManager.TryGetComponent<Game.Objects.Transform>(vehicleEntity, out var vehicleTransform))
+                vehiclePosition = vehicleTransform.m_Position;
+            else if (EntityManager.TryGetComponent<InterpolatedTransform>(vehicleEntity, out var interpolatedTransform))
+                vehiclePosition = interpolatedTransform.m_Position;
+
+            float3 prevWaypointPos = float3.zero;
+            float3 targetWaypointPos = float3.zero;
+
+            if (EntityManager.TryGetComponent<Position>(waypoints[prevWaypointIndex].m_Waypoint, out var prevPos))
+                prevWaypointPos = prevPos.m_Position;
+            if (EntityManager.TryGetComponent<Position>(waypoints[targetWaypointIndex].m_Waypoint, out var targetPos))
+                targetWaypointPos = targetPos.m_Position;
+
+            float distFromPrev = math.distance(prevWaypointPos, vehiclePosition);
+            float distToTarget = math.distance(vehiclePosition, targetWaypointPos);
+            float segmentLength = GetSegmentLength(waypoints, routeSegments, prevWaypointIndex);
+
+            float segmentProgress = 0f;
+            if (distFromPrev + distToTarget > 0)
+            {
+                segmentProgress = segmentLength * distFromPrev / math.max(1f, distFromPrev + distToTarget);
+            }
+
+            float vehicleDistance = cumulativeDistances[prevWaypointIndex] + segmentProgress;
+            return math.clamp(vehicleDistance / totalDistance, 0f, 1f);
+        }
+
+        private int FindCurrentStationIndexByPosition(
+            Entity vehicleEntity,
+            List<(string streetName, string crossStreet, float3 position, Entity stopEntity)> displayedStations,
+            List<(Entity waypointEntity, Entity stopEntity, float3 position, int waypointIndex, float normalizedPosition)> allWaypoints,
+            bool isVehicleStopped,
+            bool showFirstHalf)
+        {
+            if (!isVehicleStopped)
+                return -1;
+
+            if (!EntityManager.TryGetComponent<Target>(vehicleEntity, out var target) || target.m_Target == Entity.Null)
+                return -1;
+
+            int targetListIndex = -1;
+            for (int i = 0; i < allWaypoints.Count; i++)
+            {
+                if (allWaypoints[i].waypointEntity == target.m_Target)
+                {
+                    targetListIndex = i;
+                    break;
+                }
+            }
+
+            if (targetListIndex == -1)
+                return -1;
+
+            int prevStopIndex = targetListIndex - 1;
+            if (prevStopIndex < 0)
+                prevStopIndex = allWaypoints.Count - 1;
+
+            float3 vehiclePosition = float3.zero;
+            if (EntityManager.TryGetComponent<Game.Objects.Transform>(vehicleEntity, out var vehicleTransform))
+                vehiclePosition = vehicleTransform.m_Position;
+            else if (EntityManager.TryGetComponent<InterpolatedTransform>(vehicleEntity, out var interpolatedTransform))
+                vehiclePosition = interpolatedTransform.m_Position;
+
+            float distToTarget = math.distance(vehiclePosition, allWaypoints[targetListIndex].position);
+            float distToPrev = math.distance(vehiclePosition, allWaypoints[prevStopIndex].position);
+
+            int currentStopIndex = distToTarget < distToPrev ? targetListIndex : prevStopIndex;
+            Entity currentStopEntity = allWaypoints[currentStopIndex].stopEntity;
+
+            const float sameStationThreshold = 50f;
+            for (int i = 0; i < displayedStations.Count; i++)
+            {
+                if (displayedStations[i].stopEntity == currentStopEntity)
+                    return i;
+
+                if (math.distance(displayedStations[i].position, allWaypoints[currentStopIndex].position) < sameStationThreshold)
+                    return i;
+            }
+
+            return -1;
         }
         private LineStationInfo BuildLineStationResult(
             Entity routeEntity,
@@ -538,40 +694,6 @@ namespace FirstPersonCameraContinued.Systems
             return float3.zero;
         }
 
-        private int FindRouteMidpoint(List<(Entity waypointEntity, Entity stopEntity, float3 position, int waypointIndex)> allWaypoints)
-        {
-            const float sameStationThreshold = 50f;
-            var seenPositions = new List<float3>();
-
-            for (int i = 0; i < allWaypoints.Count; i++)
-            {
-                foreach (var pos in seenPositions)
-                {
-                    if (math.distance(pos, allWaypoints[i].position) < sameStationThreshold)
-                        return i;
-                }
-                seenPositions.Add(allWaypoints[i].position);
-            }
-
-            return allWaypoints.Count;
-        }
-
-        private int GetTargetWaypointIndex(
-            Entity vehicleEntity,
-            List<(Entity waypointEntity, Entity stopEntity, float3 position, int waypointIndex)> allWaypoints)
-        {
-            if (!EntityManager.TryGetComponent<Target>(vehicleEntity, out var target) || target.m_Target == Entity.Null)
-                return -1;
-
-            for (int i = 0; i < allWaypoints.Count; i++)
-            {
-                if (allWaypoints[i].waypointEntity == target.m_Target)
-                    return allWaypoints[i].waypointIndex;
-            }
-
-            return -1;
-        }
-
         private bool IsVehicleStopped(Entity vehicleEntity)
         {
             if (EntityManager.TryGetComponent<Game.Vehicles.PublicTransport>(vehicleEntity, out var transport))
@@ -582,63 +704,6 @@ namespace FirstPersonCameraContinued.Systems
             return false;
         }
 
-        private int FindCurrentStationIndex(
-            Entity vehicleEntity,
-            List<(string streetName, string crossStreet, float3 position, Entity stopEntity)> displayedStations,
-            List<(Entity waypointEntity, Entity stopEntity, float3 position, int waypointIndex)> allWaypoints,
-            int midpointIndex,
-            bool isVehicleStopped)
-        {
-            if (!isVehicleStopped)
-                return -1;
-
-            if (!EntityManager.TryGetComponent<Target>(vehicleEntity, out var target) || target.m_Target == Entity.Null)
-                return -1;
-
-            int targetListIndex = -1;
-            for (int i = 0; i < allWaypoints.Count; i++)
-            {
-                if (allWaypoints[i].waypointEntity == target.m_Target)
-                {
-                    targetListIndex = i;
-                    break;
-                }
-            }
-
-            if (targetListIndex == -1)
-                return -1;
-
-            int prevStopIndex = targetListIndex - 1;
-            if (prevStopIndex < 0)
-                prevStopIndex = allWaypoints.Count - 1;
-
-            float3 vehiclePosition = float3.zero;
-            if (EntityManager.TryGetComponent<Game.Objects.Transform>(vehicleEntity, out var vehicleTransform))
-                vehiclePosition = vehicleTransform.m_Position;
-            else if (EntityManager.TryGetComponent<InterpolatedTransform>(vehicleEntity, out var interpolatedTransform))
-                vehiclePosition = interpolatedTransform.m_Position;
-
-            float distToTarget = math.distance(vehiclePosition, allWaypoints[targetListIndex].position);
-            float distToPrev = math.distance(vehiclePosition, allWaypoints[prevStopIndex].position);
-
-            int currentStopIndex = distToTarget < distToPrev ? targetListIndex : prevStopIndex;
-
-            if (currentStopIndex < displayedStations.Count)
-                return currentStopIndex;
-
-            const float sameStationThreshold = 50f;
-            Entity currentStopEntity = allWaypoints[currentStopIndex].stopEntity;
-            for (int i = 0; i < displayedStations.Count; i++)
-            {
-                if (displayedStations[i].stopEntity == currentStopEntity)
-                    return i;
-
-                if (math.distance(displayedStations[i].position, allWaypoints[currentStopIndex].position) < sameStationThreshold)
-                    return i;
-            }
-
-            return -1;
-        }
         private string GetLineColor(Entity routeEntity)
         {
             if (EntityManager.TryGetComponent<Game.Routes.Color>(routeEntity, out var routeColor))
@@ -748,7 +813,7 @@ namespace FirstPersonCameraContinued.Systems
 
         private string FindCrossStreet(Entity roadEdge, string mainStreetName, float3 stopPosition)
         {
-            if (!EntityManager.TryGetComponent<Edge>(roadEdge, out var edge))
+            if (!EntityManager.TryGetComponent<Game.Net.Edge>(roadEdge, out var edge))
                 return "";
 
             float3 startPos = GetNodePosition(edge.m_Start);
@@ -801,7 +866,7 @@ namespace FirstPersonCameraContinued.Systems
                     if (edgeName == mainStreetName && nextEdge == Entity.Null)
                     {
                         nextEdge = connectedEdge.m_Edge;
-                        if (EntityManager.TryGetComponent<Edge>(nextEdge, out var edgeComp))
+                        if (EntityManager.TryGetComponent<Game.Net.Edge>(nextEdge, out var edgeComp))
                         {
                             nextNode = edgeComp.m_Start == currentNode ? edgeComp.m_End : edgeComp.m_Start;
                         }
