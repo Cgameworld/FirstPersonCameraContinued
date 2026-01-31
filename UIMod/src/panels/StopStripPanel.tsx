@@ -40,7 +40,14 @@ const StopStripPanel: React.FC = () => {
     }, [lineStationInfoStr]);
 
     useEffect(() => {
-        if (!lineStationInfo) return;
+        if (!lineStationInfo) {
+            wasAtStationRef.current = false;
+            blinkDotIndexRef.current = -1;
+            setBlinkDotIndex(-1);
+            lastStopNameRef.current = "";
+            canStartNewBlinkRef.current = true;
+            return;
+        }
 
         const currentIndex = lineStationInfo.currentStopIndex ?? -1;
 

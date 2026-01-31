@@ -53,6 +53,8 @@ namespace FirstPersonCameraContinued.Systems
         private GetterValueBinding<string> lineStationInfoBinding;
         private string lineStationInfo = "";
 
+        private bool showUpcomingRouteOnActivation = false;
+
         private NameSystem nameSystem;
 
         private static string serializedUISettingsGroupOptions;
@@ -397,6 +399,28 @@ namespace FirstPersonCameraContinued.Systems
             else
             {
                 showFirstHalf = isMovingForward;
+            }
+
+            if (showUpcomingRouteOnActivation)
+            {
+                bool isCurrentlyStopped = IsVehicleStopped(vehicleEntity);
+
+                bool atEndTerminal = !showFirstHalf
+                    && isCurrentlyStopped
+                    && vehicleNormalizedPosition >= lastStationPosition - 0.02f
+                    && targetNormalizedPosition <= firstStationPosition + 0.02f;
+
+                bool atMidpointTerminal = showFirstHalf
+                    && isCurrentlyStopped
+                    && math.abs(vehicleNormalizedPosition - midpointPosition) < 0.02f
+                    && targetNormalizedPosition >= midpointPosition;
+
+                if (atEndTerminal)
+                    showFirstHalf = true;
+                else if (atMidpointTerminal)
+                    showFirstHalf = false;
+                else
+                    showUpcomingRouteOnActivation = false;
             }
 
             var displayedStations = new List<(string streetName, string crossStreet, float3 position, Entity stopEntity)>();
@@ -1099,14 +1123,16 @@ namespace FirstPersonCameraContinued.Systems
         {
             isEntered = true;
             isEnteredBinding.Update();
+            showUpcomingRouteOnActivation = true;
         }
         public void SetInactive()
         {
             isEntered = false;
             isEnteredBinding.Update();
+            showUpcomingRouteOnActivation = false;
+            lineStationInfo = "";
+            lineStationInfoBinding.Update();
         }
-
-
     }
 
     public class UISettingsGroup
