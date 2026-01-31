@@ -13,11 +13,13 @@ interface LineStationInfo {
 }
 
 const LineStationInfo$ = bindValue<string>('fpc', 'LineStationInfo');
+const UISettingsGroupOptions$ = bindValue<string>('fpc', 'UISettingsGroupOptions');
 
 const StopStripPanel: React.FC = () => {
     const [blinkDotIndex, setBlinkDotIndex] = useState(-1);
     const [isBlinking, setIsBlinking] = useState(false);
     const [blinkCycleKey, setBlinkCycleKey] = useState(0);
+    const [isPanelVisible, setIsPanelVisible] = useState(false);
     const blinkTimeoutRef = useRef<number | null>(null);
     const isComponentMounted = useRef(true);
     const canStartNewBlinkRef = useRef(true);
@@ -25,8 +27,18 @@ const StopStripPanel: React.FC = () => {
     const blinkDotIndexRef = useRef(-1);
     const lastStopNameRef = useRef<string>("");
     const wasAtStationRef = useRef(false);
+    const hideTimeoutRef = useRef<number | null>(null);
 
     const lineStationInfoStr = useValue(LineStationInfo$);
+    const uiSettingsGroupOptions = useValue(UISettingsGroupOptions$);
+
+    const stopStripDisplayMode: number = React.useMemo(() => {
+        try {
+            return JSON.parse(uiSettingsGroupOptions).StopStripDisplayMode ?? 0;
+        } catch {
+            return 0;
+        }
+    }, [uiSettingsGroupOptions]);
 
     const lineStationInfo: LineStationInfo | null = React.useMemo(() => {
         if (!lineStationInfoStr || lineStationInfoStr === "") {
@@ -46,6 +58,12 @@ const StopStripPanel: React.FC = () => {
             setBlinkDotIndex(-1);
             lastStopNameRef.current = "";
             canStartNewBlinkRef.current = true;
+
+            if (hideTimeoutRef.current !== null) {
+                window.clearTimeout(hideTimeoutRef.current);
+                hideTimeoutRef.current = null;
+            }
+            setIsPanelVisible(false);
             return;
         }
 
@@ -66,6 +84,12 @@ const StopStripPanel: React.FC = () => {
                 canStartNewBlinkRef.current = true;
                 setBlinkCycleKey(k => k + 1);
             }
+
+            if (hideTimeoutRef.current !== null) {
+                window.clearTimeout(hideTimeoutRef.current);
+                hideTimeoutRef.current = null;
+            }
+            setIsPanelVisible(true);
         } else if (wasAtStationRef.current) {
             if (lastStopNameRef.current && lineStationInfo.stations.length > 0) {
                 const newIdx = lineStationInfo.stations.findIndex(
@@ -90,8 +114,25 @@ const StopStripPanel: React.FC = () => {
                     graceTimeoutRef.current = null;
                 }, 1250);
             }
+
+            if (stopStripDisplayMode === 0 && hideTimeoutRef.current === null) {
+                hideTimeoutRef.current = window.setTimeout(() => {
+                    setIsPanelVisible(false);
+                    hideTimeoutRef.current = null;
+                }, 2000);
+            }
         }
     }, [lineStationInfo]);
+
+    useEffect(() => {
+        if (stopStripDisplayMode === 1 && lineStationInfo) {
+            setIsPanelVisible(true);
+            if (hideTimeoutRef.current !== null) {
+                window.clearTimeout(hideTimeoutRef.current);
+                hideTimeoutRef.current = null;
+            }
+        }
+    }, [stopStripDisplayMode]);
 
     useEffect(() => {
         isComponentMounted.current = true;
@@ -131,6 +172,9 @@ const StopStripPanel: React.FC = () => {
             if (graceTimeoutRef.current !== null) {
                 window.clearTimeout(graceTimeoutRef.current);
             }
+            if (hideTimeoutRef.current !== null) {
+                window.clearTimeout(hideTimeoutRef.current);
+            }
         };
     }, []);
 
@@ -140,9 +184,11 @@ const StopStripPanel: React.FC = () => {
 
     const stations = lineStationInfo.stations;
     const lineColor = lineStationInfo.lineColor || 'rgb(255, 255, 255)';
+    const isAlwaysShow = stopStripDisplayMode === 1;
+    const visibleClass = (isPanelVisible || isAlwaysShow) ? ' fpcc-stopstrip-visible' : '';
 
     return (
-        <div className="fpcc-stopstrip-container">
+        <div className={`fpcc-stopstrip-container${visibleClass}`}>
             <div className="fpcc-stopstrip-progress-track">
                 <div className="fpcc-stopstrip-progress-bar-container">
                     <div className="fpcc-stopstrip-progress-bar" style={{ backgroundColor: lineColor }}></div>

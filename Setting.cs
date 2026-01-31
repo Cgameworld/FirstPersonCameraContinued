@@ -29,6 +29,7 @@ namespace FirstPersonCameraContinued
         private InfoBoxSize _infoBoxSize;
         private ModUnits _setUnits;
         private ShowStopStrip _showStopStrip;
+        private StopStripDisplayMode _stopStripDisplayMode;
 
         public Setting(IMod mod) : base(mod)
         {
@@ -154,6 +155,17 @@ namespace FirstPersonCameraContinued
             }
         }
 
+        [SettingsUISection(UISettingsTab, StopStripSettingsGroup)]
+        public Enums.StopStripDisplayMode StopStripDisplayMode
+        {
+            get => _stopStripDisplayMode;
+            set
+            {
+                _stopStripDisplayMode = value;
+                SetUISettingsGroup();
+            }
+        }
+
         private void SetUISettingsGroup()
         {
             World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<FirstPersonCameraActivatedUISystem>().SetUISettingsGroupOptions();
@@ -176,7 +188,8 @@ namespace FirstPersonCameraContinued
             OnlyShowSpeed = false;
             InfoBoxSize = Enums.InfoBoxSize.Default;
             SetUnits = Enums.ModUnits.GameSetting;
-            ShowStopStrip = Enums.ShowStopStrip.MetroOnly;
+            ShowStopStrip = Enums.ShowStopStrip.AllTransit;
+            StopStripDisplayMode = Enums.StopStripDisplayMode.AutoHide;
         }
 
        public void Unload()

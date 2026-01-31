@@ -777,7 +777,7 @@ namespace FirstPersonCameraContinued.Systems
             if (!EntityManager.HasComponent<Game.Vehicles.PublicTransport>(currentEntity))
                 return false;
 
-            var showStopStripSetting = Mod.FirstPersonModSettings?.ShowStopStrip ?? ShowStopStrip.MetroOnly;
+            var showStopStripSetting = Mod.FirstPersonModSettings?.ShowStopStrip ?? ShowStopStrip.AllTransit;
 
             if (showStopStripSetting == ShowStopStrip.Never)
                 return false;
@@ -1142,6 +1142,7 @@ namespace FirstPersonCameraContinued.Systems
         public int InfoBoxSize { get; set; }
         public int SetUnits { get; set; }
         public int ShowStopStrip { get; set; }
+        public int StopStripDisplayMode { get; set; }
 
         public static UISettingsGroup FromModSettings()
         {
@@ -1153,7 +1154,8 @@ namespace FirstPersonCameraContinued.Systems
                     OnlyShowSpeed = false,
                     InfoBoxSize = 1,
                     SetUnits = 0,
-                    ShowStopStrip = 0
+                    ShowStopStrip = 0,
+                    StopStripDisplayMode = 0
                 };
             }
 
@@ -1163,7 +1165,8 @@ namespace FirstPersonCameraContinued.Systems
                 OnlyShowSpeed = Mod.FirstPersonModSettings.OnlyShowSpeed,
                 InfoBoxSize = (int)Mod.FirstPersonModSettings.InfoBoxSize,
                 SetUnits = (int)Mod.FirstPersonModSettings.SetUnits,
-                ShowStopStrip = (int)Mod.FirstPersonModSettings.ShowStopStrip
+                ShowStopStrip = (int)Mod.FirstPersonModSettings.ShowStopStrip,
+                StopStripDisplayMode = (int)Mod.FirstPersonModSettings.StopStripDisplayMode
             };
         }
     }
