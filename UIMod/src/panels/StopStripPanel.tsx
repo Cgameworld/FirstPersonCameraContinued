@@ -15,10 +15,16 @@ interface LineStationInfo {
 const LineStationInfo$ = bindValue<string>('fpc', 'LineStationInfo');
 
 const StopStripPanel: React.FC = () => {
-    const [currentStop, setCurrentStop] = useState(0);
+    const [blinkDotIndex, setBlinkDotIndex] = useState(-1);
     const [isBlinking, setIsBlinking] = useState(false);
+    const [blinkCycleKey, setBlinkCycleKey] = useState(0);
     const blinkTimeoutRef = useRef<number | null>(null);
     const isComponentMounted = useRef(true);
+    const canStartNewBlinkRef = useRef(true);
+    const graceTimeoutRef = useRef<number | null>(null);
+    const blinkDotIndexRef = useRef(-1);
+    const lastStopNameRef = useRef<string>("");
+    const wasAtStationRef = useRef(false);
 
     const lineStationInfoStr = useValue(LineStationInfo$);
 
@@ -34,33 +40,89 @@ const StopStripPanel: React.FC = () => {
     }, [lineStationInfoStr]);
 
     useEffect(() => {
-        if (lineStationInfo) {
-            setCurrentStop(lineStationInfo.currentStopIndex ?? -1);
+        if (!lineStationInfo) return;
+
+        const currentIndex = lineStationInfo.currentStopIndex ?? -1;
+
+        if (currentIndex >= 0) {
+            blinkDotIndexRef.current = currentIndex;
+            setBlinkDotIndex(currentIndex);
+            lastStopNameRef.current = lineStationInfo.stations[currentIndex]?.name ?? "";
+            wasAtStationRef.current = true;
+
+            if (graceTimeoutRef.current !== null) {
+                window.clearTimeout(graceTimeoutRef.current);
+                graceTimeoutRef.current = null;
+            }
+
+            if (!canStartNewBlinkRef.current) {
+                canStartNewBlinkRef.current = true;
+                setBlinkCycleKey(k => k + 1);
+            }
+        } else if (wasAtStationRef.current) {
+            if (lastStopNameRef.current && lineStationInfo.stations.length > 0) {
+                const newIdx = lineStationInfo.stations.findIndex(
+                    s => s.name === lastStopNameRef.current
+                );
+                if (newIdx >= 0) {
+                    if (newIdx !== blinkDotIndexRef.current) {
+                        blinkDotIndexRef.current = newIdx;
+                        setBlinkDotIndex(newIdx);
+                    }
+                } else {
+                    canStartNewBlinkRef.current = false;
+                    blinkDotIndexRef.current = -1;
+                    setBlinkDotIndex(-1);
+                    wasAtStationRef.current = false;
+                }
+            }
+
+            if (graceTimeoutRef.current === null && canStartNewBlinkRef.current) {
+                graceTimeoutRef.current = window.setTimeout(() => {
+                    canStartNewBlinkRef.current = false;
+                    graceTimeoutRef.current = null;
+                }, 1250);
+            }
         }
     }, [lineStationInfo]);
 
     useEffect(() => {
         isComponentMounted.current = true;
 
-        const startBlinking = () => {
+        const startRedPhase = () => {
             if (!isComponentMounted.current) return;
+
+            if (!canStartNewBlinkRef.current) {
+                setIsBlinking(false);
+                blinkDotIndexRef.current = -1;
+                setBlinkDotIndex(-1);
+                wasAtStationRef.current = false;
+                return;
+            }
 
             setIsBlinking(true);
 
             blinkTimeoutRef.current = window.setTimeout(() => {
-                if (isComponentMounted.current) {
-                    setIsBlinking(false);
-                    blinkTimeoutRef.current = window.setTimeout(startBlinking, 1000);
-                }
+                if (!isComponentMounted.current) return;
+                setIsBlinking(false);
+                blinkTimeoutRef.current = window.setTimeout(startRedPhase, 1000);
             }, 1000);
         };
 
-        startBlinking();
+        startRedPhase();
 
         return () => {
             isComponentMounted.current = false;
             if (blinkTimeoutRef.current !== null) {
                 window.clearTimeout(blinkTimeoutRef.current);
+            }
+        };
+    }, [blinkCycleKey]);
+
+    useEffect(() => {
+        return () => {
+            if (graceTimeoutRef.current !== null) {
+                window.clearTimeout(graceTimeoutRef.current);
             }
         };
     }, []);
@@ -81,7 +143,7 @@ const StopStripPanel: React.FC = () => {
                 {stations.map((station, index) => (
                     <div key={index} className="fpcc-stopstrip-station">
                         <div
-                            className={`fpcc-stopstrip-station-dot ${index === currentStop && isBlinking ? 'blink-red' : ''
+                            className={`fpcc-stopstrip-station-dot ${index === blinkDotIndex && isBlinking ? 'blink-red' : ''
                                 }`}
                         />
                         <div className="fpcc-stopstrip-station-name">{station.name}</div>
