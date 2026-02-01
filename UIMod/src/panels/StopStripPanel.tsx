@@ -28,6 +28,9 @@ const StopStripPanel: React.FC = () => {
     const lastStopNameRef = useRef<string>("");
     const wasAtStationRef = useRef(false);
     const hideTimeoutRef = useRef<number | null>(null);
+    const lastValidInfoRef = useRef<LineStationInfo | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const slideAnimRef = useRef<number | null>(null);
 
     const lineStationInfoStr = useValue(LineStationInfo$);
     const uiSettingsGroupOptions = useValue(UISettingsGroupOptions$);
@@ -50,6 +53,10 @@ const StopStripPanel: React.FC = () => {
             return null;
         }
     }, [lineStationInfoStr]);
+
+    if (lineStationInfo && lineStationInfo.stations.length > 0) {
+        lastValidInfoRef.current = lineStationInfo;
+    }
 
     useEffect(() => {
         if (!lineStationInfo) {
@@ -135,6 +142,39 @@ const StopStripPanel: React.FC = () => {
     }, [stopStripDisplayMode]);
 
     useEffect(() => {
+        const el = containerRef.current;
+        if (!el) return;
+
+        const isVisible = isPanelVisible || stopStripDisplayMode === 1;
+        const targetY = isVisible ? 0 : 100;
+
+        if (slideAnimRef.current !== null) {
+            cancelAnimationFrame(slideAnimRef.current);
+            slideAnimRef.current = null;
+        }
+
+        const startY = parseFloat(el.style.transform?.match(/translateY\(([\d.]+)/)?.[1] ?? '100');
+        if (Math.abs(startY - targetY) < 0.1) {
+            el.style.transform = `translateY(${targetY}%)`;
+            return;
+        }
+
+        const startTime = performance.now();
+        const duration = 375;
+        const animate = (now: number) => {
+            const t = Math.min((now - startTime) / duration, 1);
+            el.style.transform = `translateY(${startY + (targetY - startY) * t}%)`;
+            if (t < 1) {
+                slideAnimRef.current = requestAnimationFrame(animate);
+            } else {
+                slideAnimRef.current = null;
+            }
+        };
+
+        slideAnimRef.current = requestAnimationFrame(animate);
+    }, [isPanelVisible, stopStripDisplayMode]);
+
+    useEffect(() => {
         isComponentMounted.current = true;
 
         const startRedPhase = () => {
@@ -175,20 +215,25 @@ const StopStripPanel: React.FC = () => {
             if (hideTimeoutRef.current !== null) {
                 window.clearTimeout(hideTimeoutRef.current);
             }
+            if (slideAnimRef.current !== null) {
+                cancelAnimationFrame(slideAnimRef.current);
+            }
         };
     }, []);
 
-    if (!lineStationInfo || lineStationInfo.stations.length === 0) {
+    const renderData = (lineStationInfo && lineStationInfo.stations.length > 0)
+        ? lineStationInfo
+        : lastValidInfoRef.current;
+
+    if (!renderData || renderData.stations.length === 0) {
         return null;
     }
 
-    const stations = lineStationInfo.stations;
-    const lineColor = lineStationInfo.lineColor || 'rgb(255, 255, 255)';
-    const isAlwaysShow = stopStripDisplayMode === 1;
-    const visibleClass = (isPanelVisible || isAlwaysShow) ? ' fpcc-stopstrip-visible' : '';
+    const stations = renderData.stations;
+    const lineColor = renderData.lineColor || 'rgb(255, 255, 255)';
 
     return (
-        <div className={`fpcc-stopstrip-container${visibleClass}`}>
+        <div ref={containerRef} className="fpcc-stopstrip-container">
             <div className="fpcc-stopstrip-progress-track">
                 <div className="fpcc-stopstrip-progress-bar-container">
                     <div className="fpcc-stopstrip-progress-bar" style={{ backgroundColor: lineColor }}></div>
