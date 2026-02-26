@@ -11,8 +11,8 @@ using Unity.Entities;
 namespace FirstPersonCameraContinued
 {
     [FileLocation(nameof(FirstPersonCameraContinued))]
-    [SettingsUIShowGroupName(CameraSettingsGroup, KeybindingSettingsGroup, OtherSettingsGroup, UISettingsGroup, InfoBoxSettingsGroup)]
-    [SettingsUITabOrder(GeneralSettingsTab,UISettingsTab)]
+    [SettingsUIShowGroupName(CameraSettingsGroup, KeybindingSettingsGroup, OtherSettingsGroup, UISettingsGroup, InfoBoxSettingsGroup, PIPGeneralSettingsGroup, PIPFeatureSettingsGroup, PIPKeybindingSettingsGroup)]
+    [SettingsUITabOrder(GeneralSettingsTab, UISettingsTab, PIPSettingsTab)]
     public class Setting : ModSetting
     {
         public const string GeneralSettingsTab = "GeneralSettingsTab";
@@ -22,6 +22,10 @@ namespace FirstPersonCameraContinued
         public const string UISettingsTab = "UISettingsTab";
         public const string UISettingsGroup = "UISettingsGroup";
         public const string InfoBoxSettingsGroup = "InfoBoxSettingsGroup";
+        public const string PIPSettingsTab = "PIPSettingsTab";
+        public const string PIPGeneralSettingsGroup = "PIPGeneralSettingsGroup";
+        public const string PIPFeatureSettingsGroup = "PIPFeatureSettingsGroup";
+        public const string PIPKeybindingSettingsGroup = "PIPKeybindingSettingsGroup";
 
         private bool _showInfoBox;
         private bool _onlyShowSpeed;
@@ -130,6 +134,32 @@ namespace FirstPersonCameraContinued
             }
         }
 
+
+        [SettingsUISection(PIPSettingsTab, PIPGeneralSettingsGroup)]
+        public FirstPersonCameraPIPSystem.PiPCorner PIPSnapToCorner { get; set; }
+
+        [SettingsUISlider(min = 0.7f, max = 2f, step = .1f, scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
+        [SettingsUISection(PIPSettingsTab, PIPGeneralSettingsGroup)]
+        public float PIPAspectRatio { get; set; }
+
+        [SettingsUISlider(min = 0.1f, max = 1f, step = .1f, scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
+        [SettingsUISection(PIPSettingsTab, PIPGeneralSettingsGroup)]
+        public float PIPSize { get; set; }
+
+        [SettingsUISection(PIPSettingsTab, PIPGeneralSettingsGroup)]
+        public bool ShowPIPOnEnter { get; set; }
+
+        [SettingsUISection(PIPSettingsTab, PIPFeatureSettingsGroup)]
+        public bool ShowPIPMarker { get; set; }
+
+        [SettingsUISection(PIPSettingsTab, PIPFeatureSettingsGroup)]
+        public bool ShowPIPUndergroundView { get; set; }
+
+
+        [SettingsUIMultilineText]
+        [SettingsUISection(PIPSettingsTab, PIPKeybindingSettingsGroup)]
+        public string PIPMultilineText => "Placeholder";
+
         [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
         public Enums.ModUnits SetUnits
         {
@@ -162,6 +192,12 @@ namespace FirstPersonCameraContinued
             ShowInfoBox = true;
             OnlyShowSpeed = false;
             InfoBoxSize = Enums.InfoBoxSize.Default;
+            PIPSnapToCorner = FirstPersonCameraPIPSystem.PiPCorner.TopRight;
+            PIPAspectRatio = 0.9f;
+            PIPSize = 0.4f;
+            ShowPIPOnEnter = false;
+            ShowPIPMarker = true;
+            ShowPIPUndergroundView = true;
             SetUnits = Enums.ModUnits.GameSetting;
         }
 

@@ -12,7 +12,7 @@ namespace FirstPersonCameraContinued
     /// <summary>
     /// Handles game object creation and rigging.
     /// </summary>
-    internal class VirtualCameraRig
+    public class VirtualCameraRig
     {
         private float TRANSITION_DAMPEN = 3.5f;
         private float FOV_END = 70f;
@@ -45,6 +45,11 @@ namespace FirstPersonCameraContinued
         {
             get;
             private set;
+        }
+
+        public float GetFOV()
+        {
+            return _virtualCamera.m_Lens.FieldOfView;
         }
 
         /// <summary>
@@ -213,6 +218,14 @@ namespace FirstPersonCameraContinued
         public void UpdateNearClipPlane( float nearClipPlane = 0.03f )
         {
             _virtualCamera.m_Lens.NearClipPlane = nearClipPlane;
+        }
+
+        public void UpdateFOV(int multiplier = 1)
+        {
+            float baseHalfRad = 0.5f * Mod.FirstPersonModSettings.FOV * Mathf.Deg2Rad;
+            float newHalfRad = Mathf.Atan(Mathf.Tan(baseHalfRad) / multiplier);
+            float newFovDeg = 2f * newHalfRad * Mathf.Rad2Deg;
+            _virtualCamera.m_Lens.FieldOfView = newFovDeg;
         }
     }
 }

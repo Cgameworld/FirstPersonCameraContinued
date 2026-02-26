@@ -1,11 +1,13 @@
 ﻿using FirstPersonCamera.Helpers;
 using FirstPersonCameraContinued.DataModels;
 using FirstPersonCameraContinued.Enums;
+using FirstPersonCameraContinued.MonoBehaviours;
 using FirstPersonCameraContinued.Systems;
 using Game.Input;
 using Game.Rendering;
 using Game.SceneFlow;
 using Game.UI.InGame;
+using Game.Vehicles;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -208,6 +210,62 @@ namespace FirstPersonCameraContinued
             // We only want these actions to occur whilst the controller is active
             TemporaryActions.Add(action);
 
+
+            // Create the input action (show pip window)
+            action = new InputAction("FPSController_HeightDown");
+            action.AddBinding("<Keyboard>/p");
+            action.performed += ctx =>
+            {
+                TogglePiPWindow();
+            };
+            action.Disable();
+
+            // We only want these actions to occur whilst the controller is active
+            TemporaryActions.Add(action);
+
+            // Create the input action (toggle zoom effect)
+            action = new InputAction("FPSController_HeightDown");
+            action.AddBinding("<Keyboard>/z");
+            action.performed += ctx =>
+            {
+               World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraSystem>().ToggleZoom();
+            };
+            action.Disable();
+
+            // We only want these actions to occur whilst the controller is active
+            TemporaryActions.Add(action);
+
+            //zoom in out pip window
+            action = new InputAction("FPSController_ScrollWheel", binding: "<Mouse>/scroll/y");
+            action.performed += ctx =>
+            {
+
+
+                var _pipSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraPIPSystem>();
+
+                if (_pipSystem.IsPiPWindow())
+                {
+                    if (!Keyboard.current.ctrlKey.isPressed)
+                    {
+                        float scrollValue = ctx.ReadValue<float>() * 0.02f;
+                        float targetOffset = _pipSystem.adjustableCameraOffset + scrollValue;
+                        _pipSystem.adjustableCameraOffset = targetOffset;
+                    }
+                    else
+                    {
+                        float scrollValue = ctx.ReadValue<float>() * 0.02f;
+                        float newSize = _pipSystem.m_PipSize + scrollValue * 0.01f;
+                        Mod.log.Info("newSize: " + newSize);
+                        _pipSystem.m_PipSize = newSize;
+                        _pipSystem.UpdatePiPSize();
+                    }
+            }
+            };
+            action.Disable();
+
+            // We only want these actions to occur whilst the controller is active
+            TemporaryActions.Add(action);
+
             action = new InputAction("FPSController_MousePosition", binding: "<Mouse>/delta");
             action.performed += ctx => _model.Look = ctx.ReadValue<Vector2>();
             action.canceled += ctx => _model.Look = float2.zero;
@@ -238,7 +296,7 @@ namespace FirstPersonCameraContinued
             action = new InputAction("FPSController_Escape", binding: "<Keyboard>/escape");
             action.performed += ctx =>
             {
-                // if (_model.Mode == CameraMode.Follow)
+               // if (_model.Mode == CameraMode.Follow)
                 //    OnUnfollow?.Invoke();
 
                 Disable();
@@ -250,6 +308,20 @@ namespace FirstPersonCameraContinued
             };
             action.Disable();
             TemporaryActions.Add(action);
+        }
+
+        private static void TogglePiPWindow()
+        {
+            var _pipSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraPIPSystem>();
+
+            if (_pipSystem.IsPiPWindow())
+            {
+                _pipSystem.DestroyPiPWindow();
+            }
+            else
+            {
+                _pipSystem.CreatePiPWindow();
+            }
         }
 
         /// <summary>
@@ -289,6 +361,11 @@ namespace FirstPersonCameraContinued
                 InputManager.DeviceType.Keyboard | InputManager.DeviceType.Gamepad,
                 blocked: true
             );
+
+            if (Mod.FirstPersonModSettings != null && Mod.FirstPersonModSettings.ShowPIPOnEnter)
+            {
+                TogglePiPWindow();
+            }
         }
 
         public void SetEntity(Entity entity)
@@ -387,22 +464,26 @@ namespace FirstPersonCameraContinued
 
             EntryInfo entryInfo = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<FirstPersonCameraSystem>().EntryInfo;
 
+            GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastPIPWindow", out string pipWindowText);
+
+            GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastZoom", out string zoomText);
+
             if (entryInfo.RandomFollow)
             {
                 if (entryInfo.RandomMode == RandomMode.Cim)
                 {
                     GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextRandomModeCimEnter", out string randomModeText);
-                    toastComponent.Initialize(entryText + "\n" + randomModeText);
+                    toastComponent.Initialize(entryText + "\n" + randomModeText + "\n" + pipWindowText + "\n" + zoomText);
                 }
                 else {
                     GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextRandomModeVehicleEnter", out string randomModeText);
-                    toastComponent.Initialize(entryText + "\n" + randomModeText);
+                    toastComponent.Initialize(entryText + "\n" + randomModeText + "\n" + pipWindowText + "\n" + zoomText);
                 }
 
             }
             else
             {
-                toastComponent.Initialize(entryText);
+                toastComponent.Initialize(entryText + "\n" + pipWindowText + "\n" + zoomText);
             }
 
             yield break;

@@ -8,7 +8,7 @@ namespace FirstPersonCameraContinued.DataModels
     /// <summary>
     /// The core data model for the camera
     /// </summary>
-    internal class CameraDataModel
+    public class CameraDataModel
     {
         /// <summary>
         /// The camera mode (e.g. Manual or Follow)

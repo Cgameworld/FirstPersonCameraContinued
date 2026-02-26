@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents the various camera modes
     /// </summary>
-    internal enum CameraMode
+    public enum CameraMode
     {
         Disabled,
         Manual,

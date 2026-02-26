@@ -1,16 +1,18 @@
-﻿using FirstPersonCameraContinued.MonoBehaviours;
+﻿using cohtml.Net;
+using Colossal.UI;
+using FirstPersonCamera.Helpers;
 using FirstPersonCameraContinued.DataModels;
+using FirstPersonCameraContinued.Enums;
+using FirstPersonCameraContinued.MonoBehaviours;
 using Game;
 using Game.Common;
 using Game.Rendering;
 using Game.SceneFlow;
 using Game.Tools;
+using System.Collections;
+using System.Net;
 using Unity.Entities;
 using UnityEngine;
-using cohtml.Net;
-using FirstPersonCameraContinued.Enums;
-using Colossal.UI;
-using System.Net;
 
 namespace FirstPersonCameraContinued.Systems
 {
@@ -42,6 +44,7 @@ namespace FirstPersonCameraContinued.Systems
         private RenderingSystem _renderingSystem;
         private ToolRaycastSystem _toolRaycastSystem;
         private ToolSystem _toolSystem;
+        private FirstPersonCameraPIPSystem _firstPersonCameraPIPSystem;
 
         protected override void OnCreate( )
         {
@@ -56,6 +59,8 @@ namespace FirstPersonCameraContinued.Systems
 
             _firstPersonCameraActivatedUISystem = World.GetExistingSystemManaged<FirstPersonCameraActivatedUISystem>();
             _firstPersonCameraActivatedUISystem.SetUISettingsGroupOptions();
+
+            _firstPersonCameraPIPSystem = World.GetExistingSystemManaged<FirstPersonCameraPIPSystem>();
 
             UnityEngine.Debug.Log( "FirstPersonCamera loaded!" );
 
@@ -113,11 +118,13 @@ namespace FirstPersonCameraContinued.Systems
                     _toolRaycastSystem.raycastFlags |= RaycastFlags.FreeCameraDisable;
                     _toolSystem.activeTool = World.GetExistingSystemManaged<DefaultToolSystem>();
                     m_UIView.ExecuteScript("document.querySelector('.app-container_Y5l').style.visibility = 'hidden';");
+                    //_firstPersonCameraPIPSystem.CreatePiPWindow();
                 }
                 else
                 {
                     _toolRaycastSystem.raycastFlags &= ~RaycastFlags.FreeCameraDisable;
                     m_UIView.ExecuteScript("document.querySelector('.app-container_Y5l').style.visibility = 'visible';");
+                    _firstPersonCameraPIPSystem.DestroyPiPWindow();
                 }
             }
             else
@@ -131,6 +138,39 @@ namespace FirstPersonCameraContinued.Systems
                     _firstPersonCameraActivatedUISystem.DisableCrosshair();
                 }
             }
+        }
+
+        public void ToggleZoom()
+        {
+            int z = Controller.CurrentZoomLevel;
+            z = z switch { < 3 => 3, _ => 1 };
+            Controller.CurrentZoomLevel = z;
+            Controller.GetRig().UpdateFOV(z);
+            StaticCoroutine.Start(StartZoomToast());
+        }
+
+        public IEnumerator StartZoomToast()
+        {
+            yield return new WaitForEndOfFrame();
+
+            GameObject.Destroy(GameObject.Find("toastTextFPC"));
+
+            GameObject toastTextFPC = new GameObject("toastTextFPC");
+            ToastTextFPC toastComponent = toastTextFPC.AddComponent<ToastTextFPC>();
+
+            GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextZoomActivated", out string zoomActivatedText);
+            GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextZoomDeactivated", out string zoomDeactivatedText);
+
+            if (Controller.CurrentZoomLevel > 1)
+            {
+                toastComponent.Initialize(zoomActivatedText);
+            }
+            else
+            {
+                toastComponent.Initialize(zoomDeactivatedText);
+            }
+            
+            yield break;
         }
 
         /// <summary>

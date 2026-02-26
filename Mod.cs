@@ -38,6 +38,7 @@ namespace FirstPersonCameraContinued
             AssetDatabase.global.LoadSettings(nameof(FirstPersonCameraContinued), FirstPersonModSettings, new Setting(this));
 
             updateSystem.UpdateBefore<FirstPersonCameraActivatedUISystem>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAt<FirstPersonCameraPIPSystem>(SystemUpdatePhase.Rendering);
         }
 
         public void OnDispose()
