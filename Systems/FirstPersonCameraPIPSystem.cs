@@ -70,6 +70,9 @@ namespace FirstPersonCameraContinued
         public bool ShowPIPUndergroundSetting;
         public bool ShowPIPMarkerSetting;
 
+        private int _storedVSyncCount;
+        private bool _vsyncOverridden;
+
         private readonly EntityFollower _entityFollower;
 
         public enum PiPCorner
@@ -119,6 +122,7 @@ namespace FirstPersonCameraContinued
 
                 SetPiPPosition(positon.x, positon.y, positon.z, rotation);
 
+                UpdateVSyncState();
                 UpdateMarkerPosition();
 
                 if (IsInTunnel(currentEntity) && ShowPIPUndergroundSetting)
@@ -213,8 +217,32 @@ namespace FirstPersonCameraContinued
             return m_PipCameraObject != null;
         }
 
+        private void UpdateVSyncState()
+        {
+            bool shouldDisable = Mod.FirstPersonModSettings?.DisableVSync == true
+                && m_PipCameraObject != null
+                && CameraController?.GetFollowEntity() != Entity.Null;
+
+            if (shouldDisable && !_vsyncOverridden)
+            {
+                _storedVSyncCount = QualitySettings.vSyncCount;
+                QualitySettings.vSyncCount = 0;
+                _vsyncOverridden = true;
+            }
+            else if (!shouldDisable && _vsyncOverridden)
+            {
+                QualitySettings.vSyncCount = _storedVSyncCount;
+                _vsyncOverridden = false;
+            }
+        }
+
         public void DestroyPiPWindow()
         {
+            if (_vsyncOverridden)
+            {
+                QualitySettings.vSyncCount = _storedVSyncCount;
+                _vsyncOverridden = false;
+            }
             if (m_RenderTexture != null)
             {
                 m_RenderTexture.Release();
@@ -222,7 +250,10 @@ namespace FirstPersonCameraContinued
             }
 
             if (m_PipCameraObject != null)
+            {
                 UnityEngine.Object.Destroy(m_PipCameraObject);
+                m_PipCameraObject = null;
+            }
 
             if (m_PipUIContainer != null)
                 UnityEngine.Object.Destroy(m_PipUIContainer);

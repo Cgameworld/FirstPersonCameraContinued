@@ -56,7 +56,7 @@ namespace FirstPersonCameraContinued
 
         [SettingsUISlider(min = 0.8f, max = 3f, step = .1f, scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
         [SettingsUISection(GeneralSettingsTab, CameraSettingsGroup)]
-        public float TransitionSpeedFactor { get; set; }
+        public float TransitionSpeedFactor { get; set; }       
 
         public const string FreeModeKeybindName = "FreeModeKeybind";
 
@@ -155,6 +155,9 @@ namespace FirstPersonCameraContinued
         [SettingsUISection(PIPSettingsTab, PIPFeatureSettingsGroup)]
         public bool ShowPIPUndergroundView { get; set; }
 
+        [SettingsUISection(PIPSettingsTab, PIPFeatureSettingsGroup)]
+        public bool DisableVSync { get; set; }
+
 
         [SettingsUIMultilineText]
         [SettingsUISection(PIPSettingsTab, PIPKeybindingSettingsGroup)]
@@ -188,6 +191,7 @@ namespace FirstPersonCameraContinued
             RunSpeed = 0.35f;
             CimHeight = 1.7f;
             TransitionSpeedFactor = 1f;
+            DisableVSync = true;
             ShowGameUI = false;
             ShowInfoBox = true;
             OnlyShowSpeed = false;
