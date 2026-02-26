@@ -118,12 +118,14 @@ namespace FirstPersonCameraContinued.Systems
                     _toolRaycastSystem.raycastFlags |= RaycastFlags.FreeCameraDisable;
                     _toolSystem.activeTool = World.GetExistingSystemManaged<DefaultToolSystem>();
                     m_UIView.ExecuteScript("document.querySelector('.app-container_Y5l').style.visibility = 'hidden';");
+                    m_UIView.ExecuteScript("var fps = document.querySelector('.fps-display_t30'); if(fps) fps.style.visibility = 'visible';");
                     //_firstPersonCameraPIPSystem.CreatePiPWindow();
                 }
                 else
                 {
                     _toolRaycastSystem.raycastFlags &= ~RaycastFlags.FreeCameraDisable;
                     m_UIView.ExecuteScript("document.querySelector('.app-container_Y5l').style.visibility = 'visible';");
+                    m_UIView.ExecuteScript("var fps = document.querySelector('.fps-display_t30'); if(fps) fps.style.visibility = '';");
                     _firstPersonCameraPIPSystem.DestroyPiPWindow();
                 }
             }
