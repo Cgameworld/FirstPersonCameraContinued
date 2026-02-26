@@ -54,6 +54,11 @@ namespace FirstPersonCameraContinued.MonoBehaviours
             return _model.Mode;
         }
 
+        public VehicleType GetScopeVehicle()
+        {
+            return _model.ScopeVehicle;
+        }
+
         public VirtualCameraRig GetRig()
         {
             return _rig;

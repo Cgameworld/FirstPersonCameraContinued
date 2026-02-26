@@ -49,7 +49,11 @@ namespace FirstPersonCameraContinued
 
         private Camera m_MainCamera;
 
-        public float adjustableCameraOffset = 10f;
+        private const float DEFAULT_PIP_OFFSET = 8f;
+        private const float RAIL_TRANSIT_PIP_OFFSET = 15f;
+
+        public float adjustableCameraOffset = DEFAULT_PIP_OFFSET;
+        private Entity _lastPipEntity;
 
         public float m_PipSize = 0.4f;
         public float aspectRatio = 0.9f;
@@ -100,6 +104,11 @@ namespace FirstPersonCameraContinued
                 var rotation = CameraController.GetViewRotation();
 
                 Entity currentEntity = CameraController.GetFollowEntity();
+                if (currentEntity != _lastPipEntity)
+                {
+                    _lastPipEntity = currentEntity;
+                    ResetZoomOffset();
+                }
                 if (currentEntity != Entity.Null)
                 {
                     CameraController.GetTransformer().GetEntityFollower().TryGetPosition(out float3 pos, out _, out quaternion rot, out _);
@@ -205,11 +214,10 @@ namespace FirstPersonCameraContinued
                 ShowPIPMarkerSetting = Mod.FirstPersonModSettings.ShowPIPMarker;
             }
 
-            InitializePiP();
-            //Mod.log.Info("CameraControllertransfrom: " + positon);
-            //SetPiPPosition(positon.x, positon.y+10f,positon.z,0f,0f,0f);
-            //SetPiPPosition(-701f, 600f, -1477f, 0f, 0f, 0f);
+            _lastPipEntity = CameraController != null ? CameraController.GetFollowEntity() : Entity.Null;
+            ResetZoomOffset();
 
+            InitializePiP();
         }
 
         public bool IsPiPWindow()
@@ -238,6 +246,9 @@ namespace FirstPersonCameraContinued
 
         public void DestroyPiPWindow()
         {
+            adjustableCameraOffset = DEFAULT_PIP_OFFSET;
+            _lastPipEntity = Entity.Null;
+
             if (_vsyncOverridden)
             {
                 QualitySettings.vSyncCount = _storedVSyncCount;
@@ -464,6 +475,27 @@ namespace FirstPersonCameraContinued
                 int uiWidth = (int)(uiSize * aspectRatio);
                 RectTransform rectTransform = m_PipDisplay.GetComponent<RectTransform>();
                 rectTransform.sizeDelta = new Vector2(uiWidth, uiSize);
+            }
+        }
+
+        private bool IsRailTransitVehicle(Enums.VehicleType vehicleType)
+        {
+            return vehicleType == Enums.VehicleType.Train
+                || vehicleType == Enums.VehicleType.CargoTrain
+                || vehicleType == Enums.VehicleType.Subway
+                || vehicleType == Enums.VehicleType.Tram;
+        }
+
+        private void ResetZoomOffset()
+        {
+            if (CameraController != null)
+            {
+                var vehicleType = CameraController.GetScopeVehicle();
+                adjustableCameraOffset = IsRailTransitVehicle(vehicleType) ? RAIL_TRANSIT_PIP_OFFSET : DEFAULT_PIP_OFFSET;
+            }
+            else
+            {
+                adjustableCameraOffset = DEFAULT_PIP_OFFSET;
             }
         }
 
