@@ -233,7 +233,7 @@ const StopStripPanel: React.FC = () => {
     const lineColor = renderData.lineColor || 'rgb(255, 255, 255)';
 
     return (
-        <div ref={containerRef} className="fpcc-stopstrip-container">
+        <div ref={containerRef} className="fpcc-stopstrip-container tool-options-panel_Se6">
             <div className="fpcc-stopstrip-progress-track">
                 <div className="fpcc-stopstrip-progress-bar-container">
                     <div className="fpcc-stopstrip-progress-bar" style={{ backgroundColor: lineColor }}></div>

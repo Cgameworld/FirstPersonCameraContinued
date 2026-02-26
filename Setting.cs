@@ -11,9 +11,7 @@ using Unity.Entities;
 namespace FirstPersonCameraContinued
 {
     [FileLocation(nameof(FirstPersonCameraContinued))]
-    [SettingsUIShowGroupName(CameraSettingsGroup, KeybindingSettingsGroup, OtherSettingsGroup, UISettingsGroup, InfoBoxSettingsGroup, StopStripSettingsGroup)]
-    [SettingsUITabOrder(GeneralSettingsTab,UISettingsTab)]
-    [SettingsUIShowGroupName(CameraSettingsGroup, KeybindingSettingsGroup, OtherSettingsGroup, UISettingsGroup, InfoBoxSettingsGroup, PIPGeneralSettingsGroup, PIPFeatureSettingsGroup, PIPKeybindingSettingsGroup)]
+    [SettingsUIShowGroupName(CameraSettingsGroup, KeybindingSettingsGroup, OtherSettingsGroup, UISettingsGroup, InfoBoxSettingsGroup, PIPGeneralSettingsGroup, PIPFeatureSettingsGroup, PIPKeybindingSettingsGroup, StopStripSettingsGroup)]
     [SettingsUITabOrder(GeneralSettingsTab, UISettingsTab, PIPSettingsTab)]
     public class Setting : ModSetting
     {
