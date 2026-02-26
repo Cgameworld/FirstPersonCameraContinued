@@ -253,11 +253,6 @@ namespace FirstPersonCameraContinued
                 aspectRatio = Mod.FirstPersonModSettings.PIPAspectRatio;
             }
 
-            for (int i = 0; i < 32; i++)
-            {
-                Mod.log.Info($"Layer {i}: {LayerMask.LayerToName(i)}");
-            }
-
             float screenScale = (float)Screen.height / 1080f;
             int referenceSize = (int)(1080 * m_PipSize);
             int actualSize = (int)(referenceSize * screenScale);
