@@ -15,6 +15,11 @@ namespace FirstPersonCameraContinued.Patches
         {
             var camera = __instance.World.GetExistingSystemManaged<FirstPersonCameraSystem>();
             camera?.UpdateCamera();
+
+            if (camera != null && camera.EntryInfo != null && camera.EntryInfo.Activated && __instance.activeViewer != null)
+            {
+                __instance.activeViewer.shadowsAdjustFarDistance = false;
+            }
         }
 
         static void Postfix(CameraUpdateSystem __instance, ref DepthOfField ___m_DepthOfField)
@@ -23,6 +28,10 @@ namespace FirstPersonCameraContinued.Patches
             if (camera != null && camera.EntryInfo != null && camera.EntryInfo.Activated)
             {
                 ___m_DepthOfField.focusMode.Override(DepthOfFieldMode.Off);
+            }
+            else if (__instance.activeViewer != null)
+            {
+                __instance.activeViewer.shadowsAdjustFarDistance = true;
             }
         }
     }
