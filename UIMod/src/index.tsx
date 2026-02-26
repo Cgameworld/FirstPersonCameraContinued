@@ -10,6 +10,7 @@ import 'style/Crosshair.scss';
 import 'style/EntityInfo.scss';
 import engine from 'cohtml/cohtml';
 import FollowedVehicleInfoPanel from './panels/FollowedVehicleInfoPanel';
+import StopStripPanel from './panels/StopStripPanel';
 
 const register: ModRegistrar = (moduleRegistry) => {
 
@@ -112,6 +113,23 @@ const register: ModRegistrar = (moduleRegistry) => {
             }
         }, [showButtonDropdown]);
 
+        useEffect(() => {
+            if (isEntered) {
+                const injectionPoint = document.body;
+                const newDiv = document.createElement('div');
+                newDiv.className = 'firstpersoncameracontinued_strippanel';
+                injectionPoint.insertBefore(newDiv, injectionPoint.firstChild);
+
+                ReactDOM.render(<StopStripPanel />, newDiv);
+
+                return () => {
+                    ReactDOM.unmountComponentAtNode(newDiv);
+                    if (newDiv.parentNode) {
+                        newDiv.parentNode.removeChild(newDiv);
+                    }
+                };
+            }
+        }, [isEntered]);
 
         useEffect(() => {
             if (isEntered) {
@@ -130,7 +148,6 @@ const register: ModRegistrar = (moduleRegistry) => {
                 };
             }
         }, [isEntered]);
-
 
         useEffect(() => {
             if (showCrosshair) {

@@ -11,6 +11,8 @@ using Unity.Entities;
 namespace FirstPersonCameraContinued
 {
     [FileLocation(nameof(FirstPersonCameraContinued))]
+    [SettingsUIShowGroupName(CameraSettingsGroup, KeybindingSettingsGroup, OtherSettingsGroup, UISettingsGroup, InfoBoxSettingsGroup, StopStripSettingsGroup)]
+    [SettingsUITabOrder(GeneralSettingsTab,UISettingsTab)]
     [SettingsUIShowGroupName(CameraSettingsGroup, KeybindingSettingsGroup, OtherSettingsGroup, UISettingsGroup, InfoBoxSettingsGroup, PIPGeneralSettingsGroup, PIPFeatureSettingsGroup, PIPKeybindingSettingsGroup)]
     [SettingsUITabOrder(GeneralSettingsTab, UISettingsTab, PIPSettingsTab)]
     public class Setting : ModSetting
@@ -26,11 +28,14 @@ namespace FirstPersonCameraContinued
         public const string PIPGeneralSettingsGroup = "PIPGeneralSettingsGroup";
         public const string PIPFeatureSettingsGroup = "PIPFeatureSettingsGroup";
         public const string PIPKeybindingSettingsGroup = "PIPKeybindingSettingsGroup";
+        public const string StopStripSettingsGroup = "StopStripSettingsGroup";
 
         private bool _showInfoBox;
         private bool _onlyShowSpeed;
         private InfoBoxSize _infoBoxSize;
         private ModUnits _setUnits;
+        private ShowStopStrip _showStopStrip;
+        private StopStripDisplayMode _stopStripDisplayMode;
 
         public Setting(IMod mod) : base(mod)
         {
@@ -174,6 +179,28 @@ namespace FirstPersonCameraContinued
             }
         }
 
+        [SettingsUISection(UISettingsTab, StopStripSettingsGroup)]
+        public Enums.ShowStopStrip ShowStopStrip
+        {
+            get => _showStopStrip;
+            set
+            {
+                _showStopStrip = value;
+                SetUISettingsGroup();
+            }
+        }
+
+        [SettingsUISection(UISettingsTab, StopStripSettingsGroup)]
+        public Enums.StopStripDisplayMode StopStripDisplayMode
+        {
+            get => _stopStripDisplayMode;
+            set
+            {
+                _stopStripDisplayMode = value;
+                SetUISettingsGroup();
+            }
+        }
+
         private void SetUISettingsGroup()
         {
             World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<FirstPersonCameraActivatedUISystem>().SetUISettingsGroupOptions();
@@ -203,6 +230,8 @@ namespace FirstPersonCameraContinued
             ShowPIPMarker = true;
             ShowPIPUndergroundView = true;
             SetUnits = Enums.ModUnits.GameSetting;
+            ShowStopStrip = Enums.ShowStopStrip.AllTransit;
+            StopStripDisplayMode = Enums.StopStripDisplayMode.AutoHide;
         }
 
        public void Unload()
