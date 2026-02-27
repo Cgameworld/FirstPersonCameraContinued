@@ -101,10 +101,11 @@ New Features:
 
 Improvements:
 * Fixed lag when looking at ground
+* Free Camera view stays above water
 * Removed first person shortcut when line info panel is selected
 
 Other Changes:
-* Hide vehicle type on default in infobox
+* Vehicle type hidden on default in infobox
 * Increased transition speed factor speed default
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
