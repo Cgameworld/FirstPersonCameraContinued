@@ -1,7 +1,11 @@
 ﻿using FirstPersonCameraContinued.DataModels;
+using FirstPersonCameraContinued.Systems;
+using Game;
+using Game.Routes;
 using Game.Simulation;
 using System;
 using Unity.Entities;
+using Unity.Jobs;
 using Unity.Mathematics;
 
 namespace FirstPersonCameraContinued.Transformer.FinalTransforms
@@ -15,7 +19,8 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
         public float runSpeed = 0.35f;
         public float cimHeight = 1.7f;
        
-        private TerrainSystem _terrainSystem;
+        private TerrainSystem m_TerrainSystem;
+        private WaterSystem m_WaterSystem;
 
         /// <summary>
         /// Apply the transformation
@@ -73,10 +78,28 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
         {
             try
             {
-                _terrainSystem ??= World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TerrainSystem>();
+                m_TerrainSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<TerrainSystem>();
+                m_WaterSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<WaterSystem>();
 
-                var heightData = _terrainSystem.GetHeightData( true );
-                return TerrainUtils.SampleHeight( ref heightData, rig.Parent.position ) + cimHeight; // Offset it a little
+                float terrainHeight = 0f;
+                TerrainHeightData data = m_TerrainSystem.GetHeightData();
+
+                if (m_WaterSystem.Loaded)
+                {
+                    JobHandle deps;
+                    WaterSurfaceData<SurfaceWater> data2 = m_WaterSystem.GetSurfaceData(out deps);
+                    deps.Complete();
+                    if (data2.isCreated)
+                    {
+                        terrainHeight = WaterUtils.SampleHeight(ref data2, ref data, rig.Parent.position);
+                    }
+                }
+                else
+                {
+                    terrainHeight = TerrainUtils.SampleHeight(ref data, rig.Parent.position);
+                }
+
+                return terrainHeight + cimHeight; // Offset it a little
             }
             catch ( NullReferenceException ) // When abruptly exiting the game TerrainUtils crashes out, just safely handle this
             {
