@@ -101,12 +101,13 @@ New Features:
 
 Improvements:
 * Fixed lag when looking at ground
-* Free Camera view stays above water
-* Removed first person shortcut when line info panel is selected
+* Free Camera view now stays above water
+* Follow Random Bicycle mode no longer picks parked bikes
 
 Other Changes:
 * Vehicle type hidden on default in infobox
 * Increased transition speed factor speed default
+* Removed first person shortcut when line info panel is selected
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />

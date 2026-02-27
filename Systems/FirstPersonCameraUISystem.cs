@@ -255,10 +255,11 @@ namespace FirstPersonCameraContinued.Systems
             EntityQuery query = GetEntityQuery(new EntityQueryDesc()
             {
                 All = new ComponentType[1] { ComponentType.ReadOnly<Bicycle>() },
-                None = new ComponentType[3] {
+                None = new ComponentType[4] {
             ComponentType.ReadOnly<Deleted>(),
             ComponentType.ReadOnly<Temp>(),
-            ComponentType.ReadOnly<TripSource>()
+            ComponentType.ReadOnly<TripSource>(),
+            ComponentType.ReadOnly<ParkedCar>()
         }
             });
 
