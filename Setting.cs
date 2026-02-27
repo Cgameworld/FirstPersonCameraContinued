@@ -29,7 +29,9 @@ namespace FirstPersonCameraContinued
         public const string StopStripSettingsGroup = "StopStripSettingsGroup";
 
         private bool _showInfoBox;
-        private bool _onlyShowSpeed;
+        private bool _showSpeed;
+        private bool _showVehicleType;
+        private bool _showExtraInfo;
         private InfoBoxSize _infoBoxSize;
         private ModUnits _setUnits;
         private ShowStopStrip _showStopStrip;
@@ -95,33 +97,11 @@ namespace FirstPersonCameraContinued
 
 
         [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
-        public bool ShowInfoBox { 
-            get => _showInfoBox; 
+        public bool ShowInfoBox {
+            get => _showInfoBox;
             set
             {
                 _showInfoBox = value;
-                //if info box disabled, show vehicletype has to also be disabled
-                if (!value)
-                {
-                    _onlyShowSpeed = false;
-                }
-                SetUISettingsGroup();
-            }
-        }
-
-
-        [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
-        public bool OnlyShowSpeed
-        {
-            get => _onlyShowSpeed;
-            set
-            {
-                _onlyShowSpeed = value;
-                // if enabled, the infobox also has to be
-                if (value)
-                {
-                    _showInfoBox = true;
-                }
                 SetUISettingsGroup();
             }
         }
@@ -177,6 +157,39 @@ namespace FirstPersonCameraContinued
             }
         }
 
+        [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
+        public bool ShowSpeed
+        {
+            get => _showSpeed;
+            set
+            {
+                _showSpeed = value;
+                SetUISettingsGroup();
+            }
+        }
+
+        [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
+        public bool ShowVehicleType
+        {
+            get => _showVehicleType;
+            set
+            {
+                _showVehicleType = value;
+                SetUISettingsGroup();
+            }
+        }
+
+        [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
+        public bool ShowExtraInfo
+        {
+            get => _showExtraInfo;
+            set
+            {
+                _showExtraInfo = value;
+                SetUISettingsGroup();
+            }
+        }
+
         [SettingsUISection(UISettingsTab, StopStripSettingsGroup)]
         public Enums.ShowStopStrip ShowStopStrip
         {
@@ -219,7 +232,9 @@ namespace FirstPersonCameraContinued
             DisableVSync = true;
             ShowGameUI = false;
             ShowInfoBox = true;
-            OnlyShowSpeed = false;
+            ShowSpeed = true;
+            ShowVehicleType = false;
+            ShowExtraInfo = true;
             InfoBoxSize = Enums.InfoBoxSize.Default;
             PIPSnapToCorner = FirstPersonCameraPIPSystem.PiPCorner.TopRight;
             PIPAspectRatio = 0.9f;

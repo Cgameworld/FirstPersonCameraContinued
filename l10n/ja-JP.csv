@@ -49,8 +49,6 @@
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.INFOBOXSIZE[Small]","小"
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.INFOBOXSIZE[Default]","標準"
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.INFOBOXSIZE[Large]","大"
-"Options.OPTION:OnlyShowSpeed","速度のみ表示"
-"Options.OPTION_DESCRIPTION:OnlyShowSpeed","一人称モード時の情報ボックスに速度のみ表示させる"
 "Options.OPTION:SetUnits","Units"
 "Options.OPTION_DESCRIPTION:SetUnits","Customize units displayed for the speed"
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.MODUNITS[GameSetting]","From Game"

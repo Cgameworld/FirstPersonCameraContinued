@@ -1138,7 +1138,9 @@ namespace FirstPersonCameraContinued.Systems
     public class UISettingsGroup
     {
         public bool ShowInfoBox { get; set; }
-        public bool OnlyShowSpeed { get; set; }
+        public bool ShowSpeed { get; set; }
+        public bool ShowVehicleType { get; set; }
+        public bool ShowExtraInfo { get; set; }
         public int InfoBoxSize { get; set; }
         public int SetUnits { get; set; }
         public int ShowStopStrip { get; set; }
@@ -1151,7 +1153,9 @@ namespace FirstPersonCameraContinued.Systems
                 return new UISettingsGroup
                 {
                     ShowInfoBox = true,
-                    OnlyShowSpeed = false,
+                    ShowSpeed = true,
+                    ShowVehicleType = false,
+                    ShowExtraInfo = true,
                     InfoBoxSize = 1,
                     SetUnits = 0,
                     ShowStopStrip = 0,
@@ -1162,7 +1166,9 @@ namespace FirstPersonCameraContinued.Systems
             return new UISettingsGroup
             {
                 ShowInfoBox = Mod.FirstPersonModSettings.ShowInfoBox,
-                OnlyShowSpeed = Mod.FirstPersonModSettings.OnlyShowSpeed,
+                ShowSpeed = Mod.FirstPersonModSettings.ShowSpeed,
+                ShowVehicleType = Mod.FirstPersonModSettings.ShowVehicleType,
+                ShowExtraInfo = Mod.FirstPersonModSettings.ShowExtraInfo,
                 InfoBoxSize = (int)Mod.FirstPersonModSettings.InfoBoxSize,
                 SetUnits = (int)Mod.FirstPersonModSettings.SetUnits,
                 ShowStopStrip = (int)Mod.FirstPersonModSettings.ShowStopStrip,

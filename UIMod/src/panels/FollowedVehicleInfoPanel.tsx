@@ -28,10 +28,13 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
     const followedEntityInfo = useValue(FollowedEntityInfo$);
     const showCrosshair = useValue(ShowCrosshair$);
 
-    const showInfoPanel = JSON.parse(uiSettingsGroupOptions).ShowInfoBox;
-    const onlyShowSpeed = JSON.parse(uiSettingsGroupOptions).OnlyShowSpeed;
-    const infoBoxSize = JSON.parse(uiSettingsGroupOptions).InfoBoxSize;
-    const setUnits = JSON.parse(uiSettingsGroupOptions).SetUnits;
+    const parsedSettings = JSON.parse(uiSettingsGroupOptions);
+    const showInfoPanel = parsedSettings.ShowInfoBox;
+    const showSpeed = parsedSettings.ShowSpeed;
+    const showVehicleType = parsedSettings.ShowVehicleType;
+    const showExtraInfo = parsedSettings.ShowExtraInfo;
+    const infoBoxSize = parsedSettings.InfoBoxSize;
+    const setUnits = parsedSettings.SetUnits;
 
     const parsedSpeed = JSON.parse(followedEntityInfo).currentSpeed;
     const parsedUnits = JSON.parse(followedEntityInfo).unitsSystem;
@@ -86,13 +89,13 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
     // Create content without rendering it yet
     const renderPanelContent = () => (
         <div className="item_bZY" ref={panelContentRef}>
-            {citizenName !== null && !onlyShowSpeed && (
+            {citizenName !== null && showExtraInfo && (
                 <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
                     <div className={`fpcc-info-label ${infoBoxSizeClass}`}>{translation.nameLabel}</div>
                     <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{citizenName}</div>
                 </div>
             )}
-            {parsedSpeed !== -1 && (
+            {parsedSpeed !== -1 && showSpeed && (
                 <div
                     ref={speedDivRef}
                     className={`fpcc-info-group-speed-padding ${infoBoxSizeClass}`}
@@ -102,25 +105,25 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
                     <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{formattedSpeed}</div>
                 </div>
             )}
-            {vehicleType !== null && !onlyShowSpeed && (
+            {vehicleType !== null && showVehicleType && (
                 <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
                     <div className={`fpcc-info-label ${infoBoxSizeClass}`}>{translation.vehicleTypeLabel}</div>
                     <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{vehicleType}</div>
                 </div>
             )}
-            {citizenAction !== null && !onlyShowSpeed && (
+            {citizenAction !== null && showExtraInfo && (
                 <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
                     <div className={`fpcc-info-label ${infoBoxSizeClass}`}>{translation.actionLabel}</div>
                     <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{citizenAction}</div>
                 </div>
             )}
-            {parsedPassengers !== -1 && !onlyShowSpeed && (
+            {parsedPassengers !== -1 && showExtraInfo && (
                 <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
                     <div className={`fpcc-info-label ${infoBoxSizeClass}`}>{translation.passengersLabel}</div>
                     <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{parsedPassengers}</div>
                 </div>
             )}
-            {parsedResources !== -1 && !onlyShowSpeed && (
+            {parsedResources !== -1 && showExtraInfo && (
                 <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
                     <div className={`fpcc-info-label ${infoBoxSizeClass}`}>{translation.resourcesLabel}</div>
                     <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{formattedResources}</div>

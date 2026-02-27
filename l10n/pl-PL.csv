@@ -49,8 +49,6 @@
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.INFOBOXSIZE[Small]","Mały"
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.INFOBOXSIZE[Default]","Domyślny"
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.INFOBOXSIZE[Large]","Duży"
-"Options.OPTION:OnlyShowSpeed","Pokaż tylko prędkość"
-"Options.OPTION_DESCRIPTION:OnlyShowSpeed","Pokaż tylko prędkość w panelu informacyjnym w trybie pierwszej osoby"
 "Options.OPTION:SetUnits","Units"
 "Options.OPTION_DESCRIPTION:SetUnits","Customize units displayed for the speed"
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.MODUNITS[GameSetting]","From Game"
