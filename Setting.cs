@@ -217,6 +217,9 @@ namespace FirstPersonCameraContinued
             World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<FirstPersonCameraActivatedUISystem>().SetUISettingsGroupOptions();
         }
 
+        [SettingsUIHidden]
+        public string LastSeenChangelogVersion { get; set; }
+
         //sometimes saving doesn't happen when changing values to their default? - hack to guarantee
         [SettingsUIHidden]
         public int MakeSureSave { get; set; }
@@ -245,6 +248,7 @@ namespace FirstPersonCameraContinued
             SetUnits = Enums.ModUnits.GameSetting;
             ShowStopStrip = Enums.ShowStopStrip.AllTransit;
             StopStripDisplayMode = Enums.StopStripDisplayMode.AutoHide;
+            LastSeenChangelogVersion = "";
         }
 
        public void Unload()

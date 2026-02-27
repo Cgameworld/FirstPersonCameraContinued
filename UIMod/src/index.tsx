@@ -11,6 +11,7 @@ import 'style/EntityInfo.scss';
 import engine from 'cohtml/cohtml';
 import FollowedVehicleInfoPanel from './panels/FollowedVehicleInfoPanel';
 import StopStripPanel from './panels/StopStripPanel';
+import ChangelogWindow from './changelogWindow';
 
 const register: ModRegistrar = (moduleRegistry) => {
 
@@ -35,6 +36,8 @@ const register: ModRegistrar = (moduleRegistry) => {
 
     const ShowCrosshair$ = bindValue<boolean>('fpc', 'ShowCrosshair');
 
+    const ShowChangelog$ = bindValue<boolean>('fpc', 'ShowChangelog');
+
     const CustomMenuButton = () => {
 
         const [showButtonDropdown, setShowButtonDropdown] = useState(false);
@@ -46,6 +49,8 @@ const register: ModRegistrar = (moduleRegistry) => {
         const isEntered = useValue(IsEntered$);
 
         const showCrosshair = useValue(ShowCrosshair$);
+
+        const showChangelog = useValue(ShowChangelog$);
 
         tooltipDescriptionMainCameraIcon = translate("FirstPersonCameraContinued.TooltipMainCameraIcon");
         tooltipDescriptionFollowCamera = translate("FirstPersonCameraContinued.TooltipFollowCamera");
@@ -112,6 +117,25 @@ const register: ModRegistrar = (moduleRegistry) => {
                 }
             }
         }, [showButtonDropdown]);
+
+        useEffect(() => {
+            if (showChangelog) {
+                const parentElement = document.querySelector('.main-container__E2');
+                if (parentElement) {
+                    const changelogRoot = document.createElement('div');
+                    changelogRoot.id = 'fpc-changelog-root';
+                    changelogRoot.style.width = '100%';
+                    parentElement.appendChild(changelogRoot);
+                    ReactDOM.render(<ChangelogWindow />, changelogRoot);
+                    return () => {
+                        ReactDOM.unmountComponentAtNode(changelogRoot);
+                        if (changelogRoot.parentNode) {
+                            changelogRoot.parentNode.removeChild(changelogRoot);
+                        }
+                    };
+                }
+            }
+        }, [showChangelog]);
 
         useEffect(() => {
             if (isEntered) {

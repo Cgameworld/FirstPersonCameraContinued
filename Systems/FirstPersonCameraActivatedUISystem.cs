@@ -53,6 +53,11 @@ namespace FirstPersonCameraContinued.Systems
         private GetterValueBinding<string> lineStationInfoBinding;
         private string lineStationInfo = "";
 
+        private GetterValueBinding<bool> showChangelogBinding;
+        private bool showChangelog;
+        private bool changelogChecked;
+        private static readonly string currentModVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
         private bool showUpcomingRouteOnActivation = false;
 
         private NameSystem nameSystem;
@@ -80,6 +85,19 @@ namespace FirstPersonCameraContinued.Systems
             this.lineStationInfoBinding = new GetterValueBinding<string>("fpc", "LineStationInfo", () => lineStationInfo);
             AddBinding(this.lineStationInfoBinding);
 
+            this.showChangelogBinding = new GetterValueBinding<bool>("fpc", "ShowChangelog", () => showChangelog);
+            AddBinding(this.showChangelogBinding);
+
+            AddBinding(new TriggerBinding("fpc", "DismissChangelog", () =>
+            {
+                showChangelog = false;
+                if (Mod.FirstPersonModSettings != null)
+                {
+                    Mod.FirstPersonModSettings.LastSeenChangelogVersion = currentModVersion;
+                    Mod.FirstPersonModSettings.ApplyAndSave();
+                }
+            }));
+
             nameSystem = World.GetOrCreateSystemManaged<NameSystem>();
 
             isObjectsSystemsInitalized = false;
@@ -106,6 +124,13 @@ namespace FirstPersonCameraContinued.Systems
 
         protected override void OnUpdate()
         {
+            if (!changelogChecked && Mod.FirstPersonModSettings != null)
+            {
+                changelogChecked = true;
+                showChangelog = Mod.FirstPersonModSettings.LastSeenChangelogVersion != currentModVersion;
+                showChangelogBinding.Update();
+            }
+
             if (isEntered && Mod.FirstPersonModSettings != null && Mod.FirstPersonModSettings.ShowInfoBox)
             {
                 if (!InitializeObjectsSystems())
