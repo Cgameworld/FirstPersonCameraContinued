@@ -94,7 +94,7 @@ If you like this mod be sure to leave an upvote! Thanks
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
 # v1.6
-New Features:
+Main New Features:
 * Added dynamic strip map display when following transit vehicles
 * Added toggleable picture-in-picture overlay (press p)
 * Added zoom mode (press z)

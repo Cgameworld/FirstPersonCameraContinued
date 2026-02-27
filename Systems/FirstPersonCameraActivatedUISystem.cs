@@ -91,6 +91,7 @@ namespace FirstPersonCameraContinued.Systems
             AddBinding(new TriggerBinding("fpc", "DismissChangelog", () =>
             {
                 showChangelog = false;
+                showChangelogBinding.Update();
                 if (Mod.FirstPersonModSettings != null)
                 {
                     Mod.FirstPersonModSettings.LastSeenChangelogVersion = currentModVersion;

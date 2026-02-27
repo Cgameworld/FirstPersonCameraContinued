@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { trigger } from "cs2/api";
 
 // ---- EDIT CHANGELOG CONTENT HERE ----
@@ -34,10 +34,10 @@ interface ChangelogSection {
 const SectionList: React.FC<{ sections: ChangelogSection[] }> = ({ sections }) => (
     <>
         {sections.map((section, i) => (
-            <div key={i} style={i > 0 ? { marginTop: '10rem' } : {}}>
-                <p className="p_CKq" style={{ fontWeight: 'bold', marginBottom: '5rem' }}>{section.heading}</p>
+            <div key={i} style={i > 0 ? { marginTop: '12rem' } : {}}>
+                <p className="p_CKq" style={{ fontWeight: 'bold', marginBottom: '6rem', fontSize: '18rem' }}>{section.heading}</p>
                 {section.items.map((item, j) => (
-                    <p className="p_CKq" key={j}>- {item}</p>
+                    <p className="p_CKq" key={j} style={{ fontSize: '16rem' }}>- {item}</p>
                 ))}
             </div>
         ))}
@@ -46,10 +46,42 @@ const SectionList: React.FC<{ sections: ChangelogSection[] }> = ({ sections }) =
 
 const ChangelogWindow: React.FC = () => {
     const [showMore, setShowMore] = useState(false);
+    const [visible, setVisible] = useState(true);
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
 
     const onClose = () => {
+        setVisible(false);
         trigger("fpc", "DismissChangelog");
     };
+
+    const onMouseDown = useCallback((e: React.MouseEvent) => {
+        dragRef.current = {
+            startX: e.clientX,
+            startY: e.clientY,
+            origX: position.x,
+            origY: position.y,
+        };
+
+        const onMouseMove = (ev: MouseEvent) => {
+            if (!dragRef.current) return;
+            setPosition({
+                x: dragRef.current.origX + (ev.clientX - dragRef.current.startX),
+                y: dragRef.current.origY + (ev.clientY - dragRef.current.startY),
+            });
+        };
+
+        const onMouseUp = () => {
+            dragRef.current = null;
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        };
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+    }, [position]);
+
+    if (!visible) return null;
 
     return (
         <div
@@ -63,13 +95,30 @@ const ChangelogWindow: React.FC = () => {
                 justifyContent: "center",
                 alignItems: "center",
                 zIndex: 9999,
+                pointerEvents: "none",
             }}
         >
-            <div className="panel_YqS error-dialog_iaV" style={{ maxWidth: "100%", maxHeight: "100%", width: '490rem' }}>
-                <div className="header_jAe header_Bpo child-opacity-transition_nkS">
+            <div
+                className="panel_YqS error-dialog_iaV"
+                style={{
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    width: '560rem',
+                    pointerEvents: "auto",
+                    transform: `translate(${position.x}px, ${position.y}px)`,
+                }}
+            >
+                <div
+                    className="header_jAe header_Bpo child-opacity-transition_nkS"
+                    onMouseDown={onMouseDown}
+                    style={{ cursor: 'grab' }}
+                >
                     <div className="title-bar_PF4">
+                        <div className="icon_VQU">
+                            <img className="iconImg_ThV" src="coui://uil/Standard/VideoCamera.svg" />
+                        </div>
                         <div className="icon-space_h_f"></div>
-                        <div className="title_ctd title_zQN">First Person Camera Continued</div>
+                        <div className="title_SVH title_zQN">First Person Camera Continued</div>
                         <button className="button_bvQ button_bvQ close-button_wKK" onClick={onClose}>
                             <div className="tinted-icon_iKo icon_PhD" style={{ maskImage: "url(Media/Glyphs/Close.svg)" }}></div>
                         </button>
@@ -79,15 +128,15 @@ const ChangelogWindow: React.FC = () => {
                     <div className="icon-layout_cZT row_L6K">
                         <div className="main-column_Jzk">
                             <div className="error-message_r4_">
-                                <div className="paragraphs_nbD">
-                                    <p className="p_CKq" style={{ fontSize: '18rem', fontWeight: 'bold', marginBottom: '10rem' }}>{CHANGELOG_TITLE}</p>
+                                <div className="paragraphs_nbD" style={{ padding: '8rem' }}>
+                                    <p className="p_CKq" style={{ fontSize: '20rem', fontWeight: 'bold', marginBottom: '12rem' }}>{CHANGELOG_TITLE}</p>
                                     <SectionList sections={CHANGELOG_HIGHLIGHTS} />
 
                                     {!showMore && (
-                                        <div style={{ marginTop: '12rem' }}>
+                                        <div style={{ marginTop: '14rem' }}>
                                             <button
                                                 className="button_HeP button_gJo"
-                                                style={{ width: 'auto', padding: '4rem 12rem' }}
+                                                style={{ width: 'auto', padding: '5rem 14rem'}}
                                                 onClick={() => setShowMore(true)}
                                             >
                                                 Show Full Changelog ▼
@@ -97,25 +146,25 @@ const ChangelogWindow: React.FC = () => {
 
                                     {showMore && (
                                         <>
-                                            <div style={{ marginTop: '12rem' }}>
+                                            <div style={{ marginTop: '14rem' }}>
                                                 <button
                                                     className="button_HeP button_gJo"
-                                                    style={{ width: 'auto', padding: '4rem 12rem' }}
+                                                    style={{ width: 'auto', padding: '5rem 14rem'}}
                                                     onClick={() => setShowMore(false)}
                                                 >
                                                     Hide Full Changelog ▲
                                                 </button>
                                             </div>
-                                            <div style={{ marginTop: '10rem' }}>
+                                            <div style={{ marginTop: '12rem' }}>
                                                 <SectionList sections={CHANGELOG_FULL} />
                                             </div>
                                         </>
                                     )}
                                 </div>
                             </div>
-                            <div className="buttons-container" style={{ marginTop: '20rem', marginRight: '10rem', textAlign: 'right' }}>
+                            <div className="buttons-container" style={{ marginTop: '22rem', marginRight: '12rem', textAlign: 'right' }}>
                                 <div className="buttons_lZi row_L6K" style={{ width: '175rem' }}>
-                                    <button className="button_HeP button_gJo" style={{ width: "125rem" }} onClick={onClose}>Ok</button>
+                                    <button className="button_HeP button_gJo" style={{ width: "130rem"}} onClick={onClose}>Ok</button>
                                 </div>
                             </div>
                         </div>
