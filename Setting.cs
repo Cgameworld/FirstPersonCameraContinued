@@ -228,7 +228,7 @@ namespace FirstPersonCameraContinued
             MovementSpeed = 0.1f;
             RunSpeed = 0.35f;
             CimHeight = 1.7f;
-            TransitionSpeedFactor = 1f;
+            TransitionSpeedFactor = 1.5f;
             DisableVSync = true;
             ShowGameUI = false;
             ShowInfoBox = true;
