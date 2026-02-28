@@ -23,11 +23,13 @@ To enter follow mode, right click on an object in free camera first person mode 
 
 To shift the camera forwards or backwards in follow mode press the UP ARROW and DOWN ARROW keys, to change the height use the R/F keys.
 
+To toggle a picture-in-picture window press P. This shows an overhead camera view of your current location. Scroll to zoom in/out or use CTRL + scroll to resize the window.
+
 To exit follow mode press WASD, to exit first person mode, press ESC or ALT+F.
 
 # Settings
 
-Several loaded parameters can also be configured from the main game settings, taking effect at the start of each first person session, specifically:
+Several loaded parameters can also be configured from the main game settings, taking effect at the start of each first person session, including:
 
 In General Tab:
 
@@ -35,15 +37,24 @@ In General Tab:
 - Walking Speed
 - Running Speed
 - Cim Height
-- Transition Speed
-- Free Camera Toggle Keyboard Shortcut
+- Transition Speed Factor
 
 In UI Tab:
 
-- Show Game UI
-- Show Info Box
-- Only Show Speed
+- Game UI Visibility
+- Info Box Visibility
 - Info Box Size
+- Display Units
+- Stop Strip Visibility 
+
+In Picture-in-Picture Tab:
+
+- Show PIP On Enter
+- PIP Snap To Corner
+- PIP Aspect Ratio
+- PIP Size
+- Show PIP Marker
+- Show PIP Underground View
 
 # Localization
 
@@ -63,6 +74,18 @@ Currently Supported Languages:
 - Spanish
 
 Help translate this mod via Crowdin: https://crowdin.com/project/cs2-first-person-camera-continued
+
+# Strip Map Station Names
+
+When following a transit vehicle, station names displayed on the strip map are determined using the following priority:
+
+For metro/train stations:
+- Custom station name (set by clicking station and renaming)
+- Street name where the stop is located, with cross street shown if multiple stops share the same street name
+
+For bus/tram stops:
+- Custom stop name (set by clicking stop and renaming)
+- Vanilla assigned stop name by street address
 
 # Notes
 
