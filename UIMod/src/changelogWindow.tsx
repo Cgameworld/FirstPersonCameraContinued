@@ -20,8 +20,8 @@ interface ChangelogSection {
 
 const CHANGELOG_HIGHLIGHTS: ChangelogSection[] = [
     { heading: "Main New Features:", items: [
-        { text: "Added dynamic strip map display when following transit vehicles", image: dynamiclineImg, imageWidth: '640rem', imageHeight: '92rem' },
-        { text: "Added toggleable picture-in-picture overlay (press p)", image: pipwindowImg, imageWidth: '640rem', imageHeight: '175rem' },
+        { text: "Added dynamic strip map stop display when following transit vehicles", image: dynamiclineImg, imageWidth: '640rem', imageHeight: '77rem' },
+        { text: "Added toggleable picture-in-picture overlay (press p)", image: pipwindowImg, imageWidth: '640rem', imageHeight: '144rem' },
         { text: "Added zoom mode (press z)" },
     ]},
 ];
@@ -44,10 +44,10 @@ const SectionList: React.FC<{ sections: ChangelogSection[] }> = ({ sections }) =
     <>
         {sections.map((section, i) => (
             <div key={i} style={i > 0 ? { marginTop: '12rem' } : {}}>
-                <p className="p_CKq" style={{ fontWeight: 'bold', marginBottom: '6rem', fontSize: '18rem' }}>{section.heading}</p>
+                <p className="p_CKq" style={{ fontWeight: 'bold', marginBottom: '6rem', fontSize: '19rem' }}>{section.heading}</p>
                 {section.items.map((item, j) => (
                     <div key={j}>
-                        <p className="p_CKq" style={{ fontSize: '16rem' }}>- {item.text}</p>
+                        <p className="p_CKq" style={{ fontSize: '17rem' }}>- {item.text}</p>
                         {item.image && (
                             <img
                                 src={item.image}
@@ -149,9 +149,9 @@ const ChangelogWindow: React.FC = () => {
                 <div className="content_VBF content_AD7 child-opacity-transition_nkS">
                     <div className="icon-layout_cZT row_L6K">
                         <div className="main-column_Jzk">
-                            <div className="error-message_r4_">
+                            <div className="error-message_r4_" style={{marginTop: '-4rem'}}>
                                 <div className="paragraphs_nbD" style={{ padding: '8rem' }}>
-                                    <p className="p_CKq" style={{ fontSize: '20rem', fontWeight: 'bold', marginBottom: '12rem' }}>{CHANGELOG_TITLE}</p>
+                                    <p className="p_CKq" style={{ fontSize: '21rem', fontWeight: 'bold', marginBottom: '12rem' }}>{CHANGELOG_TITLE}</p>
                                     <SectionList sections={CHANGELOG_HIGHLIGHTS} />
 
                                     {!showMore && (
