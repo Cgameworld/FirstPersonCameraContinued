@@ -16,9 +16,21 @@ public class ToastTextFPC : MonoBehaviour
 
     private float lineSpacingMultiplier = 1.35f;
 
+    public static void DestroyAll()
+    {
+        foreach (var toast in FindObjectsOfType<ToastTextFPC>())
+            Destroy(toast.gameObject);
+    }
+
     public void Initialize(string text)
     {
         displayedText = text;
+    }
+
+    public void Initialize(string text, float duration)
+    {
+        displayedText = text;
+        displayDuration = duration;
     }
 
     private void Start()

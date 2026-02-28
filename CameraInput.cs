@@ -321,7 +321,19 @@ namespace FirstPersonCameraContinued
             else
             {
                 _pipSystem.CreatePiPWindow();
+                StaticCoroutine.Start(StartPiPToast());
             }
+        }
+
+        static IEnumerator StartPiPToast()
+        {
+            yield return new WaitForEndOfFrame();
+            ToastTextFPC.DestroyAll();
+            GameObject toastObj = new GameObject("toastPiPZoom");
+            ToastTextFPC toastComponent = toastObj.AddComponent<ToastTextFPC>();
+            GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastPIPScrollZoom", out string scrollZoomText);
+            toastComponent.Initialize(scrollZoomText, 2f);
+            yield break;
         }
 
         /// <summary>
