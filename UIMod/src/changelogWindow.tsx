@@ -1,35 +1,44 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { trigger } from "cs2/api";
+import dynamiclineImg from "images/dynamicline.jpg";
+import pipwindowImg from "images/pipwindow.jpg";
 
 // ---- EDIT CHANGELOG CONTENT HERE ----
 const CHANGELOG_TITLE = "v1.6 Update!";
 
-const CHANGELOG_HIGHLIGHTS = [
-    { heading: "Main New Features:", items: [
-        "Added dynamic strip map display when following transit vehicles",
-        "Added toggleable picture-in-picture overlay (press p)",
-        "Added zoom mode (press z)",
-    ]},
-];
-
-const CHANGELOG_FULL = [
-    { heading: "Improvements:", items: [
-        "Fixed lag when looking at ground",
-        "Free Camera view now stays above water",
-        "Follow Random Bicycle mode no longer picks parked bikes",
-    ]},
-    { heading: "Other Changes:", items: [
-        "Vehicle type hidden on default in infobox",
-        "Increased transition speed factor speed default",
-        "Removed first person shortcut when line info panel is selected",
-    ]},
-];
-// ---- END CHANGELOG CONTENT ----
+interface ChangelogItem {
+    text: string;
+    image?: string;
+    imageWidth?: string;
+    imageHeight?: string;
+}
 
 interface ChangelogSection {
     heading: string;
-    items: string[];
+    items: ChangelogItem[];
 }
+
+const CHANGELOG_HIGHLIGHTS: ChangelogSection[] = [
+    { heading: "Main New Features:", items: [
+        { text: "Added dynamic strip map display when following transit vehicles", image: dynamiclineImg, imageWidth: '640rem', imageHeight: '92rem' },
+        { text: "Added toggleable picture-in-picture overlay (press p)", image: pipwindowImg, imageWidth: '640rem', imageHeight: '175rem' },
+        { text: "Added zoom mode (press z)" },
+    ]},
+];
+
+const CHANGELOG_FULL: ChangelogSection[] = [
+    { heading: "Improvements:", items: [
+        { text: "Fixed lag when looking at ground" },
+        { text: "Free Camera view now stays above water" },
+        { text: "Follow Random Bicycle mode no longer picks parked bikes" },
+    ]},
+    { heading: "Other Changes:", items: [
+        { text: "Vehicle type hidden on default in infobox" },
+        { text: "Increased transition speed factor speed default" },
+        { text: "Removed first person shortcut when line info panel is selected" },
+    ]},
+];
+// ---- END CHANGELOG CONTENT ----
 
 const SectionList: React.FC<{ sections: ChangelogSection[] }> = ({ sections }) => (
     <>
@@ -37,7 +46,20 @@ const SectionList: React.FC<{ sections: ChangelogSection[] }> = ({ sections }) =
             <div key={i} style={i > 0 ? { marginTop: '12rem' } : {}}>
                 <p className="p_CKq" style={{ fontWeight: 'bold', marginBottom: '6rem', fontSize: '18rem' }}>{section.heading}</p>
                 {section.items.map((item, j) => (
-                    <p className="p_CKq" key={j} style={{ fontSize: '16rem' }}>- {item}</p>
+                    <div key={j}>
+                        <p className="p_CKq" style={{ fontSize: '16rem' }}>- {item.text}</p>
+                        {item.image && (
+                            <img
+                                src={item.image}
+                                style={{
+                                    width: item.imageWidth,
+                                    height: item.imageHeight,
+                                    marginTop: '6rem',
+                                    marginBottom: '8rem',
+                                }}
+                            />
+                        )}
+                    </div>
                 ))}
             </div>
         ))}
@@ -103,7 +125,7 @@ const ChangelogWindow: React.FC = () => {
                 style={{
                     maxWidth: "100%",
                     maxHeight: "100%",
-                    width: '560rem',
+                    width: '672rem',
                     pointerEvents: "auto",
                     transform: `translate(${position.x}px, ${position.y}px)`,
                 }}
