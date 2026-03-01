@@ -32,6 +32,7 @@ const StopStripPanel: React.FC = () => {
     const wasAtStationRef = useRef(false);
     const hideTimeoutRef = useRef<number | null>(null);
     const lastValidInfoRef = useRef<LineStationInfo | null>(null);
+    const lastWindowCenterRef = useRef(0);
     const containerRef = useRef<HTMLDivElement>(null);
     const slideAnimRef = useRef<number | null>(null);
 
@@ -229,9 +230,13 @@ const StopStripPanel: React.FC = () => {
     const stationCount = renderData?.stations.length ?? 0;
     const useWindow = stationCount > SLIDING_WINDOW_THRESHOLD;
 
+    if (blinkDotIndex >= 0) {
+        lastWindowCenterRef.current = blinkDotIndex;
+    }
+
     const windowStart = useMemo(() => {
         if (!useWindow) return 0;
-        const center = blinkDotIndex >= 0 ? blinkDotIndex : 0;
+        const center = lastWindowCenterRef.current;
         const half = Math.floor(SLIDING_WINDOW_SIZE / 2);
         const maxStart = stationCount - SLIDING_WINDOW_SIZE;
         return Math.max(0, Math.min(center - half, maxStart));
