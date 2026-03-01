@@ -132,7 +132,7 @@ namespace FirstPersonCameraContinued.Systems
                 showChangelogBinding.Update();
             }
 
-            if (isEntered && Mod.FirstPersonModSettings != null && Mod.FirstPersonModSettings.ShowInfoBox)
+            if (isEntered && Mod.FirstPersonModSettings != null)
             {
                 if (!InitializeObjectsSystems())
                 {
@@ -142,22 +142,28 @@ namespace FirstPersonCameraContinued.Systems
 
                 if (currentEntity != Entity.Null)
                 {
-                    UpdateFollowedEntityInfo(currentEntity);
+                    if (Mod.FirstPersonModSettings.ShowInfoBox)
+                    {
+                        UpdateFollowedEntityInfo(currentEntity);
+                    }
                     UpdateLineStationInfo(currentEntity);
                 }
 
                 else
                 {
-                    FollowedEntityInfo followedEntityInfo = new FollowedEntityInfo()
+                    if (Mod.FirstPersonModSettings.ShowInfoBox)
                     {
-                        unitsSystem = -1,
-                        passengers = -1,
-                        currentSpeed = -1,
-                        resources = -1,
-                    };
+                        FollowedEntityInfo followedEntityInfo = new FollowedEntityInfo()
+                        {
+                            unitsSystem = -1,
+                            passengers = -1,
+                            currentSpeed = -1,
+                            resources = -1,
+                        };
 
-                    this.followedEntityInfo = JsonConvert.SerializeObject(followedEntityInfo);
-                    followedEntityInfoBinding.Update();
+                        this.followedEntityInfo = JsonConvert.SerializeObject(followedEntityInfo);
+                        followedEntityInfoBinding.Update();
+                    }
 
                     lineStationInfo = "";
                     lineStationInfoBinding.Update();

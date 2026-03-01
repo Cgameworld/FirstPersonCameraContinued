@@ -109,28 +109,15 @@ If you like this mod be sure to leave an upvote! Thanks
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/first-person-camera-continued.1669532/" />
 	<!--Version of the mod-->
-	<ModVersion Value="1.6" />
+	<ModVersion Value="1.6.1" />
 	<!--Recommended version of the base game to use the mod-->
 	<GameVersion Value="1.*" />
 	<!--Dependency for the mod, can be set multiple times-->
 	<Dependency Id="74417" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
-# v1.6
-Main New Features:
-* Added dynamic strip map stop display when following transit vehicles
-* Added toggleable picture-in-picture overlay (press p)
-* Added zoom mode (press z)
-
-Improvements:
-* Fixed lag when looking at ground
-* Free Camera view now stays above water
-* Follow Random Bicycle mode no longer picks parked bikes
-
-Other Changes:
-* Vehicle type hidden by default in infobox
-* Increased transition speed factor default
-* Removed first person shortcut when line info panel is selected
+# v1.6.1
+* TBD
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />

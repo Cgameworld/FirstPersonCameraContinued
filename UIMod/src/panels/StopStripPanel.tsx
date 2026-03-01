@@ -129,17 +129,15 @@ const StopStripPanel: React.FC = () => {
                 }, 2000);
             }
         }
-    }, [lineStationInfo]);
 
-    useEffect(() => {
-        if (stopStripDisplayMode === 1 && lineStationInfo) {
+        if (stopStripDisplayMode === 1 && lineStationInfo.stations.length > 0) {
             setIsPanelVisible(true);
             if (hideTimeoutRef.current !== null) {
                 window.clearTimeout(hideTimeoutRef.current);
                 hideTimeoutRef.current = null;
             }
         }
-    }, [stopStripDisplayMode]);
+    }, [lineStationInfo, stopStripDisplayMode]);
 
     useEffect(() => {
         const el = containerRef.current;
