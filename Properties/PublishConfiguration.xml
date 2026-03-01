@@ -128,8 +128,8 @@ Improvements:
 * Follow Random Bicycle mode no longer picks parked bikes
 
 Other Changes:
-* Vehicle type hidden on default in infobox
-* Increased transition speed factor speed default
+* Vehicle type hidden by default in infobox
+* Increased transition speed factor default
 * Removed first person shortcut when line info panel is selected
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->

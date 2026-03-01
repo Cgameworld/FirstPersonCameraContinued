@@ -33,8 +33,8 @@ const CHANGELOG_FULL: ChangelogSection[] = [
         { text: "Follow Random Bicycle mode no longer picks parked bikes" },
     ]},
     { heading: "Other Changes:", items: [
-        { text: "Vehicle type hidden on default in infobox" },
-        { text: "Increased transition speed factor speed default" },
+        { text: "Vehicle type hidden by default in infobox" },
+        { text: "Increased transition speed factor default" },
         { text: "Removed first person shortcut when line info panel is selected" },
     ]},
 ];
