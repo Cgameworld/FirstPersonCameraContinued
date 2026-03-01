@@ -1,6 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { bindValue, useValue } from "cs2/api";
 import 'style/StopStripPanel.scss';
+
+const SLIDING_WINDOW_THRESHOLD = 14;
+const SLIDING_WINDOW_SIZE = 13;
 
 interface StationData {
     name: string;
@@ -223,28 +226,69 @@ const StopStripPanel: React.FC = () => {
         ? lineStationInfo
         : lastValidInfoRef.current;
 
-    if (!renderData || renderData.stations.length === 0) {
+    const stationCount = renderData?.stations.length ?? 0;
+    const useWindow = stationCount > SLIDING_WINDOW_THRESHOLD;
+
+    const windowStart = useMemo(() => {
+        if (!useWindow) return 0;
+        const center = blinkDotIndex >= 0 ? blinkDotIndex : 0;
+        const half = Math.floor(SLIDING_WINDOW_SIZE / 2);
+        const maxStart = stationCount - SLIDING_WINDOW_SIZE;
+        return Math.max(0, Math.min(center - half, maxStart));
+    }, [useWindow, blinkDotIndex, stationCount]);
+
+    if (!renderData || stationCount === 0) {
         return null;
     }
 
     const stations = renderData.stations;
     const lineColor = renderData.lineColor || 'rgb(255, 255, 255)';
 
+    const visibleStations = useWindow
+        ? stations.slice(windowStart, windowStart + SLIDING_WINDOW_SIZE)
+        : stations;
+
+    const showLeftArrow = useWindow && windowStart > 0;
+    const showRightArrow = useWindow && windowStart + SLIDING_WINDOW_SIZE < stations.length;
+
+    const trackClasses = [
+        'fpcc-stopstrip-progress-track',
+        showLeftArrow ? 'has-left-arrow' : '',
+        showRightArrow ? 'has-right-arrow' : '',
+    ].filter(Boolean).join(' ');
+
     return (
         <div ref={containerRef} className="fpcc-stopstrip-container tool-options-panel_Se6">
-            <div className="fpcc-stopstrip-progress-track">
+            <div className={trackClasses}>
                 <div className="fpcc-stopstrip-progress-bar-container">
                     <div className="fpcc-stopstrip-progress-bar" style={{ backgroundColor: lineColor }}></div>
                 </div>
-                {stations.map((station, index) => (
-                    <div key={index} className="fpcc-stopstrip-station">
-                        <div
-                            className={`fpcc-stopstrip-station-dot ${index === blinkDotIndex && isBlinking ? 'blink-red' : ''
-                                }`}
-                        />
-                        <div className="fpcc-stopstrip-station-name">{station.name}</div>
+                {showLeftArrow && (
+                    <div className="fpcc-stopstrip-arrow fpcc-stopstrip-arrow-left">
+                        <svg viewBox="0 0 24 24" width="38rem" height="38rem">
+                            <polygon points="17,2 5,12 17,22" fill={lineColor} stroke="none"/>
+                        </svg>
                     </div>
-                ))}
+                )}
+                {visibleStations.map((station, i) => {
+                    const realIndex = windowStart + i;
+                    return (
+                        <div key={realIndex} className="fpcc-stopstrip-station">
+                            <div
+                                className={`fpcc-stopstrip-station-dot ${realIndex === blinkDotIndex && isBlinking ? 'blink-red' : ''
+                                    }`}
+                            />
+                            <div className="fpcc-stopstrip-station-name">{station.name}</div>
+                        </div>
+                    );
+                })}
+                {showRightArrow && (
+                    <div className="fpcc-stopstrip-arrow fpcc-stopstrip-arrow-right">
+                        <svg viewBox="0 0 24 24" width="38rem" height="38rem">
+                            <polygon points="7,2 19,12 7,22" fill={lineColor} stroke="none"/>
+                        </svg>
+                    </div>
+                )}
             </div>
         </div>
     );

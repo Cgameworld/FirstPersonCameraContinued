@@ -35,6 +35,14 @@
     padding-left: 75rem;
     padding-right: 75rem;
     z-index: 1;
+
+    .has-left-arrow > & {
+        padding-left: 28rem;
+    }
+
+    .has-right-arrow > & {
+        padding-right: 28rem;
+    }
 }
 
 .fpcc-stopstrip-progress-bar {
@@ -66,6 +74,17 @@
     &.blink-red {
         background-color: #ff0000;
     }
+}
+
+.fpcc-stopstrip-arrow {
+    display: flex;
+    align-self: flex-start;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 0 2rem;
+    user-select: none;
+    z-index: 2;
+    margin-top: -5rem;
 }
 
 .fpcc-stopstrip-station-name {
