@@ -238,9 +238,12 @@ const StopStripPanel: React.FC = () => {
     const windowStart = useMemo(() => {
         if (!useWindow) return 0;
         const center = lastWindowCenterRef.current;
-        const half = Math.floor(SLIDING_WINDOW_SIZE / 2);
-        const maxStart = stationCount - SLIDING_WINDOW_SIZE;
-        return Math.max(0, Math.min(center - half, maxStart));
+        const endAligned = stationCount - SLIDING_WINDOW_SIZE;
+        const pageSize = SLIDING_WINDOW_SIZE - 3;
+        const page = Math.floor(center / pageSize);
+        const pageStart = page * pageSize;
+        if (pageStart >= endAligned) return endAligned;
+        return pageStart;
     }, [useWindow, blinkDotIndex, stationCount]);
 
     if (!renderData || stationCount === 0) {
