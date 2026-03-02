@@ -69,6 +69,7 @@ const StopStripPanel: React.FC = () => {
             setBlinkDotIndex(-1);
             lastStopNameRef.current = "";
             canStartNewBlinkRef.current = true;
+            lastValidInfoRef.current = null;
 
             if (hideTimeoutRef.current !== null) {
                 window.clearTimeout(hideTimeoutRef.current);

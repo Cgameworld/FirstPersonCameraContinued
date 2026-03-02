@@ -117,7 +117,7 @@ If you like this mod be sure to leave an upvote! Thanks
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
 # v1.6.1
-* Improved strip map displaying routes with large numbers of stops
+* Improved displaying large numbers of stops on strip map
 * Fixed issue with strip map hiding when infobox disabled
 * Fixed issue of strip map not immediately showing when set to "Always Show"
   </ChangeLog>
