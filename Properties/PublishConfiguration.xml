@@ -120,6 +120,7 @@ If you like this mod be sure to leave an upvote! Thanks
 * Improved displaying large numbers of stops on strip map
 * Fixed issue with strip map hiding when infobox disabled
 * Fixed issue of strip map not immediately showing when set to "Always Show"
+* Updated translations
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />
