@@ -128,7 +128,12 @@ namespace FirstPersonCameraContinued.Systems
             if (!changelogChecked && Mod.FirstPersonModSettings != null)
             {
                 changelogChecked = true;
-                showChangelog = Mod.FirstPersonModSettings.LastSeenChangelogVersion != currentModVersion;
+                var currentMajorMinor = currentModVersion.Substring(0, currentModVersion.IndexOf('.', currentModVersion.IndexOf('.') + 1));
+                var lastSeen = Mod.FirstPersonModSettings.LastSeenChangelogVersion;
+                var lastSeenMajorMinor = string.IsNullOrEmpty(lastSeen) || lastSeen.IndexOf('.', lastSeen.IndexOf('.') + 1) < 0
+                    ? lastSeen
+                    : lastSeen.Substring(0, lastSeen.IndexOf('.', lastSeen.IndexOf('.') + 1));
+                showChangelog = lastSeenMajorMinor != currentMajorMinor;
                 showChangelogBinding.Update();
             }
 
