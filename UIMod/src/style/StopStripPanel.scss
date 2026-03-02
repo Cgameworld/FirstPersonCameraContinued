@@ -36,12 +36,17 @@
     padding-right: 75rem;
     z-index: 1;
 
+    .has-window > & {
+        padding-left: 55rem;
+        padding-right: 55rem;
+    }
+
     .has-left-arrow > & {
-        padding-left: 28rem;
+        padding-left: 0;
     }
 
     .has-right-arrow > & {
-        padding-right: 28rem;
+        padding-right: 0;
     }
 }
 
@@ -59,6 +64,10 @@
     min-width: 80rem;
     max-width: 160rem;
     padding: 0 5rem;
+
+    .many-stations > & {
+        max-width: 130rem;
+    }
 }
 
 .fpcc-stopstrip-station-dot {
@@ -85,6 +94,8 @@
     user-select: none;
     z-index: 2;
     margin-top: -5rem;
+    margin-left: -20rem;
+    margin-right: -20rem;
 }
 
 .fpcc-stopstrip-station-name {

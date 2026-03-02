@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { bindValue, useValue } from "cs2/api";
 import 'style/StopStripPanel.scss';
 
-const SLIDING_WINDOW_THRESHOLD = 14;
+const SLIDING_WINDOW_THRESHOLD = 13;
 const SLIDING_WINDOW_SIZE = 13;
 
 interface StationData {
@@ -258,8 +258,10 @@ const StopStripPanel: React.FC = () => {
 
     const trackClasses = [
         'fpcc-stopstrip-progress-track',
+        useWindow ? 'has-window' : '',
         showLeftArrow ? 'has-left-arrow' : '',
         showRightArrow ? 'has-right-arrow' : '',
+        visibleStations.length > 10 ? 'many-stations' : '',
     ].filter(Boolean).join(' ');
 
     return (

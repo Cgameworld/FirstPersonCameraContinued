@@ -117,7 +117,9 @@ If you like this mod be sure to leave an upvote! Thanks
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
 # v1.6.1
-* TBD
+* Improved strip map displaying routes with large numbers of stops
+* Fixed issue with strip map hiding when infobox disabled
+* Fixed issue of strip map not immediately showing when set to "Always Show"
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />
