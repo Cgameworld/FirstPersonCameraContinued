@@ -15,6 +15,7 @@ namespace FirstPersonCameraContinued.Enums
         Vehicle,
         Cim,
         Transit,
-        Bicycle
+        Bicycle,
+        Filtered
     }
 }

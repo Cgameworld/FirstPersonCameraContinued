@@ -100,3 +100,8 @@
 "Options.OPTION_DESCRIPTION:StopStripDisplayMode","How the transit line visualizer is displayed"
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.STOPSTRIPDISPLAYMODE[AutoHide]","Show At Stations"
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.STOPSTRIPDISPLAYMODE[AlwaysShow]","Always Show"
+"FirstPersonCameraContinued.FollowRandom","Follow Random ..."
+"FirstPersonCameraContinued.RandomFollow.CityServices","City Services"
+"FirstPersonCameraContinued.RandomFollow.PrivateTransport","Private Transport"
+"FirstPersonCameraContinued.RandomFollow.Creatures","Creatures"
+"FirstPersonCameraContinued.RandomFollow.Helicopter","Helicopter"

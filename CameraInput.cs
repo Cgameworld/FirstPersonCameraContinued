@@ -181,6 +181,10 @@ namespace FirstPersonCameraContinued
                     {
                         firstPersonCameraUISystem.EnterFollowRandomBicycle(false);
                     }
+                    else if (entryInfo.RandomMode == RandomMode.Filtered)
+                    {
+                        firstPersonCameraUISystem.EnterFollowFilteredRandom(false, entryInfo.FilteredRandomTypes);
+                    }
                 }
             };
             action.Disable();

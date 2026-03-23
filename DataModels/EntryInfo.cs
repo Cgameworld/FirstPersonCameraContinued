@@ -7,5 +7,6 @@ namespace FirstPersonCameraContinued.DataModels
         public bool Activated;
         public bool RandomFollow;
         public RandomMode RandomMode;
+        public string FilteredRandomTypes;
     }
 }

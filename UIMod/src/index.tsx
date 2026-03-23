@@ -12,6 +12,8 @@ import engine from 'cohtml/cohtml';
 import FollowedVehicleInfoPanel from './panels/FollowedVehicleInfoPanel';
 import StopStripPanel from './panels/StopStripPanel';
 import ChangelogWindow from './changelogWindow';
+import RandomFollowWindow from './randomFollowWindow';
+import 'style/RandomFollowWindow.scss';
 
 const register: ModRegistrar = (moduleRegistry) => {
 
@@ -31,6 +33,7 @@ const register: ModRegistrar = (moduleRegistry) => {
     let uiTextFollowRandomVehicle: string | null;
     let uiTextFollowRandomTransit: string | null;
     let uiTextFollowRandomBicycle: string | null;
+    let uiTextFollowRandom: string | null;
 
     const IsEntered$ = bindValue<boolean>('fpc', 'IsEntered');
 
@@ -41,6 +44,7 @@ const register: ModRegistrar = (moduleRegistry) => {
     const CustomMenuButton = () => {
 
         const [showButtonDropdown, setShowButtonDropdown] = useState(false);
+        const [showRandomFollowWindow, setShowRandomFollowWindow] = useState(false);
 
         const toggleButtonDropdown = () => {
             setShowButtonDropdown(!showButtonDropdown);
@@ -60,6 +64,7 @@ const register: ModRegistrar = (moduleRegistry) => {
         uiTextFollowRandomVehicle = translate("FirstPersonCameraContinued.FollowRandomVehicle");
         uiTextFollowRandomTransit = translate("FirstPersonCameraContinued.FollowRandomTransit");
         uiTextFollowRandomBicycle = translate("FirstPersonCameraContinued.FollowRandomBicycle");
+        uiTextFollowRandom = translate("FirstPersonCameraContinued.FollowRandom");
 
         const uiTextFollowedVehiclePanel = {
             nameLabel: translate("FirstPersonCameraContinued.NameLabel"),
@@ -106,7 +111,7 @@ const register: ModRegistrar = (moduleRegistry) => {
 
                     mainGameButton.parentNode.appendChild(dropdownRoot);
 
-                    ReactDOM.render(<DropdownWindow onClose={toggleButtonDropdown} />, dropdownRoot);
+                    ReactDOM.render(<DropdownWindow onClose={toggleButtonDropdown} onOpenRandomFollow={() => setShowRandomFollowWindow(true)} />, dropdownRoot);
 
                     return () => {
                         ReactDOM.unmountComponentAtNode(dropdownRoot);
@@ -136,6 +141,25 @@ const register: ModRegistrar = (moduleRegistry) => {
                 }
             }
         }, [showChangelog]);
+
+        useEffect(() => {
+            if (showRandomFollowWindow) {
+                const parentElement = document.querySelector('.main-container__E2');
+                if (parentElement) {
+                    const randomFollowRoot = document.createElement('div');
+                    randomFollowRoot.id = 'fpc-random-follow-root';
+                    randomFollowRoot.style.width = '100%';
+                    parentElement.appendChild(randomFollowRoot);
+                    ReactDOM.render(<RandomFollowWindow onClose={() => setShowRandomFollowWindow(false)} />, randomFollowRoot);
+                    return () => {
+                        ReactDOM.unmountComponentAtNode(randomFollowRoot);
+                        if (randomFollowRoot.parentNode) {
+                            randomFollowRoot.parentNode.removeChild(randomFollowRoot);
+                        }
+                    };
+                }
+            }
+        }, [showRandomFollowWindow]);
 
         useEffect(() => {
             if (isEntered) {
@@ -278,7 +302,7 @@ const register: ModRegistrar = (moduleRegistry) => {
         );
     }
 
-    const DropdownWindow: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+    const DropdownWindow: React.FC<{ onClose: () => void; onOpenRandomFollow: () => void }> = ({ onClose, onOpenRandomFollow }) => {
 
         const clickedDropdownItem = (item: string) => {
             onClose();
@@ -341,6 +365,13 @@ const register: ModRegistrar = (moduleRegistry) => {
                                     </div>
                                     <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("RandomBicycleFPC")}>
                                         <div className="right_k3O row_S2v">{uiTextFollowRandomBicycle}</div>
+                                    </div>
+                                    <div className="row_S2v fpc-right-row" onClick={() => {
+                                        onClose();
+                                        engine.trigger("audio.playSound", "select-item", 1);
+                                        onOpenRandomFollow();
+                                    }}>
+                                        <div className="right_k3O row_S2v">{uiTextFollowRandom}</div>
                                     </div>
                                 </div>
                             </div>
