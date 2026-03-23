@@ -36,7 +36,6 @@ namespace FirstPersonCameraContinued.Enums
 
         Cars = PersonalCar | PoliceCar | Hearse | Taxi,
         Vans = PostVan | PoliceVan | Ambulance | MaintenanceVehicle,
-        Trucks = GarbageTruck | FireEngine | DeliveryTruck | CargoTransport,
-        Transit = Bus | Tram | Train | Subway
+        Trucks = GarbageTruck | FireEngine | DeliveryTruck | CargoTransport
     }
 }
