@@ -1,6 +1,7 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { bindValue, trigger, useValue } from "cs2/api";
 import engine from 'cohtml/cohtml';
+import ErrorPopup from './errorPopup';
 
 interface CategoryItem {
     key: string;
@@ -13,17 +14,15 @@ interface Category {
 }
 
 const RandomFollowCategories$ = bindValue<string>('fpc', 'RandomFollowCategories', '[]');
-
-let persistedSelections: Record<string, boolean> | null = null;
+const NoEntitiesError$ = bindValue<string>('fpc', 'NoEntitiesError', '');
+const IsEntered$ = bindValue<boolean>('fpc', 'IsEntered');
 
 function initSelections(categories: Category[]): Record<string, boolean> {
-    if (persistedSelections) return { ...persistedSelections };
     const selections: Record<string, boolean> = {};
     categories.forEach(cat => cat.items.forEach(item => {
         selections[item.key] = false;
     }));
-    persistedSelections = selections;
-    return { ...selections };
+    return selections;
 }
 
 const RandomFollowWindow: React.FC<{ onClose: () => void }> = ({ onClose }) => {
@@ -39,9 +38,7 @@ const RandomFollowWindow: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
     const toggle = (key: string) => {
         setSelections(prev => {
-            const updated = { ...prev, [key]: !prev[key] };
-            persistedSelections = updated;
-            return updated;
+            return { ...prev, [key]: !prev[key] };
         });
     };
 
@@ -50,22 +47,31 @@ const RandomFollowWindow: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         setSelections(prev => {
             const updated = { ...prev };
             cat.items.forEach(item => { updated[item.key] = !allChecked; });
-            persistedSelections = updated;
             return updated;
         });
     };
 
-    const onStart = () => {
-        const selectedKeys = Object.entries(selections)
-            .filter(([_, v]) => v)
-            .map(([k]) => k)
-            .join(',');
+    const noEntitiesError = useValue(NoEntitiesError$);
+    const isEntered = useValue(IsEntered$);
 
-        if (!selectedKeys) return;
+    useEffect(() => {
+        if (isEntered) onClose();
+    }, [isEntered]);
+
+    const onStart = () => {
+        const selectedEntries = Object.entries(selections).filter(([_, v]) => v);
+        if (selectedEntries.length === 0) return;
+
+        const selectedKeys = selectedEntries.map(([k]) => k).join(',');
+
+        const labelLookup: Record<string, string> = {};
+        categories.forEach(cat => cat.items.forEach(item => {
+            labelLookup[item.key] = item.label;
+        }));
+        const selectedLabels = selectedEntries.map(([k]) => labelLookup[k] || k).join(', ');
 
         engine.trigger("audio.playSound", "select-item", 1);
-        trigger("fpc", "FilteredRandomFPC", selectedKeys);
-        onClose();
+        trigger("fpc", "FilteredRandomFPC", selectedKeys + '|' + selectedLabels);
     };
 
     const onMouseDown = useCallback((e: React.MouseEvent) => {
@@ -191,6 +197,7 @@ const RandomFollowWindow: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     </div>
                 </div>
             </div>
+            {noEntitiesError && <ErrorPopup />}
         </div>
     );
 };

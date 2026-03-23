@@ -48,6 +48,8 @@ namespace FirstPersonCameraContinued.Systems
         private CameraUpdateSystem _cameraUpdateSystem;
         private AudioManager audioManager;
         private OrbitCameraController s_CameraController;
+        private string _noEntitiesErrorMessage = "";
+        private GetterValueBinding<string> _noEntitiesErrorBinding;
 
         protected override void OnCreate()
         {
@@ -73,9 +75,23 @@ namespace FirstPersonCameraContinued.Systems
             this.AddBinding(new TriggerBinding("fpc", "RandomVehicleFPC", () => EnterFollowRandomVehicle()));
             this.AddBinding(new TriggerBinding("fpc", "RandomTransitFPC", () => EnterFollowRandomTransit()));
             this.AddBinding(new TriggerBinding("fpc", "RandomBicycleFPC", () => EnterFollowRandomBicycle()));
-            this.AddBinding(new TriggerBinding<string>("fpc", "FilteredRandomFPC", (string selectedTypes) => EnterFollowFilteredRandom(true, selectedTypes)));
+            this.AddBinding(new TriggerBinding<string>("fpc", "FilteredRandomFPC", (string selectedTypesWithLabels) =>
+            {
+                var parts = selectedTypesWithLabels.Split('|');
+                string selectedTypes = parts[0];
+                string selectedLabels = parts.Length > 1 ? parts[1] : selectedTypes;
+                EnterFollowFilteredRandom(true, selectedTypes, selectedLabels);
+            }));
 
             this.AddBinding(new ValueBinding<string>("fpc", "RandomFollowCategories", BuildCategoryData()));
+
+            _noEntitiesErrorBinding = new GetterValueBinding<string>("fpc", "NoEntitiesError", () => _noEntitiesErrorMessage);
+            this.AddBinding(_noEntitiesErrorBinding);
+            this.AddBinding(new TriggerBinding("fpc", "DismissNoEntitiesError", () =>
+            {
+                _noEntitiesErrorMessage = "";
+                _noEntitiesErrorBinding.Update();
+            }));
 
             m_ButtonAction = Mod.FirstPersonModSettings.GetAction(Mod.kButtonActionName);
 
@@ -247,7 +263,7 @@ namespace FirstPersonCameraContinued.Systems
                 }
                 else
                 {
-                    Mod.log.Info("No valid entities found to follow.");
+                    Mod.log.Info("No valid entities found to follow");
                     break;
                 }
                 tries++;
@@ -276,7 +292,7 @@ namespace FirstPersonCameraContinued.Systems
                 Entity randomEntity = GetRandomEntityFromQuery(query);
                 if (randomEntity == Entity.Null)
                 {
-                    Mod.log.Info("No valid entities found to follow.");
+                    Mod.log.Info("No valid entities found to follow");
                     break;
                 }
 
@@ -366,11 +382,11 @@ namespace FirstPersonCameraContinued.Systems
             { "Aircraft", Game.Prefabs.TransportType.Airplane },
         };
 
-        public void EnterFollowFilteredRandom(bool firstTimeEntry, string selectedTypesCSV)
+        public void EnterFollowFilteredRandom(bool firstTimeEntry, string selectedTypesCSV, string selectedLabels = null)
         {
             if (string.IsNullOrEmpty(selectedTypesCSV))
             {
-                Mod.log.Info("No types selected for filtered random follow.");
+                Mod.log.Info("No types selected for filtered random follow");
                 return;
             }
 
@@ -408,7 +424,14 @@ namespace FirstPersonCameraContinued.Systems
                 tries++;
             }
 
-            Mod.log.Info("No matching entities found for filtered random follow.");
+            Mod.log.Info("No matching entities found for filtered random follow");
+            ShowNoEntitiesFoundPopup(selectedLabels ?? selectedTypesCSV);
+        }
+
+        private void ShowNoEntitiesFoundPopup(string categoriesText)
+        {
+            _noEntitiesErrorMessage = categoriesText;
+            _noEntitiesErrorBinding.Update();
         }
 
         private Entity GetRandomEntityForType(string typeKey)
