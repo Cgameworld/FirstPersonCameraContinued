@@ -1,6 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { bindValue, trigger, useValue } from "cs2/api";
-import { useLocalization } from "cs2/l10n";
 import engine from 'cohtml/cohtml';
 import ErrorPopup from './errorPopup';
 
@@ -26,14 +25,18 @@ function initSelections(categories: Category[]): Record<string, boolean> {
     return selections;
 }
 
-const RandomFollowWindow: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+interface RandomFollowTranslation {
+    selectAll: string | null;
+    deselectAll: string | null;
+    start: string | null;
+}
+
+const RandomFollowWindow: React.FC<{ onClose: () => void, translation: RandomFollowTranslation }> = ({ onClose, translation }) => {
     const categoriesJson = useValue(RandomFollowCategories$);
     const categories: Category[] = React.useMemo(() => {
         try { return JSON.parse(categoriesJson); }
         catch { return []; }
     }, [categoriesJson]);
-
-    const { translate } = useLocalization();
     const [selections, setSelections] = useState<Record<string, boolean>>(() => initSelections(categories));
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
@@ -220,13 +223,11 @@ const RandomFollowWindow: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                                 </div>
                             </div>
                             <div className="buttons-container" style={{ marginTop: '22rem', marginRight: '12rem', textAlign: 'right' }}>
-                                <div className="buttons_lZi row_L6K" style={{ width: '300rem' }}>
-                                    <button className="button_HeP button_gJo" style={{ width: "130rem", backgroundColor: '#606973', color: 'rgba(255,255,255,0.9)', textTransform: 'uppercase' }} onClick={selectAll}>
-                                        {Object.values(selections).every(v => v)
-                                            ? translate("FirstPersonCameraContinued.RandomFollow.DeselectAll")
-                                            : translate("FirstPersonCameraContinued.RandomFollow.SelectAll")}
+                                <div className="buttons_lZi row_L6K" style={{ width: '350rem' }}>
+                                    <button className="button_HeP button_gJo" style={{ width: "140rem", backgroundColor: '#606973', color: 'rgba(255,255,255,0.9)', textTransform: 'uppercase' }} onClick={selectAll}>
+                                        {Object.values(selections).every(v => v) ? translation.deselectAll : translation.selectAll}
                                     </button>
-                                    <button className="button_HeP button_gJo" style={{ width: "130rem" }} onClick={onStart}>START</button>
+                                    <button className="button_HeP button_gJo" style={{ width: "130rem", textTransform: 'uppercase' }} onClick={onStart}>{translation.start}</button>
                                 </div>
                             </div>
                         </div>

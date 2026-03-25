@@ -75,6 +75,12 @@ const register: ModRegistrar = (moduleRegistry) => {
             passengersLabel: translate("FirstPersonCameraContinued.PassengersLabel")
         };
 
+        const uiTextRandomFollowWindow = {
+            selectAll: translate("FirstPersonCameraContinued.RandomFollow.SelectAll"),
+            deselectAll: translate("FirstPersonCameraContinued.RandomFollow.DeselectAll"),
+            start: translate("FirstPersonCameraContinued.RandomFollow.Start"),
+        };
+
         var selectedEntity: Entity;
         if (selectedInfo && selectedInfo.selectedEntity$) {
             selectedInfo.selectedEntity$.subscribe(SelectedEntityChanged);
@@ -150,7 +156,7 @@ const register: ModRegistrar = (moduleRegistry) => {
                     randomFollowRoot.id = 'fpc-random-follow-root';
                     randomFollowRoot.style.width = '100%';
                     parentElement.appendChild(randomFollowRoot);
-                    ReactDOM.render(<RandomFollowWindow onClose={() => setShowRandomFollowWindow(false)} />, randomFollowRoot);
+                    ReactDOM.render(<RandomFollowWindow onClose={() => setShowRandomFollowWindow(false)} translation={uiTextRandomFollowWindow} />, randomFollowRoot);
                     return () => {
                         ReactDOM.unmountComponentAtNode(randomFollowRoot);
                         if (randomFollowRoot.parentNode) {
