@@ -145,6 +145,9 @@ namespace FirstPersonCameraContinued.Transforms
             if ( _model.FollowEntity == Entity.Null )
                 return CameraScope.Default;
 
+            _model.ScopeCitizen = null;
+            _model.ScopeVehicle = VehicleType.Unknown;
+
             if ( CheckForCitizenScope( out var age ) )
             {
                 _model.ScopeCitizen = age;
