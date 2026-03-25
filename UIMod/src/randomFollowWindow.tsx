@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { bindValue, trigger, useValue } from "cs2/api";
+import { useLocalization } from "cs2/l10n";
 import engine from 'cohtml/cohtml';
 import ErrorPopup from './errorPopup';
 
@@ -32,6 +33,7 @@ const RandomFollowWindow: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         catch { return []; }
     }, [categoriesJson]);
 
+    const { translate } = useLocalization();
     const [selections, setSelections] = useState<Record<string, boolean>>(() => initSelections(categories));
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
@@ -47,6 +49,15 @@ const RandomFollowWindow: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         setSelections(prev => {
             const updated = { ...prev };
             cat.items.forEach(item => { updated[item.key] = !allChecked; });
+            return updated;
+        });
+    };
+
+    const selectAll = () => {
+        const allChecked = Object.values(selections).every(v => v);
+        setSelections(prev => {
+            const updated = { ...prev };
+            Object.keys(updated).forEach(key => { updated[key] = !allChecked; });
             return updated;
         });
     };
@@ -126,7 +137,7 @@ const RandomFollowWindow: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 style={{
                     maxWidth: "100%",
                     maxHeight: "100%",
-                    width: '900rem',
+                    width: '860rem',
                     pointerEvents: "auto",
                     transform: `translate(${position.x}px, ${position.y}px)`,
                 }}
@@ -153,47 +164,68 @@ const RandomFollowWindow: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                             <div className="error-message_r4_" style={{ marginTop: '-4rem' }}>
                                 <div className="fpc-random-follow-grid" style={{
                                     display: 'flex',
-                                    flexWrap: 'wrap',
-                                    gap: '8rem',
+                                    flexDirection: 'row',
                                     padding: '8rem',
                                 }}>
-                                    {categories.map((cat, catIdx) => (
-                                        <div className="statistics-category-item_qVI" key={catIdx} style={{
-                                            width: '260rem',
-                                            flexShrink: 0,
-                                        }}>
-                                            <div
-                                                className="header_Ld7"
-                                                onClick={() => toggleCategory(cat)}
-                                                style={{ cursor: 'pointer' }}
-                                            >
-                                                {cat.name}
-                                            </div>
-                                            <div className="items_AIY">
-                                                {cat.items.map(item => (
+                                    {[[0, 3], [1, 2, 4], [5]].map((colIndices, col) => (
+                                        <div key={col} style={{ width: '270rem', flexShrink: 0, marginRight: '8rem' }}>
+                                            {colIndices.filter(i => i < categories.length).map(i => categories[i]).map((cat) => {
+                                                const allChecked = cat.items.every(item => selections[item.key]);
+                                                const someChecked = cat.items.some(item => selections[item.key]);
+                                                return (
+                                                    <div key={cat.name} style={{
+                                                        marginBottom: '10rem',
+                                                    }}>
+                                                <div
+                                                    className="foldout-item_dah foldout-item_wOF"
+                                                    style={{ '--nesting': 1 } as React.CSSProperties}
+                                                >
                                                     <div
-                                                        className="foldout-item_dah foldout-item_wOF disable-mouse-states_js5"
-                                                        key={item.key}
-                                                        onClick={() => toggle(item.key)}
+                                                        className="header_MP_ header_8H_ item-mouse-states_Fmi item-focused_FuT"
+                                                        onClick={() => toggleCategory(cat)}
                                                         style={{ cursor: 'pointer' }}
                                                     >
-                                                        <div className="header_MP_ header_8H_ item-mouse-states_Fmi item-focused_FuT">
-                                                            <div className="header-content_SqG header-content_wUX">
-                                                                <div className={`toggle_GGm toggle_cca item-mouse-states_Fmi icon_xRc ${selections[item.key] ? 'checked' : 'unchecked'}`}>
-                                                                    <div className={`checkmark_NXV ${selections[item.key] ? 'checked' : ''}`}></div>
-                                                                </div>
-                                                                <div className="label_VRN">{item.label}</div>
+                                                        <div className="header-content_SqG header-content_wUX">
+                                                            <div className={`toggle_GGm toggle_cca item-mouse-states_Fmi icon_xRc ${allChecked ? 'checked' : someChecked ? 'partial' : 'unchecked'}`}>
+                                                                <div className={`checkmark_NXV ${allChecked ? 'checked' : someChecked ? 'partial' : ''}`}></div>
                                                             </div>
+                                                            <div className="header_Ld7" style={{padding:'0'}}>{cat.name}</div>
                                                         </div>
                                                     </div>
-                                                ))}
+                                                </div>
+                                                <div className="content_mJm foldout-expanded" style={{ overflowX: 'hidden', overflowY: 'hidden', paddingLeft: '5rem' }}>
+                                                    {cat.items.map(item => (
+                                                        <div
+                                                            className="foldout-item_dah foldout-item_wOF disable-mouse-states_js5"
+                                                            key={item.key}
+                                                            style={{ '--nesting': 1, cursor: 'pointer' } as React.CSSProperties}
+                                                            onClick={() => toggle(item.key)}
+                                                        >
+                                                            <div className="header_MP_ header_8H_ item-mouse-states_Fmi item-focused_FuT">
+                                                                <div className="header-content_SqG header-content_wUX">
+                                                                    <div className={`toggle_GGm toggle_cca item-mouse-states_Fmi icon_xRc ${selections[item.key] ? 'checked' : 'unchecked'}`}>
+                                                                        <div className={`checkmark_NXV ${selections[item.key] ? 'checked' : ''}`}></div>
+                                                                    </div>
+                                                                    <div className="label_VRN">{item.label}</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
+                                                );
+                                            })}
                                         </div>
                                     ))}
                                 </div>
                             </div>
                             <div className="buttons-container" style={{ marginTop: '22rem', marginRight: '12rem', textAlign: 'right' }}>
-                                <div className="buttons_lZi row_L6K" style={{ width: '175rem' }}>
+                                <div className="buttons_lZi row_L6K" style={{ width: '300rem' }}>
+                                    <button className="button_HeP button_gJo" style={{ width: "130rem", backgroundColor: '#606973', color: 'rgba(255,255,255,0.9)', textTransform: 'uppercase' }} onClick={selectAll}>
+                                        {Object.values(selections).every(v => v)
+                                            ? translate("FirstPersonCameraContinued.RandomFollow.DeselectAll")
+                                            : translate("FirstPersonCameraContinued.RandomFollow.SelectAll")}
+                                    </button>
                                     <button className="button_HeP button_gJo" style={{ width: "130rem" }} onClick={onStart}>START</button>
                                 </div>
                             </div>

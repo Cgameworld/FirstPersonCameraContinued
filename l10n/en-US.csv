@@ -107,3 +107,5 @@
 "FirstPersonCameraContinued.NoEntitiesFoundFor","No entities found for"
 "FirstPersonCameraContinued.NothingCheckedError","Please select at least one option"
 "FirstPersonCameraContinued.RandomFollow.Helicopter","Helicopter"
+"FirstPersonCameraContinued.RandomFollow.SelectAll","Select All"
+"FirstPersonCameraContinued.RandomFollow.DeselectAll","Deselect All"
