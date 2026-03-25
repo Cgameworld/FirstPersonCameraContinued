@@ -60,7 +60,11 @@ const RandomFollowWindow: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
     const onStart = () => {
         const selectedEntries = Object.entries(selections).filter(([_, v]) => v);
-        if (selectedEntries.length === 0) return;
+        if (selectedEntries.length === 0) {
+            engine.trigger("audio.playSound", "select-item", 1);
+            trigger("fpc", "NothingCheckedFPC");
+            return;
+        }
 
         const selectedKeys = selectedEntries.map(([k]) => k).join(',');
 

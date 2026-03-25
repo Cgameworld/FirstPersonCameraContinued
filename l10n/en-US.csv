@@ -104,4 +104,6 @@
 "FirstPersonCameraContinued.RandomFollow.CityServices","City Services"
 "FirstPersonCameraContinued.RandomFollow.PrivateTransport","Private Transport"
 "FirstPersonCameraContinued.RandomFollow.Creatures","Creatures"
+"FirstPersonCameraContinued.NoEntitiesFoundFor","No entities found for"
+"FirstPersonCameraContinued.NothingCheckedError","Please select at least one option"
 "FirstPersonCameraContinued.RandomFollow.Helicopter","Helicopter"

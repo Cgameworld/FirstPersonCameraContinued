@@ -29,7 +29,7 @@ const ErrorPopup: React.FC = () => {
                 backgroundColor: "rgba(0, 0, 0, 0.5)",
             }}
         >
-            <div className="panel_YqS error-dialog_iaV" style={{ marginTop:'-150rem' }}>
+            <div className="panel_YqS error-dialog_iaV" style={{ marginTop:'-150rem', width:'650rem' }}>
                 <div className="header_jAe header_Bpo child-opacity-transition_nkS">
                     <div className="title-bar_PF4">
                         <div className="icon_VQU">
@@ -46,7 +46,7 @@ const ErrorPopup: React.FC = () => {
                             <div className="error-message_r4_" style={{ maxHeight: '540rem' }}>
                                 <div className="paragraphs_nbD">
                                     <p className="p_CKq" cohinline="cohinline">
-                                        No entities found for: {errorMessage}
+                                        {errorMessage}
                                     </p>
                                 </div>
                             </div>

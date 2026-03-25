@@ -77,7 +77,7 @@ namespace FirstPersonCameraContinued.Systems
             this.AddBinding(new TriggerBinding("fpc", "RandomBicycleFPC", () => EnterFollowRandomBicycle()));
             this.AddBinding(new TriggerBinding<string>("fpc", "FilteredRandomFPC", (string selectedTypesWithLabels) =>
             {
-                var parts = selectedTypesWithLabels.Split('|');
+                string[] parts = selectedTypesWithLabels.Split('|');
                 string selectedTypes = parts[0];
                 string selectedLabels = parts.Length > 1 ? parts[1] : selectedTypes;
                 EnterFollowFilteredRandom(true, selectedTypes, selectedLabels);
@@ -87,6 +87,11 @@ namespace FirstPersonCameraContinued.Systems
 
             _noEntitiesErrorBinding = new GetterValueBinding<string>("fpc", "NoEntitiesError", () => _noEntitiesErrorMessage);
             this.AddBinding(_noEntitiesErrorBinding);
+            this.AddBinding(new TriggerBinding("fpc", "NothingCheckedFPC", () =>
+            {
+                GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.NothingCheckedError", out string errorText);
+                ShowNoEntitiesFoundPopup(errorText);
+            }));
             this.AddBinding(new TriggerBinding("fpc", "DismissNoEntitiesError", () =>
             {
                 _noEntitiesErrorMessage = "";
@@ -425,7 +430,9 @@ namespace FirstPersonCameraContinued.Systems
             }
 
             Mod.log.Info("No matching entities found for filtered random follow");
-            ShowNoEntitiesFoundPopup(selectedLabels ?? selectedTypesCSV);
+
+            GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.NoEntitiesFoundFor", out string prefix);
+            ShowNoEntitiesFoundPopup(prefix + ": " + (selectedLabels ?? selectedTypesCSV));
         }
 
         private void ShowNoEntitiesFoundPopup(string categoriesText)
