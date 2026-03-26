@@ -50,6 +50,7 @@ namespace FirstPersonCameraContinued.Systems
         private OrbitCameraController s_CameraController;
         private string _noEntitiesErrorMessage = "";
         private GetterValueBinding<string> _noEntitiesErrorBinding;
+        private GetterValueBinding<string> _randomFollowCategoriesBinding;
 
         protected override void OnCreate()
         {
@@ -83,7 +84,9 @@ namespace FirstPersonCameraContinued.Systems
                 EnterFollowFilteredRandom(true, selectedTypes, selectedLabels);
             }));
 
-            this.AddBinding(new ValueBinding<string>("fpc", "RandomFollowCategories", BuildCategoryData()));
+            _randomFollowCategoriesBinding = new GetterValueBinding<string>("fpc", "RandomFollowCategories", () => BuildCategoryData());
+            this.AddBinding(_randomFollowCategoriesBinding);
+            GameManager.instance.localizationManager.onActiveDictionaryChanged += OnActiveDictionaryChanged;
 
             _noEntitiesErrorBinding = new GetterValueBinding<string>("fpc", "NoEntitiesError", () => _noEntitiesErrorMessage);
             this.AddBinding(_noEntitiesErrorBinding);
@@ -112,6 +115,17 @@ namespace FirstPersonCameraContinued.Systems
                     ClearEntitySelection();
                 }
             };
+        }
+
+        protected override void OnDestroy()
+        {
+            GameManager.instance.localizationManager.onActiveDictionaryChanged -= OnActiveDictionaryChanged;
+            base.OnDestroy();
+        }
+
+        private void OnActiveDictionaryChanged()
+        {
+            _randomFollowCategoriesBinding.Update();
         }
 
         private void ActivateFPC()
