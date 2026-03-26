@@ -165,21 +165,9 @@ namespace FirstPersonCameraContinued
 
                 if (entryInfo.RandomFollow)
                 {
-                    if (entryInfo.RandomMode == RandomMode.Cim)
-                    {
-                        firstPersonCameraUISystem.EnterFollowRandomCim(false);
-                    }
-                    else if (entryInfo.RandomMode == RandomMode.Vehicle)
+                    if (entryInfo.RandomMode == RandomMode.Vehicle)
                     {
                         firstPersonCameraUISystem.EnterFollowRandomVehicle(false);
-                    }
-                    else if (entryInfo.RandomMode == RandomMode.Transit)
-                    {
-                        firstPersonCameraUISystem.EnterFollowRandomTransit(false);
-                    }
-                    else if (entryInfo.RandomMode == RandomMode.Bicycle)
-                    {
-                        firstPersonCameraUISystem.EnterFollowRandomBicycle(false);
                     }
                     else if (entryInfo.RandomMode == RandomMode.Filtered)
                     {
@@ -486,7 +474,7 @@ namespace FirstPersonCameraContinued
 
             if (entryInfo.RandomFollow)
             {
-                if (entryInfo.RandomMode == RandomMode.Cim)
+                if (entryInfo.FilteredRandomTypes == "Citizen")
                 {
                     GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.ToastTextRandomModeCimEnter", out string randomModeText);
                     toastComponent.Initialize(entryText + "\n" + randomModeText + "\n" + pipWindowText + "\n" + zoomText);

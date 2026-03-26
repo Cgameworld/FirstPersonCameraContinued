@@ -71,10 +71,10 @@ namespace FirstPersonCameraContinued.Systems
                     _selectedEntity = entity;
                 }
             }));
-            this.AddBinding(new TriggerBinding("fpc", "RandomCimFPC", () => EnterFollowRandomCim()));
+            this.AddBinding(new TriggerBinding("fpc", "RandomCimFPC", () => EnterFollowFilteredRandom(true, "Citizen")));
             this.AddBinding(new TriggerBinding("fpc", "RandomVehicleFPC", () => EnterFollowRandomVehicle()));
-            this.AddBinding(new TriggerBinding("fpc", "RandomTransitFPC", () => EnterFollowRandomTransit()));
-            this.AddBinding(new TriggerBinding("fpc", "RandomBicycleFPC", () => EnterFollowRandomBicycle()));
+            this.AddBinding(new TriggerBinding("fpc", "RandomTransitFPC", () => EnterFollowFilteredRandom(true, "Bus,Tram,Train,Subway,Ferry,Ship,Aircraft")));
+            this.AddBinding(new TriggerBinding("fpc", "RandomBicycleFPC", () => EnterFollowFilteredRandom(true, "Bicycle")));
             this.AddBinding(new TriggerBinding<string>("fpc", "FilteredRandomFPC", (string selectedTypesWithLabels) =>
             {
                 string[] parts = selectedTypesWithLabels.Split('|');
@@ -178,143 +178,52 @@ namespace FirstPersonCameraContinued.Systems
             ConfigureRandomEnterFollow(firstTimeEntry, RandomMode.Vehicle, randomEntity);
         }
 
-        public void EnterFollowRandomTransit(bool firstTimeEntry = true)
+        public void EnterFollowFilteredRandom(bool firstTimeEntry, string selectedTypesCSV, string selectedLabels = null)
         {
-            EntityQuery query = GetEntityQuery(new EntityQueryDesc()
+            if (string.IsNullOrEmpty(selectedTypesCSV))
             {
-                All = new ComponentType[1] { ComponentType.ReadOnly<PassengerTransport>() },
-                None = new ComponentType[2] {
-                    ComponentType.ReadOnly<Deleted>(),
-                    ComponentType.ReadOnly<Temp>()
-                }
-            });
-
-            Entity randomEntity = GetRandomEntityFromQuery(query);
-
-            //follow end cars
-            if (EntityManager.TryGetComponent<Game.Vehicles.Controller>(randomEntity, out var controllerComponent))
-            {
-                Entity selectedEntity = Entity.Null;
-
-                //check if attaching in reverse direction
-                if (EntityManager.TryGetComponent<Game.Vehicles.Train>(controllerComponent.m_Controller, out var trainComponent) && trainComponent.m_Flags.HasFlag(Game.Vehicles.TrainFlags.Reversed))
-                {
-                    //get all cars in rail vehicle
-                    if (EntityManager.TryGetBuffer<Game.Vehicles.LayoutElement>(controllerComponent.m_Controller, false, out var layoutElementBuffer))
-                    {
-                        if (layoutElementBuffer[0].m_Vehicle != controllerComponent.m_Controller)
-                        {
-                            selectedEntity = layoutElementBuffer[0].m_Vehicle;
-                        }
-                        else
-                        {
-                            selectedEntity = layoutElementBuffer[layoutElementBuffer.Length - 1].m_Vehicle;
-                        }
-                    }
-                }
-                else
-                {
-                    selectedEntity = controllerComponent.m_Controller;
-                }
-
-                //if entity same as current, try again
-                if (Controller.GetFollowEntity() == selectedEntity)
-                {
-                    EnterFollowRandomTransit(firstTimeEntry);
-                }
-                else
-                {
-                    ConfigureRandomEnterFollow(firstTimeEntry, RandomMode.Transit, selectedEntity);
-                }
-            }
-            else
-            {
-                ConfigureRandomEnterFollow(firstTimeEntry, RandomMode.Transit, randomEntity);
+                Mod.log.Info("No types selected for filtered random follow");
+                return;
             }
 
-            
-        }
+            _firstPersonCameraSystem.EntryInfo.FilteredRandomTypes = selectedTypesCSV;
+            var typeKeys = new List<string>(selectedTypesCSV.Split(','));
 
-        public void EnterFollowRandomCim(bool firstTimeEntry = true)
-        {
-            EntityQuery query = GetEntityQuery(new EntityQueryDesc()
-            {
-                All = new ComponentType[1] { ComponentType.ReadOnly<HumanCurrentLane>() },
-                None = new ComponentType[3] {
-                    ComponentType.ReadOnly<Deleted>(),
-                    ComponentType.ReadOnly<Temp>(),
-                    ComponentType.ReadOnly<TripSource>()
-                }
-            });
-
+            int maxRetries = 50;
             int tries = 0;
-            while (tries < 100)
+
+            while (tries < maxRetries && typeKeys.Count > 0)
             {
-                Entity randomEntity = GetRandomEntityFromQuery(query);
-                if (randomEntity != Entity.Null)
+                int randomTypeIndex = UnityEngine.Random.Range(0, typeKeys.Count);
+                string typeKey = typeKeys[randomTypeIndex];
+
+                Entity entity = GetRandomEntityForType(typeKey);
+
+                if (entity == Entity.Null)
                 {
-                    ComponentLookup<HumanCurrentLane> humanLaneFromEntity = GetComponentLookup<HumanCurrentLane>(true);
-                    if (humanLaneFromEntity.HasComponent(randomEntity))
-                    {
-                        HumanCurrentLane humanLane = humanLaneFromEntity[randomEntity];
-                        CreatureLaneFlags flags = humanLane.m_Flags;
-
-                        if ((flags & (CreatureLaneFlags.EndReached | CreatureLaneFlags.Hangaround)) == 0)
-                        {
-                            ConfigureRandomEnterFollow(firstTimeEntry, RandomMode.Cim, randomEntity);
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    Mod.log.Info("No valid entities found to follow");
-                    break;
-                }
-                tries++;
-            }
-        }
-
-        public void EnterFollowRandomBicycle(bool firstTimeEntry = true)
-        {
-            EntityQuery query = GetEntityQuery(new EntityQueryDesc()
-            {
-                All = new ComponentType[1] { ComponentType.ReadOnly<Bicycle>() },
-                None = new ComponentType[4] {
-            ComponentType.ReadOnly<Deleted>(),
-            ComponentType.ReadOnly<Temp>(),
-            ComponentType.ReadOnly<TripSource>(),
-            ComponentType.ReadOnly<ParkedCar>()
-        }
-            });
-
-            ComponentLookup<Game.Prefabs.PrefabRef> prefabRefLookup = GetComponentLookup<Game.Prefabs.PrefabRef>(true);
-            ComponentLookup<Game.Prefabs.SelectedSoundData> selectedSoundLookup = GetComponentLookup<Game.Prefabs.SelectedSoundData>(true);
-
-            int tries = 0;
-            while (tries < 100)
-            {
-                Entity randomEntity = GetRandomEntityFromQuery(query);
-                if (randomEntity == Entity.Null)
-                {
-                    Mod.log.Info("No valid entities found to follow");
-                    break;
+                    typeKeys.RemoveAt(randomTypeIndex);
+                    tries++;
+                    continue;
                 }
 
-                if (prefabRefLookup.HasComponent(randomEntity))
+                if (TransitTypeKeys.Contains(typeKey) || typeKey == "CargoTrain")
                 {
-                    var prefabRefComponentBike = prefabRefLookup[randomEntity];
-                    var prefabEntity = prefabRefComponentBike.m_Prefab;
+                    entity = ResolveTransitEntity(entity);
+                }
 
-                    if (selectedSoundLookup.HasComponent(prefabEntity))
-                    {
-                        ConfigureRandomEnterFollow(firstTimeEntry, RandomMode.Bicycle, randomEntity);
-                        break;
-                    }
+                if (entity != Entity.Null && entity != Controller.GetFollowEntity())
+                {
+                    ConfigureRandomEnterFollow(firstTimeEntry, RandomMode.Filtered, entity);
+                    return;
                 }
 
                 tries++;
             }
+
+            Mod.log.Info("No matching entities found for filtered random follow");
+
+            GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.NoEntitiesFoundFor", out string prefix);
+            ShowNoEntitiesFoundPopup(prefix + ": " + (selectedLabels ?? selectedTypesCSV));
         }
 
         private void ConfigureRandomEnterFollow(bool firstTimeEntry, RandomMode randomMode, Entity randomEntity)
@@ -387,54 +296,7 @@ namespace FirstPersonCameraContinued.Systems
             { "Aircraft", Game.Prefabs.TransportType.Airplane },
         };
 
-        public void EnterFollowFilteredRandom(bool firstTimeEntry, string selectedTypesCSV, string selectedLabels = null)
-        {
-            if (string.IsNullOrEmpty(selectedTypesCSV))
-            {
-                Mod.log.Info("No types selected for filtered random follow");
-                return;
-            }
-
-            _firstPersonCameraSystem.EntryInfo.FilteredRandomTypes = selectedTypesCSV;
-            var typeKeys = new List<string>(selectedTypesCSV.Split(','));
-
-            int maxRetries = 50;
-            int tries = 0;
-
-            while (tries < maxRetries && typeKeys.Count > 0)
-            {
-                int randomTypeIndex = UnityEngine.Random.Range(0, typeKeys.Count);
-                string typeKey = typeKeys[randomTypeIndex];
-
-                Entity entity = GetRandomEntityForType(typeKey);
-
-                if (entity == Entity.Null)
-                {
-                    typeKeys.RemoveAt(randomTypeIndex);
-                    tries++;
-                    continue;
-                }
-
-                if (TransitTypeKeys.Contains(typeKey) || typeKey == "CargoTrain")
-                {
-                    entity = ResolveTransitEntity(entity);
-                }
-
-                if (entity != Entity.Null && entity != Controller.GetFollowEntity())
-                {
-                    ConfigureRandomEnterFollow(firstTimeEntry, RandomMode.Filtered, entity);
-                    return;
-                }
-
-                tries++;
-            }
-
-            Mod.log.Info("No matching entities found for filtered random follow");
-
-            GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.NoEntitiesFoundFor", out string prefix);
-            ShowNoEntitiesFoundPopup(prefix + ": " + (selectedLabels ?? selectedTypesCSV));
-        }
-
+       
         private void ShowNoEntitiesFoundPopup(string categoriesText)
         {
             _noEntitiesErrorMessage = categoriesText;
@@ -505,12 +367,12 @@ namespace FirstPersonCameraContinued.Systems
                     }));
                 case "Citizen":
                     return GetRandomCitizen();
-                case "Animal":
+                case "Wildlife":
                     return GetRandomFromQuery(GetEntityQuery(new EntityQueryDesc()
                     {
                         All = new ComponentType[] {
                             ComponentType.ReadOnly<AnimalCurrentLane>(),
-                            ComponentType.ReadOnly<Game.Creatures.Animal>()
+                            ComponentType.ReadOnly<Game.Creatures.Wildlife>()
                         },
                         None = new ComponentType[] {
                             ComponentType.ReadOnly<Deleted>(),
@@ -738,7 +600,7 @@ namespace FirstPersonCameraContinued.Systems
                     items = new[]
                     {
                         new { key = "Citizen", label = Loc("SelectedInfoPanel.CITIZEN_TYPE[Citizen]") },
-                        new { key = "Animal", label = Loc("SelectedInfoPanel.ANIMAL_TITLE[Unknown]") },
+                        new { key = "Wildlife", label = Loc("SelectedInfoPanel.ANIMAL_TYPE[Wildlife]") },
                         new { key = "Pet", label = Loc("SelectedInfoPanel.ANIMAL_TYPE[Pet]") },
                     }
                 },

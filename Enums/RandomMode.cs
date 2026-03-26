@@ -13,9 +13,6 @@ namespace FirstPersonCameraContinued.Enums
     {
         None,
         Vehicle,
-        Cim,
-        Transit,
-        Bicycle,
         Filtered
     }
 }
