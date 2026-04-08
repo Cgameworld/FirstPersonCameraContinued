@@ -65,7 +65,7 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
             {
                 WildlifePreset preset = _activeWildlifePreset.Value;
                 float3 worldBonePos = pos + math.mul(rotation, boneModelPos);
-                model.Position = worldBonePos + new float3(0f, userHeightOffset + preset.UpOffset, 0f) + (forward * (model.PositionFollowOffset.y + preset.ForwardOffset));
+                model.Position = worldBonePos + new float3(0f, userHeightOffset + preset.Height, 0f) + (forward * (model.PositionFollowOffset.y + preset.ForwardOffset));
             }
             else if (isTrain || model.ScopeVehicle == VehicleType.Bus || model.ScopeVehicle == VehicleType.Ship || model.ScopeVehicle == VehicleType.Ferry)
             {
@@ -191,7 +191,7 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
             _boneReadback.ResetForNewEntity();
             _activeWildlifePreset = null;
 
-            if (!_entityManager.HasComponent<Game.Creatures.Wildlife>(entity) && !_entityManager.HasComponent<Game.Creatures.Pet>(entity))
+            if (!_entityManager.HasComponent<Game.Creatures.Wildlife>(entity))
                 return;
 
             if (!_entityManager.TryGetComponent<Game.Prefabs.PrefabRef>(entity, out Game.Prefabs.PrefabRef prefabRef))
@@ -206,7 +206,7 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
             if (WildlifePresets.TryGetPreset(prefabName, out WildlifePreset preset, out string matchedName))
             {
                 _activeWildlifePreset = preset;
-                Mod.log.Info($"Applied wildlife preset '{matchedName}': bone={preset.BoneIndex} forward={preset.ForwardOffset} up={preset.UpOffset}");
+                Mod.log.Info($"Applied wildlife preset '{matchedName}': bone={preset.BoneIndex} forward={preset.ForwardOffset} up={preset.Height}");
             }
         }
     }
