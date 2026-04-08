@@ -29,11 +29,11 @@ const register: ModRegistrar = (moduleRegistry) => {
     let tooltipDescriptionFollowCamera: string | null;
 
     let uiTextEnterFreeCamera: string | null;
-    let uiTextFollowRandomCim: string | null;
+    let uiTextFollowRandom: string | null;
+    let uiTextFollowRandomCitizen: string | null;
     let uiTextFollowRandomVehicle: string | null;
     let uiTextFollowRandomTransit: string | null;
-    let uiTextFollowRandomBicycle: string | null;
-    let uiTextFollowRandom: string | null;
+    let uiTextFollowRandomCustom: string | null;
 
     const IsEntered$ = bindValue<boolean>('fpc', 'IsEntered');
 
@@ -60,11 +60,11 @@ const register: ModRegistrar = (moduleRegistry) => {
         tooltipDescriptionFollowCamera = translate("FirstPersonCameraContinued.TooltipFollowCamera");
 
         uiTextEnterFreeCamera = translate("FirstPersonCameraContinued.EnterFreeCamera");
-        uiTextFollowRandomCim = translate("FirstPersonCameraContinued.FollowRandomCim");
-        uiTextFollowRandomVehicle = translate("FirstPersonCameraContinued.FollowRandomVehicle");
-        uiTextFollowRandomTransit = translate("FirstPersonCameraContinued.FollowRandomTransit");
-        uiTextFollowRandomBicycle = translate("FirstPersonCameraContinued.FollowRandomBicycle");
         uiTextFollowRandom = translate("FirstPersonCameraContinued.FollowRandom");
+        uiTextFollowRandomCitizen = translate("FirstPersonCameraContinued.FollowRandom.Citizen");
+        uiTextFollowRandomVehicle = translate("FirstPersonCameraContinued.FollowRandom.Vehicle");
+        uiTextFollowRandomTransit = translate("FirstPersonCameraContinued.FollowRandom.Transit");
+        uiTextFollowRandomCustom = translate("FirstPersonCameraContinued.FollowRandom.Custom");
 
         const uiTextFollowedVehiclePanel = {
             nameLabel: translate("FirstPersonCameraContinued.NameLabel"),
@@ -308,6 +308,13 @@ const register: ModRegistrar = (moduleRegistry) => {
         );
     }
 
+    interface DropdownMenuItem {
+        label: string | null;
+        action?: string;
+        onCustomClick?: () => void;
+        submenu?: DropdownMenuItem[];
+    }
+
     const DropdownWindow: React.FC<{ onClose: () => void; onOpenRandomFollow: () => void }> = ({ onClose, onOpenRandomFollow }) => {
 
         const clickedDropdownItem = (item: string) => {
@@ -316,39 +323,64 @@ const register: ModRegistrar = (moduleRegistry) => {
             trigger("fpc", item);
         };
 
+        const menuItems: DropdownMenuItem[] = [
+            { label: uiTextEnterFreeCamera, action: "ActivateFPC" },
+            { label: uiTextFollowRandom, submenu: [
+                { label: uiTextFollowRandomCitizen, action: "RandomCimFPC" },
+                { label: uiTextFollowRandomVehicle, action: "RandomVehicleFPC" },
+                { label: uiTextFollowRandomTransit, action: "RandomTransitFPC" },
+                { label: uiTextFollowRandomCustom, onCustomClick: () => { onClose(); engine.trigger("audio.playSound", "select-item", 1); onOpenRandomFollow(); } },
+            ]},
+        ];
+
+        const handleItemClick = (item: DropdownMenuItem) => {
+            if (item.submenu) return;
+            if (item.onCustomClick) {
+                item.onCustomClick();
+            } else if (item.action) {
+                clickedDropdownItem(item.action);
+            }
+        };
+
+        const [submenuDirection, setSubmenuDirection] = useState<string>('fpc-submenu-left');
+
         //dynamically change width of dropdown window based on locale
         const [dropdownWidth, setDropdownWidth] = useState<string>('220rem');
+        const [submenuWidth, setSubmenuWidth] = useState<string>('120rem');
         const [rightOffset, setRightOffset] = useState<string>('0rem');
 
         useEffect(() => {
-            const texts = [uiTextEnterFreeCamera, uiTextFollowRandomCim, uiTextFollowRandomVehicle];
+            const texts = menuItems.map(item => item.label);
+            const submenuTexts = menuItems.flatMap(item => item.submenu ? item.submenu.map(sub => sub.label) : []);
 
-            const calculateWidth = () => {
+            const isAsian = (t: string | null) => t && /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/.test(t);
 
-                //check if text has zh-HANS, zh-HANT, ko, jp characters
-                if (!texts.some(text =>
-                    text && /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/.test(text))) {
-                    const longestText = Math.max(
-                        ...(texts.map(text => text?.length || 0))
-                    );
-                    const calculatedWidth = longestText * 10 + 15;
-                    setDropdownWidth(`${calculatedWidth}rem`);
-                }
-            };
+            if (!texts.some(isAsian)) {
+                const longestText = Math.max(
+                    ...(texts.map(text => text?.length || 0))
+                );
+                const calculatedWidth = longestText * 10 + 20;
+                setDropdownWidth(`${calculatedWidth}rem`);
+            }
 
-            const updateRightOffset = () => {
-                const button = document.querySelector('#FPC-MainGameButton');
-                if (button) {
-                    const rect = button.getBoundingClientRect();
-                    const offset = window.innerWidth - rect.left;
-                    const offsetAdjusted = offset / (window.innerWidth / 1920) - 40;
-                    setRightOffset(`${offsetAdjusted}rem`);
-                }
-            };
+            let computedSubmenuWidth = 120;
+            if (!submenuTexts.some(isAsian)) {
+                const longestSubmenuText = Math.max(
+                    ...(submenuTexts.map(text => text?.length || 0))
+                );
+                computedSubmenuWidth = longestSubmenuText * 10 + 40;
+                setSubmenuWidth(`${computedSubmenuWidth}rem`);
+            }
 
-            calculateWidth();
-            updateRightOffset();
-        }, [uiTextEnterFreeCamera, uiTextFollowRandomCim, uiTextFollowRandomVehicle]);
+            const button = document.querySelector('#FPC-MainGameButton');
+            if (button) {
+                const rect = button.getBoundingClientRect();
+                const offset = window.innerWidth - rect.left;
+                const offsetAdjusted = offset / (window.innerWidth / 1920) - 40;
+                setRightOffset(`${offsetAdjusted}rem`);
+                setSubmenuDirection(offsetAdjusted > computedSubmenuWidth ? 'fpc-submenu-right' : 'fpc-submenu-left');
+            }
+        }, [uiTextEnterFreeCamera, uiTextFollowRandom]);
 
         return (
             <div style={{ width: dropdownWidth, right: rightOffset }} className="fpc-dropdownpanel panel_YqS expanded collapsible advisor-panel_dXi advisor-panel_mrr top-right-panel_A2r">
@@ -357,28 +389,29 @@ const register: ModRegistrar = (moduleRegistry) => {
                         <div className="content_gqa" style={{ padding: '0' }} >
                             <div className="infoview-panel-section_RXJ" style={{ padding: '0' }}>
                                 <div className="content_1xS focusable_GEc item-focused_FuT" style={{ padding: '0' }}>
-                                    <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("ActivateFPC")}>
-                                        <div className="right_k3O row_S2v">{uiTextEnterFreeCamera}</div>
-                                    </div>
-                                    <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("RandomCimFPC")}>
-                                        <div className="right_k3O row_S2v">{uiTextFollowRandomCim}</div>
-                                    </div>
-                                    <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("RandomVehicleFPC")}>
-                                        <div className="right_k3O row_S2v">{uiTextFollowRandomVehicle}</div>
-                                    </div>
-                                    <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("RandomTransitFPC")}>
-                                        <div className="right_k3O row_S2v">{uiTextFollowRandomTransit}</div>
-                                    </div>
-                                    <div className="row_S2v fpc-right-row" onClick={() => clickedDropdownItem("RandomBicycleFPC")}>
-                                        <div className="right_k3O row_S2v">{uiTextFollowRandomBicycle}</div>
-                                    </div>
-                                    <div className="row_S2v fpc-right-row" onClick={() => {
-                                        onClose();
-                                        engine.trigger("audio.playSound", "select-item", 1);
-                                        onOpenRandomFollow();
-                                    }}>
-                                        <div className="right_k3O row_S2v">{uiTextFollowRandom}</div>
-                                    </div>
+                                    {menuItems.map((item, index) => (
+                                        <div key={index} className="fpc-submenu-wrapper">
+                                            <div className={`row_S2v fpc-right-row ${item.submenu ? 'fpc-has-submenu' : ''}`}
+                                                onClick={() => handleItemClick(item)}>
+                                                <div className="right_k3O row_S2v">{item.label}</div>
+                                                {item.submenu && <span className="fpc-submenu-arrow">&#9654;</span>}
+                                            </div>
+                                            {item.submenu && (
+                                                <div style={{ width: submenuWidth }} className={`fpc-submenu-container ${submenuDirection} panel_YqS expanded collapsible advisor-panel_dXi advisor-panel_mrr top-right-panel_A2r`}>
+                                                    <div className="content_XD5 content_AD7 child-opacity-transition_nkS">
+                                                        <div className="content_1xS focusable_GEc item-focused_FuT" style={{ padding: '0' }}>
+                                                            {item.submenu.map((subItem, subIndex) => (
+                                                                <div key={subIndex} className="row_S2v fpc-right-row"
+                                                                    onClick={() => handleItemClick(subItem)}>
+                                                                    <div className="right_k3O row_S2v">{subItem.label}</div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
