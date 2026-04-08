@@ -1,7 +1,10 @@
-﻿using Colossal.Mathematics;
+using Colossal.Entities;
+using Colossal.Mathematics;
 using FirstPersonCameraContinued.DataModels;
 using FirstPersonCameraContinued.Enums;
+using FirstPersonCameraContinued.Helpers;
 using Game.Citizens;
+using Game.Rendering;
 using Unity.Entities;
 using Unity.Mathematics;
 
@@ -14,12 +17,17 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
     {
         private float3 offset;
         private Entity lastFollow;
+        private WildlifePreset? _activeWildlifePreset;
 
         private readonly EntityFollower _entityFollower;
+        private readonly EntityManager _entityManager;
+        private readonly BoneReadback _boneReadback;
 
         public FollowEntityFinalTransform(EntityFollower entityFollower)
         {
             _entityFollower = entityFollower;
+            _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+            _boneReadback = new BoneReadback();
         }
 
         /// <summary>
@@ -37,6 +45,12 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
             {
                 lastFollow = model.FollowEntity;
                 GrabOffset(model);
+                TryApplyWildlifePreset(model.FollowEntity);
+            }
+
+            if (_activeWildlifePreset != null)
+            {
+                _boneReadback.Update(model.FollowEntity);
             }
 
             var rotation = new quaternion(rot.value.x, rot.value.y, rot.value.z, rot.value.w);
@@ -47,7 +61,13 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
 
             pivot += forward * ((bounds.max.z - bounds.min.z) * offset.z + model.PositionFollowOffset.y);
 
-            if (isTrain || model.ScopeVehicle == VehicleType.Bus || model.ScopeVehicle == VehicleType.Ship || model.ScopeVehicle == VehicleType.Ferry)
+            if (_activeWildlifePreset != null && _boneReadback.TryGetBonePosition(_activeWildlifePreset.Value.BoneIndex, out float3 boneModelPos))
+            {
+                WildlifePreset preset = _activeWildlifePreset.Value;
+                float3 worldBonePos = pos + math.mul(rotation, boneModelPos);
+                model.Position = worldBonePos + new float3(0f, userHeightOffset + preset.UpOffset, 0f) + (forward * (model.PositionFollowOffset.y + preset.ForwardOffset));
+            }
+            else if (isTrain || model.ScopeVehicle == VehicleType.Bus || model.ScopeVehicle == VehicleType.Ship || model.ScopeVehicle == VehicleType.Ferry)
             {
                 model.Position = pos + new float3(0f, offset.y + userHeightOffset, 0f) + (forward * (offset.z + model.PositionFollowOffset.y));
             }
@@ -77,7 +97,7 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
         {
             var z = 0.25f;
             var y = 0.5f;
-            var scope = model.Scope;
+            var scope = model.Scope;          
 
             if (model.ScopeCitizen is CitizenAge age)
             {
@@ -164,6 +184,30 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
             }
 
             return new float3(0f, y, z);
+        }
+
+        private void TryApplyWildlifePreset(Entity entity)
+        {
+            _boneReadback.ResetForNewEntity();
+            _activeWildlifePreset = null;
+
+            if (!_entityManager.HasComponent<Game.Creatures.Wildlife>(entity) && !_entityManager.HasComponent<Game.Creatures.Pet>(entity))
+                return;
+
+            if (!_entityManager.TryGetComponent<Game.Prefabs.PrefabRef>(entity, out Game.Prefabs.PrefabRef prefabRef))
+                return;
+
+            Game.Prefabs.PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<Game.Prefabs.PrefabSystem>();
+            Game.Prefabs.PrefabBase prefabBase = prefabSystem.GetPrefab<Game.Prefabs.PrefabBase>(prefabRef.m_Prefab);
+            string prefabName = prefabBase.name;
+
+            Mod.log.Info($"Wildlife prefab: {prefabName}");
+
+            if (WildlifePresets.TryGetPreset(prefabName, out WildlifePreset preset, out string matchedName))
+            {
+                _activeWildlifePreset = preset;
+                Mod.log.Info($"Applied wildlife preset '{matchedName}': bone={preset.BoneIndex} forward={preset.ForwardOffset} up={preset.UpOffset}");
+            }
         }
     }
 }
