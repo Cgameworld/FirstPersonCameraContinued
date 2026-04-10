@@ -18,9 +18,11 @@ namespace FirstPersonCameraContinued.Helpers
         private bool _readbackPending;
         private float4x4[] _lastReadbackData;
         private float3[] _modelSpacePositions;
+        private float3[] _smoothedPositions;
         private int[] _parentIndices;
         private bool _hierarchyLoaded;
         private int _hierarchyRetryCount;
+        private const float SmoothSpeed = 18f;
 
         private readonly EntityManager _entityManager;
 
@@ -144,6 +146,11 @@ namespace FirstPersonCameraContinued.Helpers
             if (_modelSpacePositions == null || _modelSpacePositions.Length != count)
                 _modelSpacePositions = new float3[count];
 
+            bool initSmoothed = _smoothedPositions == null || _smoothedPositions.Length != count;
+            if (initSmoothed)
+                _smoothedPositions = new float3[count];
+
+            float t = 1f - math.exp(-SmoothSpeed * Time.deltaTime);
             float4x4[] worldTransforms = new float4x4[count];
             for (int i = 0; i < count; i++)
             {
@@ -155,7 +162,13 @@ namespace FirstPersonCameraContinued.Helpers
                 else
                     worldTransforms[i] = local;
 
-                _modelSpacePositions[i] = worldTransforms[i].c3.xyz;
+                float3 rawPos = worldTransforms[i].c3.xyz;
+                _modelSpacePositions[i] = rawPos;
+
+                if (initSmoothed)
+                    _smoothedPositions[i] = rawPos;
+                else
+                    _smoothedPositions[i] = math.lerp(_smoothedPositions[i], rawPos, t);
             }
         }
 
@@ -163,6 +176,7 @@ namespace FirstPersonCameraContinued.Helpers
         {
             _lastReadbackData = null;
             _modelSpacePositions = null;
+            _smoothedPositions = null;
             _bufferLookupDone = false;
             _boneBuffer = null;
             _localTRSBuffer = null;
@@ -174,6 +188,12 @@ namespace FirstPersonCameraContinued.Helpers
         public bool TryGetBonePosition(int boneIndex, out float3 position)
         {
             position = float3.zero;
+
+            if (_smoothedPositions != null && boneIndex >= 0 && boneIndex < _smoothedPositions.Length)
+            {
+                position = _smoothedPositions[boneIndex];
+                return !math.any(math.isnan(position));
+            }
 
             if (_modelSpacePositions != null && boneIndex >= 0 && boneIndex < _modelSpacePositions.Length)
             {
