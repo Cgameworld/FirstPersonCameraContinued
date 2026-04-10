@@ -23,7 +23,10 @@ namespace FirstPersonCameraContinued.Transformer
         {
             { "Bear", new WildlifePreset(24, 0.225f, 0.05f) },
             { "Goose", new WildlifePreset(3, 0.1f, 0.05f) },
-            { "Moose", new WildlifePreset(5, 0f, -1f) },
+            { "Deer", new WildlifePreset(5, 0.25f, 0.1f) },
+            { "Seagull", new WildlifePreset(3, 0.1f, 0.0f) },
+            { "Moose", new WildlifePreset(8, 0.35f, 0.3f) },
+            { "Shark", new WildlifePreset(3, 0.95f, 0.15f) },
         };
 
         public static bool TryGetPreset(string prefabName, out WildlifePreset preset, out string matchedName)
