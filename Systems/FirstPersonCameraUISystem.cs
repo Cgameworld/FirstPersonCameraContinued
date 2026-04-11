@@ -326,15 +326,15 @@ namespace FirstPersonCameraContinued.Systems
                 case "PostVan":
                     return GetRandomFromSimpleQuery<Game.Vehicles.PostVan>();
                 case "PoliceCar":
-                    return GetRandomFromSimpleQuery<Game.Vehicles.PoliceCar>();
+                    return GetRandomFromSimpleGroundVehicleQuery<Game.Vehicles.PoliceCar>();
                 case "MaintenanceVehicle":
                     return GetRandomFromSimpleQuery<Game.Vehicles.MaintenanceVehicle>();
                 case "Ambulance":
-                    return GetRandomFromSimpleQuery<Game.Vehicles.Ambulance>();
+                    return GetRandomFromSimpleGroundVehicleQuery<Game.Vehicles.Ambulance>();
                 case "GarbageTruck":
                     return GetRandomFromSimpleQuery<Game.Vehicles.GarbageTruck>();
                 case "FireEngine":
-                    return GetRandomFromSimpleQuery<Game.Vehicles.FireEngine>();
+                    return GetRandomFromSimpleGroundVehicleQuery<Game.Vehicles.FireEngine>();    
                 case "DeliveryTruck":
                     return GetRandomFromSimpleQuery<Game.Vehicles.DeliveryTruck>();
                 case "Hearse":
@@ -355,14 +355,7 @@ namespace FirstPersonCameraContinued.Systems
                 case "WorkVehicle":
                     return GetRandomFromSimpleQuery<Game.Vehicles.WorkVehicle>();
                 case "Helicopter":
-                    return GetRandomFromQuery(GetEntityQuery(new EntityQueryDesc()
-                    {
-                        All = new ComponentType[] { ComponentType.ReadOnly<Game.Vehicles.Helicopter>() },
-                        None = new ComponentType[] {
-                            ComponentType.ReadOnly<Deleted>(),
-                            ComponentType.ReadOnly<Temp>()
-                        }
-                    }));
+                    return GetRandomFromSimpleQuery<Game.Vehicles.Helicopter>();
                 case "Bicycle":
                     return GetRandomBicycleOrScooter(true);
                 case "ElectricScooter":
@@ -420,7 +413,23 @@ namespace FirstPersonCameraContinued.Systems
                 None = new ComponentType[] {
                     ComponentType.ReadOnly<Deleted>(),
                     ComponentType.ReadOnly<Temp>(),
-                    ComponentType.ReadOnly<TripSource>()
+                    ComponentType.ReadOnly<TripSource>(),
+                    ComponentType.ReadOnly<ParkedCar>(),
+                }
+            });
+            return GetRandomEntityFromQuery(query);
+        }
+        private Entity GetRandomFromSimpleGroundVehicleQuery<T>() where T : unmanaged, IComponentData
+        {
+            EntityQuery query = GetEntityQuery(new EntityQueryDesc()
+            {
+                All = new ComponentType[] { ComponentType.ReadOnly<T>() },
+                None = new ComponentType[] {
+                    ComponentType.ReadOnly<Deleted>(),
+                    ComponentType.ReadOnly<Temp>(),
+                    ComponentType.ReadOnly<TripSource>(),
+                    ComponentType.ReadOnly<ParkedCar>(),
+                    ComponentType.ReadOnly<Aircraft>()
                 }
             });
             return GetRandomEntityFromQuery(query);
@@ -507,7 +516,9 @@ namespace FirstPersonCameraContinued.Systems
                 All = new ComponentType[] { ComponentType.ReadOnly<Game.Vehicles.PublicTransport>() },
                 None = new ComponentType[] {
                     ComponentType.ReadOnly<Deleted>(),
-                    ComponentType.ReadOnly<Temp>()
+                    ComponentType.ReadOnly<Temp>(),
+                    ComponentType.ReadOnly<ParkedCar>(),
+                    ComponentType.ReadOnly<ParkedTrain>(),
                 }
             });
 
