@@ -782,9 +782,10 @@ namespace FirstPersonCameraContinued.Systems
             }
             else
             {
+                bool useVanillaNames = Mod.FirstPersonModSettings?.UseVanillaStopNames ?? true;
                 for (int i = 0; i < stations.Count; i++)
                 {
-                    string displayName = GetVanillaStopName(stations[i].stopEntity);
+                    string displayName = useVanillaNames ? GetVanillaStopName(stations[i].stopEntity) : null;
                     if (string.IsNullOrEmpty(displayName))
                     {
                         displayName = FormatStationName(stations[i].streetName, stations[i].crossStreet, nameCount, stations[i].stopEntity);
@@ -1264,6 +1265,7 @@ namespace FirstPersonCameraContinued.Systems
         public int SetUnits { get; set; }
         public int ShowStopStrip { get; set; }
         public int StopStripDisplayMode { get; set; }
+        public bool UseVanillaStopNames { get; set; }
 
         public static UISettingsGroup FromModSettings()
         {
@@ -1278,7 +1280,8 @@ namespace FirstPersonCameraContinued.Systems
                     InfoBoxSize = 1,
                     SetUnits = 0,
                     ShowStopStrip = 0,
-                    StopStripDisplayMode = 0
+                    StopStripDisplayMode = 0,
+                    UseVanillaStopNames = true
                 };
             }
 
@@ -1291,7 +1294,8 @@ namespace FirstPersonCameraContinued.Systems
                 InfoBoxSize = (int)Mod.FirstPersonModSettings.InfoBoxSize,
                 SetUnits = (int)Mod.FirstPersonModSettings.SetUnits,
                 ShowStopStrip = (int)Mod.FirstPersonModSettings.ShowStopStrip,
-                StopStripDisplayMode = (int)Mod.FirstPersonModSettings.StopStripDisplayMode
+                StopStripDisplayMode = (int)Mod.FirstPersonModSettings.StopStripDisplayMode,
+                UseVanillaStopNames = Mod.FirstPersonModSettings.UseVanillaStopNames
             };
         }
     }

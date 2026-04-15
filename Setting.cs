@@ -36,6 +36,7 @@ namespace FirstPersonCameraContinued
         private ModUnits _setUnits;
         private ShowStopStrip _showStopStrip;
         private StopStripDisplayMode _stopStripDisplayMode;
+        private bool _useVanillaStopNames;
 
         public Setting(IMod mod) : base(mod)
         {
@@ -212,6 +213,17 @@ namespace FirstPersonCameraContinued
             }
         }
 
+        [SettingsUISection(UISettingsTab, StopStripSettingsGroup)]
+        public bool UseVanillaStopNames
+        {
+            get => _useVanillaStopNames;
+            set
+            {
+                _useVanillaStopNames = value;
+                SetUISettingsGroup();
+            }
+        }
+
         private void SetUISettingsGroup()
         {
             World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<FirstPersonCameraActivatedUISystem>().SetUISettingsGroupOptions();
@@ -248,6 +260,7 @@ namespace FirstPersonCameraContinued
             SetUnits = Enums.ModUnits.GameSetting;
             ShowStopStrip = Enums.ShowStopStrip.AllTransit;
             StopStripDisplayMode = Enums.StopStripDisplayMode.AutoHide;
+            UseVanillaStopNames = true;
             LastSeenChangelogVersion = "";
         }
 
