@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -61,6 +62,8 @@ namespace FirstPersonCameraContinued.Systems
         private bool showUpcomingRouteOnActivation = false;
 
         private NameSystem nameSystem;
+        private EntityQuery namedEdgeQuery;
+        private readonly Dictionary<Entity, (string name, Entity edge)> nearestNamedRoadCache = new Dictionary<Entity, (string, Entity)>();
 
         private static string serializedUISettingsGroupOptions;
 
@@ -100,6 +103,12 @@ namespace FirstPersonCameraContinued.Systems
             }));
 
             nameSystem = World.GetOrCreateSystemManaged<NameSystem>();
+
+            namedEdgeQuery = GetEntityQuery(
+                ComponentType.ReadOnly<Aggregated>(),
+                ComponentType.ReadOnly<Game.Net.Edge>(),
+                ComponentType.Exclude<Deleted>()
+            );
 
             isObjectsSystemsInitalized = false;
         }
@@ -743,15 +752,15 @@ namespace FirstPersonCameraContinued.Systems
                 lineColor = GetLineColor(routeEntity)
             };
 
+            Dictionary<string, int> nameCount = new Dictionary<string, int>();
+            foreach (var station in stations)
+            {
+                string baseName = GetStreetBaseName(station.streetName);
+                nameCount[baseName] = nameCount.GetValueOrDefault(baseName, 0) + 1;
+            }
+
             if (isMetroOrTrain)
             {
-                var nameCount = new Dictionary<string, int>();
-                foreach (var station in stations)
-                {
-                    string baseName = GetStreetBaseName(station.streetName);
-                    nameCount[baseName] = nameCount.GetValueOrDefault(baseName, 0) + 1;
-                }
-
                 if (goingInbound)
                 {
                     for (int i = stations.Count - 1; i >= 0; i--)
@@ -776,6 +785,10 @@ namespace FirstPersonCameraContinued.Systems
                 for (int i = 0; i < stations.Count; i++)
                 {
                     string displayName = GetVanillaStopName(stations[i].stopEntity);
+                    if (string.IsNullOrEmpty(displayName))
+                    {
+                        displayName = FormatStationName(stations[i].streetName, stations[i].crossStreet, nameCount, stations[i].stopEntity);
+                    }
                     result.stations.Add(new StationData { name = displayName });
                 }
                 result.currentStopIndex = currentStationIdx;
@@ -794,13 +807,22 @@ namespace FirstPersonCameraContinued.Systems
             if (BuildingUtils.GetAddress(EntityManager, stopEntity, out var road, out var number))
             {
                 string roadName = AbbreviateSuffix(nameSystem.GetRenderedLabelName(road));
-                if (!string.IsNullOrEmpty(roadName))
+                if (IsValidRoadName(roadName))
                 {
                     return $"{number} {roadName}";
                 }
             }
 
-            return "Stop";
+            return null;
+        }
+
+        private static bool IsValidRoadName(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return false;
+            if (name.StartsWith("Assets.NAME[")) return false;
+            if (name.EndsWith("Bridge")) return false;
+            if (name.EndsWith("Track")) return false;
+            return true;
         }
 
         private void ClearLineStationInfo()
@@ -951,10 +973,10 @@ namespace FirstPersonCameraContinued.Systems
                 streetName = GetRoadName(roadEdge);
             }
 
-            // fallback to stop name
+            // fallback to nearest named road
             if (string.IsNullOrEmpty(streetName))
             {
-                try { streetName = nameSystem.GetRenderedLabelName(stopEntity); } catch { }
+                (streetName, roadEdge) = TryFindNearestNamedRoad(stopEntity);
                 if (string.IsNullOrEmpty(streetName)) streetName = "Stop";
             }
 
@@ -979,11 +1001,70 @@ namespace FirstPersonCameraContinued.Systems
             {
                 try
                 {
-                    return nameSystem.GetRenderedLabelName(aggregated.m_Aggregate);
+                    string name = nameSystem.GetRenderedLabelName(aggregated.m_Aggregate);
+                    if (IsValidRoadName(name))
+                        return name;
                 }
                 catch { }
             }
             return "";
+        }
+
+        private (string name, Entity edge) TryFindNearestNamedRoad(Entity stopEntity)
+        {
+            if (nearestNamedRoadCache.TryGetValue(stopEntity, out (string name, Entity edge) cached))
+                return cached;
+
+            float3 stopPos = float3.zero;
+            if (EntityManager.TryGetComponent<Game.Objects.Transform>(stopEntity, out Game.Objects.Transform transform))
+                stopPos = transform.m_Position;
+            else
+            {
+                nearestNamedRoadCache[stopEntity] = ("", Entity.Null);
+                return ("", Entity.Null);
+            }
+
+            const float MaxSearchRadius = 1000f;
+            float closestDistSq = MaxSearchRadius * MaxSearchRadius;
+            string closestName = "";
+            Entity closestEdge = Entity.Null;
+            HashSet<Entity> checkedAggregates = new HashSet<Entity>();
+
+            using (NativeArray<Entity> edges = namedEdgeQuery.ToEntityArray(Allocator.TempJob))
+            {
+                for (int i = 0; i < edges.Length; i++)
+                {
+                    Entity edgeEntity = edges[i];
+                    if (!EntityManager.TryGetComponent<Game.Net.Edge>(edgeEntity, out Game.Net.Edge edge))
+                        continue;
+
+                    float3 midPos = (GetNodePosition(edge.m_Start) + GetNodePosition(edge.m_End)) * 0.5f;
+                    float distSq = math.distancesq(stopPos, midPos);
+                    if (distSq >= closestDistSq)
+                        continue;
+
+                    if (!EntityManager.TryGetComponent<Aggregated>(edgeEntity, out Aggregated aggregated))
+                        continue;
+
+                    if (!checkedAggregates.Add(aggregated.m_Aggregate))
+                        continue;
+
+                    try
+                    {
+                        string name = nameSystem.GetRenderedLabelName(aggregated.m_Aggregate);
+                        if (!IsValidRoadName(name))
+                            continue;
+
+                        closestDistSq = distSq;
+                        closestName = name;
+                        closestEdge = edgeEntity;
+                    }
+                    catch { }
+                }
+            }
+
+            nearestNamedRoadCache[stopEntity] = (closestName, closestEdge);
+            return (closestName, closestEdge);
         }
 
         private float3 GetNodePosition(Entity node)
@@ -1169,6 +1250,7 @@ namespace FirstPersonCameraContinued.Systems
             showUpcomingRouteOnActivation = false;
             lineStationInfo = "";
             lineStationInfoBinding.Update();
+            nearestNamedRoadCache.Clear();
         }
     }
 
