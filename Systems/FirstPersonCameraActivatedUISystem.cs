@@ -143,7 +143,7 @@ namespace FirstPersonCameraContinued.Systems
                 {
                     return;
                 }
-                Entity currentEntity = CameraController.GetFollowEntity();
+                Entity currentEntity = CameraController.GetAttachmentTarget();
 
                 if (currentEntity != Entity.Null)
                 {
@@ -749,7 +749,7 @@ namespace FirstPersonCameraContinued.Systems
                 foreach (var station in stations)
                 {
                     string baseName = GetStreetBaseName(station.streetName);
-                    nameCount[baseName] = nameCount.GetValueOrDefault(baseName, 0) + 1;
+                    nameCount[baseName] = GetDictionaryValueOrDefault(nameCount, baseName) + 1;
                 }
 
                 if (goingInbound)
@@ -914,12 +914,17 @@ namespace FirstPersonCameraContinued.Systems
             }
 
             string baseName = GetStreetBaseName(streetName);
-            if (nameCount.GetValueOrDefault(baseName, 0) > 1 && !string.IsNullOrEmpty(crossStreet))
+            if (GetDictionaryValueOrDefault(nameCount, baseName) > 1 && !string.IsNullOrEmpty(crossStreet))
             {
                 string crossBase = GetStreetBaseName(crossStreet);
                 return $"{baseName}/\n{crossBase}";
             }
             return AbbreviateSuffix(streetName);
+        }
+
+        private static int GetDictionaryValueOrDefault(Dictionary<string, int> dictionary, string key)
+        {
+            return dictionary.TryGetValue(key, out int value) ? value : 0;
         }
 
         private (string streetName, string crossStreet) GetStopStreetAndCrossStreet(Entity stopEntity)

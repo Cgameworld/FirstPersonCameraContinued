@@ -44,6 +44,11 @@ namespace FirstPersonCameraContinued.MonoBehaviours
             return _model.FollowEntity;
         }
 
+        public Entity GetAttachmentTarget()
+        {
+            return _model.AttachmentTarget;
+        }
+
         public quaternion GetViewRotation()
         {
             return _model.Rotation;

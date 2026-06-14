@@ -28,75 +28,65 @@ namespace FirstPersonCameraContinued
         }
 
         /// <summary>
-        /// Filter the current entity
+        /// Resolve the current camera attachment target without changing the selected follow subject.
         /// </summary>
-        private void Filter( )
+        public Entity ResolveAttachmentTarget()
         {
-            // Check and update entity based on TargetElement buffer
-            if ( _entityManager.TryGetBuffer<TargetElement>( _model.FollowEntity, true, out var buffer ) && buffer.Length > 0 )
+            var target = _model.FollowEntity;
+
+            if (target == Entity.Null || !_entityManager.Exists(target))
             {
-                _model.FollowEntity = buffer[0].m_Entity;
+                _model.AttachmentTarget = Entity.Null;
+                return Entity.Null;
+            }
+
+            // Check and update entity based on TargetElement buffer
+            if (_entityManager.TryGetBuffer<TargetElement>(target, true, out var buffer) && buffer.Length > 0)
+            {
+                target = buffer[0].m_Entity;
             }
 
             // Check and update entity based on CurrentTransport component
-            if ( TryGetComponent<CurrentTransport>( out var transport ) )
+            if ( TryGetComponent(target, out CurrentTransport transport) )
             {
-                _model.FollowEntity = transport.m_CurrentTransport;
+                target = transport.m_CurrentTransport;
             }
 
             // Further processing if entity has Unspawned component
-            if ( HasComponent<Game.Objects.Unspawned>( ) )
+            if ( HasComponent<Game.Objects.Unspawned>(target) )
             {
                 // Check and update entity based on CurrentVehicle component
-                if ( TryGetComponent<CurrentVehicle>( out var vehicle ) )
+                if ( TryGetComponent(target, out CurrentVehicle vehicle) )
                 {
-                    _model.FollowEntity = vehicle.m_Vehicle;
+                    target = vehicle.m_Vehicle;
                 }
                 // Check and update entity based on Resident component and its CurrentBuilding
-                else if ( TryGetComponent<Game.Creatures.Resident>( out var residentComponent ) &&
+                else if ( TryGetComponent(target, out Game.Creatures.Resident residentComponent) &&
                          TryGetComponent<CurrentBuilding>( residentComponent.m_Citizen, out var houseResident ) )
                 {
-                    _model.FollowEntity = houseResident.m_CurrentBuilding;
+                    target = houseResident.m_CurrentBuilding;
                 }
                 // Check and update entity based on Pet component and its CurrentBuilding
-                else if ( TryGetComponent<Game.Creatures.Pet>( out var petComponent ) &&
+                else if ( TryGetComponent(target, out Game.Creatures.Pet petComponent) &&
                          TryGetComponent<CurrentBuilding>( petComponent.m_HouseholdPet, out var housePet ) )
                 {
-                    _model.FollowEntity = housePet.m_CurrentBuilding;
+                    target = housePet.m_CurrentBuilding;
                 }
             }
 
-
-            // switch back to following cim entity after exiting vehicle
-            if (_entityManager.TryGetComponent<Game.Creatures.Resident>(_model.LastFollowEntity, out var lastEntityResident) && lastEntityResident.m_Flags.HasFlag(ResidentFlags.Disembarking))
+            if (target != Entity.Null && !_entityManager.Exists(target))
             {
-                //Mod.log.Info("Cim Disembarking " + _model.FollowEntity);
-                _model.FollowEntity = _model.LastFollowEntity;
+                target = Entity.Null;
             }
 
+            _model.AttachmentTarget = target;
+            return target;
         }
 
-        /// <summary>
-        /// Shortcut for checking if a component exists
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        private bool HasComponent<T>( )
+        private bool HasComponent<T>( Entity entity )
             where T : unmanaged, IComponentData
         {
-            return _entityManager.HasComponent<T>( _model.FollowEntity );
-        }
-
-        /// <summary>
-        /// Shortcut for getting a component
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="component"></param>
-        /// <returns></returns>
-        private bool TryGetComponent<T>( out T component )
-            where T : unmanaged, IComponentData
-        {
-            return _entityManager.TryGetComponent( _model.FollowEntity, out component );
+            return entity != Entity.Null && _entityManager.Exists(entity) && _entityManager.HasComponent<T>( entity );
         }
 
         /// <summary>
@@ -109,7 +99,8 @@ namespace FirstPersonCameraContinued
         private bool TryGetComponent<T>( Entity entity, out T component )
             where T : unmanaged, IComponentData
         {
-            return _entityManager.TryGetComponent( entity, out component );
+            component = default;
+            return entity != Entity.Null && _entityManager.Exists(entity) && _entityManager.TryGetComponent( entity, out component );
         }
 
         /// <summary>
@@ -198,45 +189,51 @@ namespace FirstPersonCameraContinued
             rotation = default;
             isTrain = false;
 
-            Filter();
-            if (_entityManager.TryGetComponent<Game.Vehicles.TrainNavigation>(_model.FollowEntity, out var trainNavigationComponent))
+            var target = ResolveAttachmentTarget();
+            if (target == Entity.Null)
+                return false;
+
+            if (_entityManager.TryGetComponent<Game.Vehicles.TrainNavigation>(target, out var trainNavigationComponent))
             {
-                if (_entityManager.TryGetComponent<Game.Rendering.InterpolatedTransform>(_model.FollowEntity, out var interpolatedTransformComponent))
+                if (_entityManager.TryGetComponent<Game.Rendering.InterpolatedTransform>(target, out var interpolatedTransformComponent))
                 {
                     position = interpolatedTransformComponent.m_Position;
                     rotation = interpolatedTransformComponent.m_Rotation;
                     isTrain = true;
+                    return true;
                 }
             }
             else
             {
-                if (_entityManager.TryGetBuffer<Game.Objects.TransformFrame>(_model.FollowEntity, true, out var buffer1))
+                if (_entityManager.TryGetBuffer<Game.Objects.TransformFrame>(target, true, out var buffer1))
                 {
-                    var interpolatedPosition = GetInterpolatedPosition(_model.FollowEntity, buffer1, out bounds);
+                    var interpolatedPosition = GetInterpolatedPosition(target, buffer1, out bounds);
                     position = interpolatedPosition.m_Position;
                     rotation = interpolatedPosition.m_Rotation;
+                    return true;
                 }
                 else
                 {
-                    if (_entityManager.TryGetComponent<Game.Objects.Relative>(_model.FollowEntity, out var component1))
+                    if (_entityManager.TryGetComponent<Game.Objects.Relative>(target, out var component1))
                     {
-                        var relativePosition = GetRelativePosition(_model.FollowEntity, component1, out bounds);
+                        var relativePosition = GetRelativePosition(target, component1, out bounds);
                         position = relativePosition.m_Position;
                         rotation = relativePosition.m_Rotation;
+                        return true;
                     }
                     else
                     {
-                        if (_entityManager.TryGetComponent<Game.Objects.Transform>(_model.FollowEntity, out var component2))
+                        if (_entityManager.TryGetComponent<Game.Objects.Transform>(target, out var component2))
                         {
-                            var objectPosition = GetObjectPosition(_model.FollowEntity, component2, out bounds);
+                            var objectPosition = GetObjectPosition(target, component2, out bounds);
                             position = objectPosition.m_Position;
                             rotation = objectPosition.m_Rotation;
+                            return true;
                         }
                     }
                 }
-                isTrain = false;
             }
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -248,34 +245,39 @@ namespace FirstPersonCameraContinued
         {
             position = default;
 
-            Filter( );
+            var target = ResolveAttachmentTarget();
+            if (target == Entity.Null)
+                return false;
 
             //if ( _entityManager.TryGetComponent<InterpolatedTransform>( _model.FollowEntity, out var interpolatedTransform ) )
             //{
             //    position = interpolatedTransform.m_Position;
             //}
-            if ( _entityManager.TryGetBuffer<Game.Objects.TransformFrame>( _model.FollowEntity, true, out var buffer1 ) )
+            if ( _entityManager.TryGetBuffer<Game.Objects.TransformFrame>( target, true, out var buffer1 ) )
             {
-                var interpolatedPosition = GetInterpolatedPosition( _model.FollowEntity, buffer1, out _ );
+                var interpolatedPosition = GetInterpolatedPosition( target, buffer1, out _ );
                 position = interpolatedPosition.m_Position;
+                return true;
             }
             else
             {
-                if ( _entityManager.TryGetComponent<Game.Objects.Relative>( _model.FollowEntity, out var component1 ) )
+                if ( _entityManager.TryGetComponent<Game.Objects.Relative>( target, out var component1 ) )
                 {
-                    var relativePosition = GetRelativePosition( _model.FollowEntity, component1, out _ );
+                    var relativePosition = GetRelativePosition( target, component1, out _ );
                     position = relativePosition.m_Position;
+                    return true;
                 }
                 else
                 {
-                    if ( _entityManager.TryGetComponent<Game.Objects.Transform>( _model.FollowEntity, out var component2 ) )
+                    if ( _entityManager.TryGetComponent<Game.Objects.Transform>( target, out var component2 ) )
                     {
-                        var objectPosition = GetObjectPosition( _model.FollowEntity, component2, out _ );
+                        var objectPosition = GetObjectPosition( target, component2, out _ );
                         position = objectPosition.m_Position;
+                        return true;
                     }
                 }
             }
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -288,18 +290,21 @@ namespace FirstPersonCameraContinued
         {
             rotation = default;
 
-            var workingEntity = entity != default ? entity : _model.FollowEntity;
+            var workingEntity = entity != default ? entity : ResolveAttachmentTarget();
 
-            Filter( );
+            if (workingEntity == Entity.Null)
+                return false;
 
-            if ( _entityManager.TryGetComponent<InterpolatedTransform>( _model.FollowEntity, out var interpolatedTransform ) )
+            if ( _entityManager.TryGetComponent<InterpolatedTransform>( workingEntity, out var interpolatedTransform ) )
             {
                 rotation = interpolatedTransform.m_Rotation;
+                return true;
             }
             else if ( _entityManager.TryGetBuffer<Game.Objects.TransformFrame>( workingEntity, true, out var buffer1 ) )
             {
                 var interpolatedPosition = GetInterpolatedPosition( workingEntity, buffer1, out _ );
                 rotation = interpolatedPosition.m_Rotation;
+                return true;
             }
             else
             {
@@ -307,6 +312,7 @@ namespace FirstPersonCameraContinued
                 {
                     var relativePosition = GetRelativePosition( workingEntity, component1, out _ );
                     rotation = relativePosition.m_Rotation;
+                    return true;
                 }
                 else
                 {
@@ -314,10 +320,11 @@ namespace FirstPersonCameraContinued
                     {
                         var objectPosition = GetObjectPosition( workingEntity, component2, out _ );
                         rotation = objectPosition.m_Rotation;
+                        return true;
                     }
                 }
             }
-            return true;
+            return false;
         }
     }
 }

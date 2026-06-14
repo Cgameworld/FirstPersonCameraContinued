@@ -103,7 +103,7 @@ namespace FirstPersonCameraContinued
                 var positon = CameraController.transform.position;
                 var rotation = CameraController.GetViewRotation();
 
-                Entity currentEntity = CameraController.GetFollowEntity();
+                Entity currentEntity = CameraController.GetAttachmentTarget();
                 if (currentEntity != _lastPipEntity)
                 {
                     _lastPipEntity = currentEntity;

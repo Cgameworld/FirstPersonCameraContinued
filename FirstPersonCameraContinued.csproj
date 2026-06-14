@@ -87,6 +87,7 @@
 			<Private>false</Private>
 		</Reference>
 		<Reference Include="Newtonsoft.Json">
+		  <HintPath>$(ManagedPath)\Newtonsoft.Json.dll</HintPath>
 		  <Private>False</Private>
 		</Reference>
 		<Reference Include="Unity.InputSystem">
@@ -149,6 +150,10 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Lib.Harmony" Version="2.2.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Tests\**\*.cs" />
 	</ItemGroup>
 	
 <Target Name="BuildUI" AfterTargets="AfterBuild">

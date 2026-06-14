@@ -28,14 +28,28 @@ namespace FirstPersonCameraContinued.DataModels
             set;
         }
 
+        public FollowTargetState<Entity> FollowTarget
+        {
+            get;
+        } = new FollowTargetState<Entity>(Entity.Null);
+
         /// <summary>
-        /// The entity we may be following
+        /// The entity the user intentionally selected to follow.
         /// </summary>
         public Entity FollowEntity
         {
-            get;
-            set;
-        } = Entity.Null;
+            get => FollowTarget.SelectedSubject;
+            set => FollowTarget.SelectSubject(value);
+        }
+
+        /// <summary>
+        /// The entity currently used for camera position and rotation.
+        /// </summary>
+        public Entity AttachmentTarget
+        {
+            get => FollowTarget.AttachmentTarget;
+            set => FollowTarget.ResolveAttachmentTarget(value);
+        }
 
         /// <summary>
         /// Is the player sprinting?
