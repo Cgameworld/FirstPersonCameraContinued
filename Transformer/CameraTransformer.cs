@@ -256,8 +256,8 @@ namespace FirstPersonCameraContinued.Transforms
 
             if (_entityManager.HasComponent<Game.Vehicles.PostVan>(entity))
             {
-                vehicleType = VehicleType.PersonalCar;
-                translatedVehicleType = GetVehicleLocalizedString("PRIVATE_VEHICLE_TITLE[Taxi]");
+                vehicleType = VehicleType.PostVan;
+                translatedVehicleType = GetVehicleLocalizedString("POST_VEHICLE_TITLE");
                 return true;
             }
 
