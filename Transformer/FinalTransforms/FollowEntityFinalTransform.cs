@@ -157,6 +157,11 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
                 y = 4.4f;
                 z = 12.3f;
             }
+            else if (model.ScopeVehicle == VehicleType.Helicopter)
+            {
+                y = 0f;
+                z = 0.01f;
+            }
             else if (scope == CameraScope.UnknownVehicle)
             {
                 z = 0.25f;
@@ -165,11 +170,6 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
             else if (scope == CameraScope.Pet)
             {
                 y = 0.35f;
-            }
-            else if (scope == CameraScope.UnknownVehicle && model.ScopeVehicle == VehicleType.Helicopter)
-            {
-                y = 0f;
-                z = 0.01f;
             }
 
 
