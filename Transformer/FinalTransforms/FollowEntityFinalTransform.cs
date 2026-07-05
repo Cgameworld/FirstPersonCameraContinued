@@ -5,6 +5,7 @@ using FirstPersonCameraContinued.Enums;
 using FirstPersonCameraContinued.Helpers;
 using Game.Citizens;
 using Game.Rendering;
+using System;
 using Unity.Entities;
 using Unity.Mathematics;
 
@@ -18,6 +19,8 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
         private float3 offset;
         private Entity lastFollow;
         private WildlifePreset? _activeWildlifePreset;
+
+        internal Action OnFollowEntityChanged;
 
         private readonly EntityFollower _entityFollower;
         private readonly EntityManager _entityManager;
@@ -40,10 +43,11 @@ namespace FirstPersonCameraContinued.Transformer.FinalTransforms
             if (!_entityFollower.TryGetPosition(out float3 pos, out Bounds3 bounds, out quaternion rot, out bool isTrain))
                 return;
 
-            // When the entity changes get the new offset
+            // When the entity changes (e.g. cim boards a vehicle) redetermine scope before grabbing the new offset
             if (lastFollow != model.FollowEntity)
             {
                 lastFollow = model.FollowEntity;
+                OnFollowEntityChanged?.Invoke();
                 GrabOffset(model);
                 TryApplyWildlifePreset(model.FollowEntity);
             }

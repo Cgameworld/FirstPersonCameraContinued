@@ -59,6 +59,7 @@ namespace FirstPersonCameraContinued.Transforms
             _manualFinalTransform = new ManualFinalTransform();
             _entityFollower = new EntityFollower( _model );
             _followEntityFinalTransform = new FollowEntityFinalTransform( _entityFollower );
+            _followEntityFinalTransform.OnFollowEntityChanged = RefreshScope;
             _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
             FinalTransform = _manualFinalTransform;
             AddTransforms( );
@@ -95,9 +96,7 @@ namespace FirstPersonCameraContinued.Transforms
                     }
                 }
 
-                _model.Scope = DetermineScope( );
-                UpdateEffectToggle( );
-                OnScopeChanged?.Invoke( ); // Propagate event to listeners
+                RefreshScope( );
                 _model.LastFollowEntity = _model.FollowEntity;
             };
         }
@@ -126,6 +125,16 @@ namespace FirstPersonCameraContinued.Transforms
 
             CoreTransform.Apply( _model );
             FinalTransform?.Apply( _rig, _model );
+        }
+
+        /// <summary>
+        /// Redetermines scope and dependent state, also needed when EntityFollower switches the followed entity mid-follow
+        /// </summary>
+        private void RefreshScope( )
+        {
+            _model.Scope = DetermineScope( );
+            UpdateEffectToggle( );
+            OnScopeChanged?.Invoke( ); // Propagate event to listeners
         }
 
         /// <summary>
