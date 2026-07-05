@@ -384,6 +384,7 @@ const register: ModRegistrar = (moduleRegistry) => {
 
         return (
             <div style={{ width: dropdownWidth, right: rightOffset }} className="fpc-dropdownpanel panel_YqS expanded collapsible advisor-panel_dXi advisor-panel_mrr top-right-panel_A2r">
+                <div className="fpc-panel-blur"></div>
                 <div className="content_XD5 content_AD7 child-opacity-transition_nkS">
                     <div className="scrollable_DXr y_SMM scrollable_wt8">
                         <div className="content_gqa" style={{ padding: '0' }} >
