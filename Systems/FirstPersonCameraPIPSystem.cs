@@ -521,17 +521,16 @@ namespace FirstPersonCameraContinued
             ComponentType.ReadOnly<DisallowCluster>()
         );
 
-            var markerEntities = markerQuery.ToEntityArray(Allocator.TempJob);
-
-            foreach (var entity in markerEntities)
+            using (NativeArray<Entity> markerEntities = markerQuery.ToEntityArray(Allocator.TempJob))
             {
-                if (EntityManager.TryGetComponent<Icon>(entity, out var iconComponent))
+                foreach (Entity entity in markerEntities)
                 {
-                    return iconComponent.m_Location;
+                    if (EntityManager.TryGetComponent<Icon>(entity, out var iconComponent))
+                    {
+                        return iconComponent.m_Location;
+                    }
                 }
             }
-
-            markerEntities.Dispose();
 
             return float3.zero;
         }
@@ -543,20 +542,21 @@ namespace FirstPersonCameraContinued
             ComponentType.ReadOnly<PrefabData>()
         );
 
-            var notificationIconEntities = notificationIconQuery.ToEntityArray(Allocator.TempJob);
-
-            foreach (var entity in notificationIconEntities)
+            using (NativeArray<Entity> notificationIconEntities = notificationIconQuery.ToEntityArray(Allocator.TempJob))
             {
-                if (EntityManager.TryGetComponent<PrefabData>(entity, out var prefabDataComponent))
+                foreach (Entity entity in notificationIconEntities)
                 {
-                    PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<PrefabSystem>();
-                    if (prefabSystem.TryGetPrefab(prefabDataComponent, out NotificationIconPrefab prefab))
+                    if (EntityManager.TryGetComponent<PrefabData>(entity, out var prefabDataComponent))
                     {
-                        if (prefab.name == "Followed")
+                        PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<PrefabSystem>();
+                        if (prefabSystem.TryGetPrefab(prefabDataComponent, out NotificationIconPrefab prefab))
                         {
-                            return prefab.m_Icon;
-                        }
+                            if (prefab.name == "Followed")
+                            {
+                                return prefab.m_Icon;
+                            }
 
+                        }
                     }
                 }
             }
