@@ -117,10 +117,23 @@ If you like this mod be sure to leave an upvote! Thanks
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog>
 # v1.7
-randomfollowwindow added
-fix for bottom clamping issue after following citizens
-follow wildlife from using (head) bone positions
-improve random follow querying?
+Main New Features:
+- Added custom follow random mode where you can pick and choose what specifically to follow
+ 
+Improvements:
+
+- Improved stop name detection and filtering
+- Improved follow camera for wildlife
+- Improved backend random follow querying and vehicle type detection
+
+Bug Fixes: 
+
+- Fixed bottom clamping issue after following citizens
+- Fixed PIP not closing when exiting first person mode while "Show Game UI" turned on
+- Fixed issue where FOV increased ith fast transition speed
+- Fixed issue where background city sounds became quieter each session
+- Fixed speed info box width padding not rendering when following after free camera entry
+
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />
