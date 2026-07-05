@@ -207,7 +207,7 @@ namespace FirstPersonCameraContinued.Transforms
                 }
                 if (_entityManager.HasComponent<Game.Vehicles.PoliceCar>(entity))
                 {
-                    translatedVehicleType = GetVehicleLocalizedString("HEALTHCARE_VEHICLE_TITLE[MedicalHelicopter]");
+                    translatedVehicleType = GetVehicleLocalizedString("POLICE_VEHICLE_TITLE[PoliceHelicopter]");
                 }
                 if (_entityManager.HasComponent<Game.Vehicles.FireEngine>(entity))
                 {
