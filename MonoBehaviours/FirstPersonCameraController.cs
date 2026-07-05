@@ -140,6 +140,8 @@ namespace FirstPersonCameraContinued.MonoBehaviours
 
             AudioManager.instance?.UpdateAudioListener( transform.position, _rig.RigTransform.rotation );
             _cameraUpdateSystem.activeCameraController.rotation = _rig.RigTransform.rotation.eulerAngles;
+            _cameraUpdateSystem.activeCameraController.pivot = transform.position;
+            _cameraUpdateSystem.activeCameraController.zoom = 0f;
         }
 
         /// <summary>
