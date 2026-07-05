@@ -235,7 +235,7 @@ namespace FirstPersonCameraContinued.MonoBehaviours
             {
                 Cursor.lockState = CursorLockMode.None;
                 renderingSystem.levelOfDetail = storedLODScale;
-                //AudioManager.instance.ambienceVolume = storedAmbienceVolume;
+                AudioManager.instance.ambienceVolume = storedAmbienceVolume;
                 _cameraUpdateSystem.orbitCameraController.inputEnabled = true;
                 _firstPersonCameraSystem.ToggleUI( false );
                 IsActive = false; // Update the IsActive status to off now
