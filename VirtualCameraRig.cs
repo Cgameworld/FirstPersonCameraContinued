@@ -136,11 +136,13 @@ namespace FirstPersonCameraContinued
                     CameraTransform.transform.position = RigTransform.position;
                     CameraTransform.transform.rotation = RigTransform.rotation;
                     
-                    _virtualCamera.m_Lens.FieldOfView = math.lerp( _virtualCamera.m_Lens.FieldOfView, FOV_END, TRANSITION_DAMPEN * Time.deltaTime );
+                    // math.lerp doesn't clamp, fast factors with frame hitches overshoot the FOV
+                    _virtualCamera.m_Lens.FieldOfView = math.lerp( _virtualCamera.m_Lens.FieldOfView, FOV_END, math.saturate( TRANSITION_DAMPEN * Time.deltaTime ) );
 
                     // We've arrived
                     if ( Vector3.Distance( Parent.position, _model.Position ) <= 0.125f )
                     {
+                        _virtualCamera.m_Lens.FieldOfView = FOV_END;
                         _model.IsTransitioningIn = false;
                         OnTransitionComplete?.Invoke( false );
                     }
@@ -156,11 +158,12 @@ namespace FirstPersonCameraContinued
                     CameraTransform.transform.position = RigTransform.position;
                     CameraTransform.transform.rotation = RigTransform.rotation;
                     
-                    _virtualCamera.m_Lens.FieldOfView = math.lerp( _virtualCamera.m_Lens.FieldOfView, startFOV, TRANSITION_DAMPEN * Time.deltaTime );
-                    
+                    _virtualCamera.m_Lens.FieldOfView = math.lerp( _virtualCamera.m_Lens.FieldOfView, startFOV, math.saturate( TRANSITION_DAMPEN * Time.deltaTime ) );
+
                     // We've arrived
                     if ( Vector3.Distance( Parent.position, startPosition ) <= 0.125f )
                     {
+                        _virtualCamera.m_Lens.FieldOfView = startFOV;
                         _model.IsTransitioningOut = false;
                         _virtualCamera.Priority = 0;
                         OnTransitionComplete?.Invoke( true );
