@@ -105,6 +105,11 @@ namespace FirstPersonCameraContinued.Systems
         /// <param name="hidden"></param>
         public void ToggleUI( bool hidden )
         {
+            if (!hidden)
+            {
+                _firstPersonCameraPIPSystem.DestroyPiPWindow();
+            }
+
             if (Mod.FirstPersonModSettings?.ShowGameUI == false)
             {
                 _renderingSystem.hideOverlay = hidden;
@@ -126,7 +131,6 @@ namespace FirstPersonCameraContinued.Systems
                     _toolRaycastSystem.raycastFlags &= ~RaycastFlags.FreeCameraDisable;
                     m_UIView.ExecuteScript("document.querySelector('.app-container_Y5l').style.visibility = 'visible';");
                     m_UIView.ExecuteScript("var fps = document.querySelector('.fps-display_t30'); if(fps) fps.style.visibility = '';");
-                    _firstPersonCameraPIPSystem.DestroyPiPWindow();
                 }
             }
             else
