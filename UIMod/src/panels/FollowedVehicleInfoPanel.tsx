@@ -62,22 +62,32 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
 
     let formattedResources = Math.round(parsedResources*100) + "%";
 
+    const hasSpeedRow = parsedSpeed !== -1 && showSpeed;
+
     useEffect(() => {
+        if (!hasSpeedRow || !showInfoPanel || speedWidth !== undefined) {
+            return;
+        }
+
+        let cancelled = false;
         const updateWidth = () => {
+            if (cancelled) {
+                return;
+            }
             if (speedDivRef.current) {
                 const width = speedDivRef.current.offsetWidth;
                 console.log("speedDivRef:", width);
                 if (width > 0) {
                     setSpeedWidth(width / (window.innerWidth / 1920) + 40 + 5);
-                }
-                else {
-                    requestAnimationFrame(updateWidth);
+                    return;
                 }
             }
+            requestAnimationFrame(updateWidth);
         };
 
         requestAnimationFrame(updateWidth);
-    }, []);
+        return () => { cancelled = true; };
+    }, [hasSpeedRow, showInfoPanel]);
 
     if (!showInfoPanel) {
         return null;
@@ -95,7 +105,7 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
                     <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{citizenName}</div>
                 </div>
             )}
-            {parsedSpeed !== -1 && showSpeed && (
+            {hasSpeedRow && (
                 <div
                     ref={speedDivRef}
                     className={`fpcc-info-group-speed-padding ${infoBoxSizeClass}`}
