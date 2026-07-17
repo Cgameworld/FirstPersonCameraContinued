@@ -105,6 +105,14 @@
     display: block;
 }
 
+.fpc-submenu-wrapper.fpc-submenu-keyboard-open > .fpc-submenu-container {
+    display: block;
+}
+
+.fpc-submenu-wrapper.fpc-submenu-keyboard-open > .fpc-right-row {
+    background-color: rgba(128, 128, 128, 0.5);
+}
+
 .focusable_GEc {
     
    

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ModRegistrar } from "cs2/modding";
 import { bindValue, trigger, useValue } from "cs2/api";
 import { Entity, selectedInfo } from "cs2/bindings";
@@ -44,6 +44,8 @@ const register: ModRegistrar = (moduleRegistry) => {
     const ShowCrosshair$ = bindValue<boolean>('fpc', 'ShowCrosshair');
 
     const ShowChangelog$ = bindValue<boolean>('fpc', 'ShowChangelog');
+
+    const NumKeyEvent$ = bindValue<number>('fpc', 'NumKeyEvent');
 
     const CustomMenuButton = () => {
 
@@ -348,6 +350,40 @@ const register: ModRegistrar = (moduleRegistry) => {
 
         const [submenuDirection, setSubmenuDirection] = useState<string>('fpc-submenu-left');
 
+        const numKeyEvent = useValue(NumKeyEvent$);
+        const lastNumKeyEvent = useRef(numKeyEvent);
+        const [keyboardSubmenuIndex, setKeyboardSubmenuIndex] = useState<number | null>(null);
+
+        useEffect(() => {
+            trigger("fpc", "IsDropdownVisible", true);
+            return () => {
+                trigger("fpc", "IsDropdownVisible", false);
+            };
+        }, []);
+
+        //num key quick select, digit is lowest decimal place of event value, first press picks top level item, next press picks inside opened submenu
+        useEffect(() => {
+            if (numKeyEvent === lastNumKeyEvent.current) return;
+            lastNumKeyEvent.current = numKeyEvent;
+            const digit = numKeyEvent % 10;
+
+            if (keyboardSubmenuIndex === null) {
+                const item = menuItems[digit - 1];
+                if (!item) return;
+                if (item.submenu) {
+                    engine.trigger("audio.playSound", "select-item", 1);
+                    setKeyboardSubmenuIndex(digit - 1);
+                } else {
+                    handleItemClick(item);
+                }
+            } else {
+                const subItem = menuItems[keyboardSubmenuIndex]?.submenu?.[digit - 1];
+                if (subItem) {
+                    handleItemClick(subItem);
+                }
+            }
+        }, [numKeyEvent]);
+
         //dynamically change width of dropdown window based on locale
         const [dropdownWidth, setDropdownWidth] = useState<string>('220rem');
         const [submenuWidth, setSubmenuWidth] = useState<string>('120rem');
@@ -395,7 +431,7 @@ const register: ModRegistrar = (moduleRegistry) => {
                             <div className="infoview-panel-section_RXJ" style={{ padding: '0' }}>
                                 <div className="content_1xS focusable_GEc item-focused_FuT" style={{ padding: '0' }}>
                                     {menuItems.map((item, index) => (
-                                        <div key={index} className="fpc-submenu-wrapper">
+                                        <div key={index} className={`fpc-submenu-wrapper${keyboardSubmenuIndex === index ? ' fpc-submenu-keyboard-open' : ''}`}>
                                             <div className={`row_S2v fpc-right-row ${item.submenu ? 'fpc-has-submenu' : ''}`}
                                                 onMouseEnter={playHoverSound}
                                                 onClick={() => handleItemClick(item)}>

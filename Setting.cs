@@ -68,12 +68,15 @@ namespace FirstPersonCameraContinued
 
         [SettingsUIKeyboardBinding(BindingKeyboard.F, Mod.kButtonActionName, alt: true)]
         [SettingsUISection(GeneralSettingsTab, KeybindingSettingsGroup)]
-        public ProxyBinding FreeModeKeybind { get; set; }
+        public ProxyBinding FreeModeKeybind { get; set; }     
 
         [SettingsUIMultilineText]
         [SettingsUISection(GeneralSettingsTab, KeybindingSettingsGroup)]
         public string MultilineText => "List of Keyboard Shortcuts in First Person Mode\n" +
             "To move around use WASD, use SHIFT to walk faster and R/F keys to increase/decrease the camera height";
+
+        [SettingsUISection(GeneralSettingsTab, KeybindingSettingsGroup)]
+        public bool QuickDropdownSelect { get; set; }
 
         [SettingsUISection(GeneralSettingsTab, OtherSettingsGroup)]
         public string ModVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
@@ -244,6 +247,7 @@ namespace FirstPersonCameraContinued
             RunSpeed = 0.35f;
             CimHeight = 1.7f;
             TransitionSpeedFactor = 1.5f;
+            QuickDropdownSelect = false;
             DisableVSync = true;
             ShowGameUI = false;
             ShowInfoBox = true;

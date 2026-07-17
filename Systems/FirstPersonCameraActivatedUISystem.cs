@@ -8,6 +8,7 @@ using FirstPersonCameraContinued.Transforms;
 using Game.Buildings;
 using Game.Citizens;
 using Game.Common;
+using Game.Input;
 using Game.Net;
 using Game.Objects;
 using Game.Pathfind;
@@ -27,6 +28,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace FirstPersonCameraContinued.Systems
 {
@@ -57,6 +59,23 @@ namespace FirstPersonCameraContinued.Systems
         private GetterValueBinding<bool> showChangelogBinding;
         private bool showChangelog;
         private bool changelogChecked;
+
+        private GetterValueBinding<int> numKeyEventBinding;
+        private bool isDropdownVisible;
+        private int numKeyPressCount;
+        private int lastNumKeyDigit;
+        private InputBarrier numKeyBarrier;
+
+        private static readonly Key[] DigitKeys = { Key.Digit1, Key.Digit2, Key.Digit3, Key.Digit4, Key.Digit5, Key.Digit6, Key.Digit7, Key.Digit8, Key.Digit9 };
+        private static readonly Key[] NumpadKeys = { Key.Numpad1, Key.Numpad2, Key.Numpad3, Key.Numpad4, Key.Numpad5, Key.Numpad6, Key.Numpad7, Key.Numpad8, Key.Numpad9 };
+
+        private static readonly HashSet<string> NumKeyBindingPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "<Keyboard>/1", "<Keyboard>/2", "<Keyboard>/3", "<Keyboard>/4", "<Keyboard>/5",
+            "<Keyboard>/6", "<Keyboard>/7", "<Keyboard>/8", "<Keyboard>/9",
+            "<Keyboard>/numpad1", "<Keyboard>/numpad2", "<Keyboard>/numpad3", "<Keyboard>/numpad4", "<Keyboard>/numpad5",
+            "<Keyboard>/numpad6", "<Keyboard>/numpad7", "<Keyboard>/numpad8", "<Keyboard>/numpad9"
+        };
         private static readonly string currentModVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
         private bool showUpcomingRouteOnActivation = false;
@@ -90,6 +109,23 @@ namespace FirstPersonCameraContinued.Systems
 
             this.showChangelogBinding = new GetterValueBinding<bool>("fpc", "ShowChangelog", () => showChangelog);
             AddBinding(this.showChangelogBinding);
+
+            //press count encoded with digit so repeated presses of same key still change the bound value
+            this.numKeyEventBinding = new GetterValueBinding<int>("fpc", "NumKeyEvent", () => numKeyPressCount * 10 + lastNumKeyDigit);
+            AddBinding(this.numKeyEventBinding);
+
+            AddBinding(new TriggerBinding<bool>("fpc", "IsDropdownVisible", (bool visible) =>
+            {
+                isDropdownVisible = visible && Mod.FirstPersonModSettings != null && Mod.FirstPersonModSettings.QuickDropdownSelect;
+                if (visible)
+                {
+                    BlockVanillaNumKeyActions();
+                }
+                else
+                {
+                    ReleaseVanillaNumKeyActions();
+                }
+            }));
 
             AddBinding(new TriggerBinding("fpc", "DismissChangelog", () =>
             {
@@ -134,6 +170,11 @@ namespace FirstPersonCameraContinued.Systems
 
         protected override void OnUpdate()
         {
+            if (isDropdownVisible)
+            {
+                PollNumKeys();
+            }
+
             if (!changelogChecked && Mod.FirstPersonModSettings != null)
             {
                 changelogChecked = true;
@@ -183,6 +224,70 @@ namespace FirstPersonCameraContinued.Systems
                     lineStationInfoBinding.Update();
                 }
 
+            }
+        }
+
+        //same InputBarrier pattern as CameraInput.Enable, blocks vanilla shortcuts currently bound to num keys (speed 1/2/3 etc) while menu open
+        private void BlockVanillaNumKeyActions()
+        {
+            if (numKeyBarrier != null)
+            {
+                return;
+            }
+
+            ProxyActionMap shortcutsProxyMap = InputManager.instance.FindActionMap("Shortcuts");
+            if (shortcutsProxyMap == null)
+            {
+                return;
+            }
+
+            List<ProxyAction> actionsToBlock = shortcutsProxyMap.actions
+                .Where(kv => kv.Value.bindings.Any(b => NumKeyBindingPaths.Contains(b.path)))
+                .Select(kv => kv.Value)
+                .ToList();
+
+            numKeyBarrier = new InputBarrier(
+                "FPC Dropdown NumKeys",
+                actionsToBlock,
+                InputManager.DeviceType.Keyboard,
+                blocked: true
+            );
+        }
+
+        private void ReleaseVanillaNumKeyActions()
+        {
+            if (numKeyBarrier == null)
+            {
+                return;
+            }
+
+            numKeyBarrier.blocked = false;
+            numKeyBarrier.Dispose();
+            numKeyBarrier = null;
+        }
+
+        protected override void OnDestroy()
+        {
+            ReleaseVanillaNumKeyActions();
+            base.OnDestroy();
+        }
+        private void PollNumKeys()
+        {
+            Keyboard keyboard = Keyboard.current;
+            if (keyboard == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < DigitKeys.Length; i++)
+            {
+                if (keyboard[DigitKeys[i]].wasPressedThisFrame || keyboard[NumpadKeys[i]].wasPressedThisFrame)
+                {
+                    lastNumKeyDigit = i + 1;
+                    numKeyPressCount++;
+                    numKeyEventBinding.Update();
+                    return;
+                }
             }
         }
 

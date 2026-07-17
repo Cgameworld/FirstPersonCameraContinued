@@ -35,6 +35,8 @@
 "Options.OPTION_DESCRIPTION:CimHeight","Set the default height of the cim in free mode"
 "Options.OPTION:TransitionSpeedFactor","Transition Speed Factor"
 "Options.OPTION_DESCRIPTION:TransitionSpeedFactor","Adjust the enter/exit transition speed"
+"Options.OPTION:QuickDropdownSelect","Quick Dropdown Menu Select"
+"Options.OPTION_DESCRIPTION:QuickDropdownSelect","Select items in the camera dropdown menu with the number keys while it is open, the first number picks a menu item and the next number picks inside the opened submenu"
 "Options.OPTION:DisableVSync","Disable VSync"
 "Options.OPTION_DESCRIPTION:DisableVSync","Temporarily disable VSync while following an entity with the PiP window open"
 "Options.OPTION:ResetModSettings","Reset All Settings"
