@@ -14,6 +14,10 @@ const ErrorPopup: React.FC = () => {
         trigger("fpc", "DismissNoEntitiesError");
     };
 
+    const playHoverSound = () => {
+        engine.trigger("audio.playSound", "hover-item", 1);
+    };
+
     return (
         <div
             style={{
@@ -54,7 +58,7 @@ const ErrorPopup: React.FC = () => {
                         </div>
                     </div>
                     <div className="buttons_lZi row_L6K">
-                        <button className="button_HeP button_gJo" onClick={onContinue}>
+                        <button className="button_HeP button_gJo" onMouseEnter={playHoverSound} onClick={onContinue}>
                             OK
                         </button>
                     </div>

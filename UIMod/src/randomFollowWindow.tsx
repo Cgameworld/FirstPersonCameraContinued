@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { bindValue, trigger, useValue } from "cs2/api";
+import { Button } from "cs2/ui";
 import engine from 'cohtml/cohtml';
 import ErrorPopup from './errorPopup';
 
@@ -16,6 +17,10 @@ interface Category {
 const RandomFollowCategories$ = bindValue<string>('fpc', 'RandomFollowCategories', '[]');
 const NoEntitiesError$ = bindValue<string>('fpc', 'NoEntitiesError', '');
 const IsEntered$ = bindValue<boolean>('fpc', 'IsEntered');
+
+function playHoverSound() {
+    engine.trigger("audio.playSound", "hover-item", 1);
+}
 
 function initSelections(categories: Category[]): Record<string, boolean> {
     const selections: Record<string, boolean> = {};
@@ -42,12 +47,14 @@ const RandomFollowWindow: React.FC<{ onClose: () => void, translation: RandomFol
     const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
 
     const toggle = (key: string) => {
+        engine.trigger("audio.playSound", "select-toggle", 1);
         setSelections(prev => {
             return { ...prev, [key]: !prev[key] };
         });
     };
 
     const toggleCategory = (cat: Category) => {
+        engine.trigger("audio.playSound", "select-toggle", 1);
         const allChecked = cat.items.every(item => selections[item.key]);
         setSelections(prev => {
             const updated = { ...prev };
@@ -75,7 +82,6 @@ const RandomFollowWindow: React.FC<{ onClose: () => void, translation: RandomFol
     const onStart = () => {
         const selectedEntries = Object.entries(selections).filter(([_, v]) => v);
         if (selectedEntries.length === 0) {
-            engine.trigger("audio.playSound", "select-item", 1);
             trigger("fpc", "NothingCheckedFPC");
             return;
         }
@@ -88,7 +94,6 @@ const RandomFollowWindow: React.FC<{ onClose: () => void, translation: RandomFol
         }));
         const selectedLabels = selectedEntries.map(([k]) => labelLookup[k] || k).join(', ');
 
-        engine.trigger("audio.playSound", "select-item", 1);
         trigger("fpc", "FilteredRandomFPC", selectedKeys + '|' + selectedLabels);
     };
 
@@ -156,9 +161,7 @@ const RandomFollowWindow: React.FC<{ onClose: () => void, translation: RandomFol
                         </div>
                         <div className="icon-space_h_f"></div>
                         <div className="title_SVH title_zQN">Follow Random</div>
-                        <button className="button_bvQ button_bvQ close-button_wKK" onClick={onClose}>
-                            <div className="tinted-icon_iKo icon_PhD" style={{ maskImage: "url(Media/Glyphs/Close.svg)" }}></div>
-                        </button>
+                        <Button variant="round" className="close-button_wKK" src="Media/Glyphs/Close.svg" tinted onSelect={onClose} />
                     </div>
                 </div>
                 <div className="content_XD5 content_AD7 child-opacity-transition_nkS">
@@ -185,6 +188,7 @@ const RandomFollowWindow: React.FC<{ onClose: () => void, translation: RandomFol
                                                 >
                                                     <div
                                                         className="header_MP_ header_8H_ item-mouse-states_Fmi item-focused_FuT"
+                                                        onMouseEnter={playHoverSound}
                                                         onClick={() => toggleCategory(cat)}
                                                         style={{ cursor: 'pointer' }}
                                                     >
@@ -202,6 +206,7 @@ const RandomFollowWindow: React.FC<{ onClose: () => void, translation: RandomFol
                                                             className="foldout-item_dah foldout-item_wOF disable-mouse-states_js5"
                                                             key={item.key}
                                                             style={{ '--nesting': 1, cursor: 'pointer' } as React.CSSProperties}
+                                                            onMouseEnter={playHoverSound}
                                                             onClick={() => toggle(item.key)}
                                                         >
                                                             <div className="header_MP_ header_8H_ item-mouse-states_Fmi item-focused_FuT">
@@ -224,10 +229,10 @@ const RandomFollowWindow: React.FC<{ onClose: () => void, translation: RandomFol
                             </div>
                             <div className="buttons-container" style={{ marginTop: '22rem', marginRight: '12rem', textAlign: 'right' }}>
                                 <div className="buttons_lZi row_L6K" style={{ width: '350rem' }}>
-                                    <button className="button_HeP button_gJo" style={{ width: "140rem", backgroundColor: '#606973', color: 'rgba(255,255,255,0.9)', textTransform: 'uppercase' }} onClick={selectAll}>
+                                    <Button className="button_gJo" theme={{ button: "button_HeP" }} style={{ width: "140rem", backgroundColor: '#606973', color: 'rgba(255,255,255,0.9)', textTransform: 'uppercase' }} onSelect={selectAll}>
                                         {Object.values(selections).every(v => v) ? translation.deselectAll : translation.selectAll}
-                                    </button>
-                                    <button className="button_HeP button_gJo" style={{ width: "130rem", textTransform: 'uppercase' }} onClick={onStart}>{translation.start}</button>
+                                    </Button>
+                                    <Button className="button_gJo" theme={{ button: "button_HeP" }} style={{ width: "130rem", textTransform: 'uppercase' }} onSelect={onStart}>{translation.start}</Button>
                                 </div>
                             </div>
                         </div>

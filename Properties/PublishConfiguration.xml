@@ -118,7 +118,7 @@ If you like this mod be sure to leave an upvote! Thanks
   <ChangeLog>
 # v1.7
 Main New Features:
-- Added custom follow random mode where you can pick and choose what specifically to follow
+- Added custom follow random mode where you can pick and choose what vehicle/creature type(s) to follow
  
 Improvements:
 
@@ -133,7 +133,7 @@ Bug Fixes:
 - Fixed issue where FOV increased ith fast transition speed
 - Fixed issue where background city sounds became quieter each session
 - Fixed speed info box width padding not rendering when following after free camera entry
-
+- Fixed missing vanilla UI sounds
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />

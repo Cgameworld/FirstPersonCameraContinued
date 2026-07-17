@@ -25,6 +25,10 @@ const register: ModRegistrar = (moduleRegistry) => {
         return translate(key);
     }
 
+    const playHoverSound = () => {
+        engine.trigger("audio.playSound", "hover-item", 1);
+    };
+
     let tooltipDescriptionMainCameraIcon: string | null;
     let tooltipDescriptionFollowCamera: string | null;
 
@@ -225,7 +229,7 @@ const register: ModRegistrar = (moduleRegistry) => {
 
         return <div>
             <DescriptionTooltip title="First Person Camera" description={tooltipDescriptionMainCameraIcon}>
-                <button id="FPC-MainGameButton" className="button_ke4 button_ke4 button_h9N" onClick={() => {
+                <button id="FPC-MainGameButton" className="button_ke4 button_ke4 button_h9N" onMouseEnter={playHoverSound} onClick={() => {
                     engine.trigger("audio.playSound", "select-item", 1);
                     toggleButtonDropdown();
                 }}>
@@ -393,6 +397,7 @@ const register: ModRegistrar = (moduleRegistry) => {
                                     {menuItems.map((item, index) => (
                                         <div key={index} className="fpc-submenu-wrapper">
                                             <div className={`row_S2v fpc-right-row ${item.submenu ? 'fpc-has-submenu' : ''}`}
+                                                onMouseEnter={playHoverSound}
                                                 onClick={() => handleItemClick(item)}>
                                                 <div className="right_k3O row_S2v">{item.label}</div>
                                                 {item.submenu && <span className="fpc-submenu-arrow">&#9654;</span>}
@@ -403,6 +408,7 @@ const register: ModRegistrar = (moduleRegistry) => {
                                                         <div className="content_1xS focusable_GEc item-focused_FuT" style={{ padding: '0' }}>
                                                             {item.submenu.map((subItem, subIndex) => (
                                                                 <div key={subIndex} className="row_S2v fpc-right-row"
+                                                                    onMouseEnter={playHoverSound}
                                                                     onClick={() => handleItemClick(subItem)}>
                                                                     <div className="right_k3O row_S2v">{subItem.label}</div>
                                                                 </div>
