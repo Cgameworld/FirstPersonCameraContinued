@@ -146,7 +146,7 @@ const RandomFollowWindow: React.FC<{ onClose: () => void, translation: RandomFol
                 }}
             >
                 <div
-                    className="header_jAe header_Bpo child-opacity-transition_nkS"
+                    className="header_H_U header_Bpo child-opacity-transition_nkS"
                     onMouseDown={onMouseDown}
                     style={{ cursor: 'grab' }}
                 >
@@ -161,7 +161,7 @@ const RandomFollowWindow: React.FC<{ onClose: () => void, translation: RandomFol
                         </button>
                     </div>
                 </div>
-                <div className="content_VBF content_AD7 child-opacity-transition_nkS">
+                <div className="content_XD5 content_AD7 child-opacity-transition_nkS">
                     <div className="icon-layout_cZT row_L6K">
                         <div className="main-column_Jzk">
                             <div className="error-message_r4_" style={{ marginTop: '-4rem' }}>
