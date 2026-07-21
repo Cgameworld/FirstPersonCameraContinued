@@ -117,7 +117,7 @@ namespace FirstPersonCameraContinued.Systems
             AddBinding(new TriggerBinding<bool>("fpc", "IsDropdownVisible", (bool visible) =>
             {
                 isDropdownVisible = visible && Mod.FirstPersonModSettings != null && Mod.FirstPersonModSettings.QuickDropdownSelect;
-                if (visible)
+                if (isDropdownVisible)
                 {
                     BlockVanillaNumKeyActions();
                 }
