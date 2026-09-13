@@ -401,7 +401,7 @@ FodyWeavers.xsd
 *.stackdump
 
 # Unity IL Post Processing
-ilpp.pid
+*.pid
 
 # Claude
 CLAUDE.md

@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -83,6 +84,7 @@ namespace FirstPersonCameraContinued.Systems
         private NameSystem nameSystem;
         private EntityQuery namedEdgeQuery;
         private readonly Dictionary<Entity, (string name, Entity edge)> nearestNamedRoadCache = new Dictionary<Entity, (string, Entity)>();
+        private string lastStripMapDebugKey = "";
 
         private static string serializedUISettingsGroupOptions;
 
@@ -644,6 +646,14 @@ namespace FirstPersonCameraContinued.Systems
                 isMetroOrTrain
             );
 
+            //log once on entry and whenever the displayed stop list changes, current stop index alone does not retrigger
+            string stripMapDebugKey = string.Join("|", result.stations.Select(s => s.name));
+            if (lineStationInfo.Length == 0 || stripMapDebugKey != lastStripMapDebugKey)
+            {
+                lastStripMapDebugKey = stripMapDebugKey;
+                LogStripMapDebug(routeEntity, vehicleEntity, displayedStations, allWaypoints.Count, result, showFirstHalf, reverseStationOrder, isMetroOrTrain);
+            }
+
             lineStationInfo = JsonConvert.SerializeObject(result);
             lineStationInfoBinding.Update();
         }
@@ -890,7 +900,11 @@ namespace FirstPersonCameraContinued.Systems
                 bool useVanillaNames = Mod.FirstPersonModSettings?.UseVanillaStopNames ?? true;
                 for (int i = 0; i < stations.Count; i++)
                 {
-                    string displayName = useVanillaNames ? GetVanillaStopName(stations[i].stopEntity) : null;
+                    string displayName = GetMarkerStopName(stations[i].stopEntity, stations[i].streetName);
+                    if (string.IsNullOrEmpty(displayName) && useVanillaNames)
+                    {
+                        displayName = GetVanillaStopName(stations[i].stopEntity);
+                    }
                     if (string.IsNullOrEmpty(displayName))
                     {
                         displayName = FormatStationName(stations[i].streetName, stations[i].crossStreet, nameCount, stations[i].stopEntity);
@@ -901,6 +915,42 @@ namespace FirstPersonCameraContinued.Systems
             }
 
             return result;
+        }
+
+        //marker stops sit inside a building (harbor, depot, terminal) and their address points at an internal pathway, vanilla names them by the building
+        private string GetMarkerStopName(Entity stopEntity, string streetName)
+        {
+            if (!EntityManager.HasComponent<Game.Objects.Marker>(stopEntity))
+                return null;
+
+            if (nameSystem.TryGetCustomName(stopEntity, out string customName))
+                return customName;
+
+            Entity topOwner = stopEntity;
+            for (int hop = 0; hop < 8; hop++)
+            {
+                if (!EntityManager.TryGetComponent<Owner>(topOwner, out Owner owner) || owner.m_Owner == Entity.Null)
+                    break;
+                topOwner = owner.m_Owner;
+                if (nameSystem.TryGetCustomName(topOwner, out string ownerCustomName))
+                    return ownerCustomName;
+            }
+
+            if (topOwner == stopEntity)
+                return null;
+
+            string buildingName = nameSystem.GetRenderedLabelName(topOwner);
+            if (string.IsNullOrEmpty(buildingName) || buildingName.StartsWith("Assets.NAME["))
+                return null;
+
+            string baseName = GetStreetBaseName(streetName);
+            if (string.IsNullOrEmpty(baseName) || baseName == "Stop")
+                return buildingName;
+
+            string format = GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.StopStripBuildingStopFormat", out string localizedFormat)
+                ? localizedFormat
+                : "{STREET} {BUILDING}";
+            return format.Replace("{STREET}", baseName).Replace("{BUILDING}", buildingName);
         }
 
         private string GetVanillaStopName(Entity stopEntity)
@@ -929,6 +979,164 @@ namespace FirstPersonCameraContinued.Systems
             if (name.EndsWith("Bridge")) return false;
             if (name.EndsWith("Track")) return false;
             return true;
+        }
+
+        //debug only, re-derives every naming input for each displayed stop without touching the real naming path
+        private void LogStripMapDebug(
+            Entity routeEntity,
+            Entity vehicleEntity,
+            List<(string streetName, string crossStreet, float3 position, Entity stopEntity)> stations,
+            int transportStopCount,
+            LineStationInfo result,
+            bool showFirstHalf,
+            bool reverseStationOrder,
+            bool isMetroOrTrain)
+        {
+            try
+            {
+                bool useVanillaNames = Mod.FirstPersonModSettings?.UseVanillaStopNames ?? true;
+                PrefabSystem prefabSystem = World.GetExistingSystemManaged<PrefabSystem>();
+
+                Dictionary<string, int> nameCount = new Dictionary<string, int>();
+                foreach ((string streetName, string crossStreet, float3 position, Entity stopEntity) station in stations)
+                {
+                    string baseName = GetStreetBaseName(station.streetName);
+                    nameCount[baseName] = nameCount.GetValueOrDefault(baseName, 0) + 1;
+                }
+
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("=== strip map updated ===");
+                sb.AppendLine($"route {routeEntity} name={DescribeName(nameSystem.GetName(routeEntity))}");
+                sb.AppendLine($"vehicle {vehicleEntity} prefab={GetPrefabNameSafe(prefabSystem, vehicleEntity)} isMetroOrTrain={isMetroOrTrain} useVanillaNames={useVanillaNames}");
+                sb.AppendLine($"showFirstHalf={showFirstHalf} reverseOrder={reverseStationOrder} currentStopIndex={result.currentStopIndex} displayed={stations.Count} transportStopsOnRoute={transportStopCount} lineColor={result.lineColor}");
+                sb.AppendLine($"baseNameCounts: {string.Join(", ", nameCount.Select(kv => $"'{kv.Key}'={kv.Value}"))}");
+                sb.AppendLine("name path: metro/train -> FormatStationName | other -> GetMarkerStopName (marker stop inside building: stop/owner custom name, else street base + localized building) then GetVanillaStopName (stop custom name, else address number+road) then FormatStationName fallback (stop custom, owner custom, base/cross when base duplicated, else AbbreviateSuffix(street))");
+
+                for (int j = 0; j < result.stations.Count; j++)
+                {
+                    int stationIndex = (isMetroOrTrain && reverseStationOrder) ? stations.Count - 1 - j : j;
+                    if (stationIndex < 0 || stationIndex >= stations.Count)
+                        continue;
+
+                    (string streetName, string crossStreet, float3 position, Entity stopEntity) station = stations[stationIndex];
+                    Entity stopEntity = station.stopEntity;
+                    string shownName = (result.stations[j].name ?? "").Replace("\n", "\\n");
+                    string currentMarker = j == result.currentStopIndex ? " <== current" : "";
+
+                    sb.AppendLine($"[{j}] '{shownName}'{currentMarker}");
+
+                    string stopCustomName = nameSystem.TryGetCustomName(stopEntity, out string stopCustom) ? stopCustom : null;
+                    Entity ownerEntity = EntityManager.TryGetComponent<Owner>(stopEntity, out Owner owner) ? owner.m_Owner : Entity.Null;
+                    string ownerCustomName = ownerEntity != Entity.Null && nameSystem.TryGetCustomName(ownerEntity, out string ownerCustom) ? ownerCustom : null;
+
+                    sb.AppendLine($"    stop {stopEntity} prefab={GetPrefabNameSafe(prefabSystem, stopEntity)} marker={EntityManager.HasComponent<Game.Objects.Marker>(stopEntity)} building={EntityManager.HasComponent<Building>(stopEntity)} attached={EntityManager.HasComponent<Attached>(stopEntity)} owner={(ownerEntity != Entity.Null ? ownerEntity.ToString() : "none")} pos={station.position}");
+                    sb.AppendLine($"    customName stop='{stopCustomName ?? "-"}' owner='{ownerCustomName ?? "-"}'");
+
+                    List<string> ownerChain = new List<string>();
+                    Entity topOwner = stopEntity;
+                    for (int hop = 0; hop < 8; hop++)
+                    {
+                        if (!EntityManager.TryGetComponent<Owner>(topOwner, out Owner chainOwner) || chainOwner.m_Owner == Entity.Null)
+                            break;
+                        topOwner = chainOwner.m_Owner;
+                        ownerChain.Add($"{topOwner} ({GetPrefabNameSafe(prefabSystem, topOwner)})");
+                    }
+                    if (ownerChain.Count > 0)
+                        sb.AppendLine($"    ownerChain: {string.Join(" -> ", ownerChain)} topName={DescribeName(nameSystem.GetName(topOwner))}");
+
+                    sb.AppendLine($"    vanilla NameSystem.GetName(stop)={DescribeName(nameSystem.GetName(stopEntity))}");
+
+                    string markerStopName = GetMarkerStopName(stopEntity, station.streetName);
+                    sb.AppendLine($"    marker: GetMarkerStopName='{markerStopName ?? "null"}'");
+
+                    bool hasAddress = BuildingUtils.GetAddress(EntityManager, stopEntity, out Entity addressRoad, out int addressNumber);
+                    string rawAddressRoad = hasAddress && addressRoad != Entity.Null ? nameSystem.GetRenderedLabelName(addressRoad) : null;
+                    string abbrevAddressRoad = AbbreviateSuffix(rawAddressRoad);
+                    string vanillaStopName = GetVanillaStopName(stopEntity);
+                    sb.AppendLine($"    address: found={hasAddress} road={addressRoad} number={addressNumber} rawRoad='{rawAddressRoad ?? "-"}' abbrev='{abbrevAddressRoad ?? "-"}' valid={IsValidRoadName(abbrevAddressRoad)} -> GetVanillaStopName='{vanillaStopName ?? "null"}'");
+
+                    string buildingEdgeName = EntityManager.TryGetComponent<Building>(stopEntity, out Building stopBuilding) && stopBuilding.m_RoadEdge != Entity.Null ? GetRoadName(stopBuilding.m_RoadEdge) : "";
+                    string ownerBuildingEdgeName = ownerEntity != Entity.Null && EntityManager.TryGetComponent<Building>(ownerEntity, out Building ownerBuilding) && ownerBuilding.m_RoadEdge != Entity.Null ? GetRoadName(ownerBuilding.m_RoadEdge) : "";
+                    string attachedEdgeName = EntityManager.TryGetComponent<Attached>(stopEntity, out Attached stopAttached) && stopAttached.m_Parent != Entity.Null ? GetRoadName(stopAttached.m_Parent) : "";
+                    bool nearestSearched = nearestNamedRoadCache.TryGetValue(stopEntity, out (string name, Entity edge) nearest);
+                    string nearestText = nearestSearched ? $"'{nearest.name}' edge={nearest.edge}" : "not searched";
+
+                    string streetSource;
+                    if (!string.IsNullOrEmpty(buildingEdgeName)) streetSource = "Building.m_RoadEdge";
+                    else if (!string.IsNullOrEmpty(ownerBuildingEdgeName)) streetSource = "owner Building.m_RoadEdge";
+                    else if (!string.IsNullOrEmpty(attachedEdgeName)) streetSource = "Attached.m_Parent";
+                    else if (nearestSearched && !string.IsNullOrEmpty(nearest.name)) streetSource = "nearest named road";
+                    else streetSource = "fallback 'Stop'";
+
+                    sb.AppendLine($"    street: source={streetSource} candidates building='{buildingEdgeName}' ownerBuilding='{ownerBuildingEdgeName}' attached='{attachedEdgeName}' nearest={nearestText}");
+
+                    string baseName = GetStreetBaseName(station.streetName);
+                    int baseCount = nameCount.GetValueOrDefault(baseName, 0);
+                    string formatted = (FormatStationName(station.streetName, station.crossStreet, nameCount, stopEntity) ?? "").Replace("\n", "\\n");
+                    sb.AppendLine($"    streetName='{station.streetName}' base='{baseName}' baseCount={baseCount} crossStreet='{station.crossStreet}' crossBase='{GetStreetBaseName(station.crossStreet)}' -> FormatStationName='{formatted}'");
+
+                    string chosen;
+                    if (!isMetroOrTrain && !string.IsNullOrEmpty(markerStopName))
+                        chosen = "GetMarkerStopName (street base + localized building)";
+                    else if (!isMetroOrTrain && useVanillaNames && !string.IsNullOrEmpty(vanillaStopName))
+                        chosen = stopCustomName != null ? "GetVanillaStopName stop custom name" : "GetVanillaStopName address";
+                    else if (stopCustomName != null)
+                        chosen = "FormatStationName stop custom name";
+                    else if (ownerCustomName != null)
+                        chosen = "FormatStationName owner custom name";
+                    else if (baseCount > 1 && !string.IsNullOrEmpty(station.crossStreet))
+                        chosen = "FormatStationName base/cross (duplicate base name)";
+                    else
+                        chosen = "FormatStationName AbbreviateSuffix(streetName)";
+                    sb.AppendLine($"    chosen={chosen}");
+                }
+
+                Mod.log.Info(sb.ToString());
+            }
+            catch (Exception e)
+            {
+                Mod.log.Info($"strip map debug log failed {e}");
+            }
+        }
+
+        private static readonly FieldInfo nameTypeField = typeof(NameSystem.Name).GetField("m_NameType", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly FieldInfo nameIdField = typeof(NameSystem.Name).GetField("m_NameID", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly FieldInfo nameArgsField = typeof(NameSystem.Name).GetField("m_NameArgs", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        private static string DescribeName(NameSystem.Name name)
+        {
+            object nameType = nameTypeField?.GetValue(name);
+            string nameId = nameIdField?.GetValue(name) as string;
+            string[] nameArgs = nameArgsField?.GetValue(name) as string[];
+
+            string text = $"{nameType}:{nameId ?? "null"}";
+
+            if (nameId != null && GameManager.instance?.localizationManager?.activeDictionary != null
+                && GameManager.instance.localizationManager.activeDictionary.TryGetValue(nameId, out string localized))
+            {
+                text += $" => '{localized}'";
+            }
+
+            if (nameArgs != null && nameArgs.Length > 0)
+                text += $" args=[{string.Join(", ", nameArgs)}]";
+
+            return text;
+        }
+
+        private string GetPrefabNameSafe(PrefabSystem prefabSystem, Entity entity)
+        {
+            if (prefabSystem == null || entity == Entity.Null)
+                return "-";
+            if (!EntityManager.TryGetComponent<PrefabRef>(entity, out PrefabRef prefabRef))
+                return "-";
+            try
+            {
+                return prefabSystem.GetPrefabName(prefabRef.m_Prefab);
+            }
+            catch
+            {
+                return "?";
+            }
         }
 
         private void ClearLineStationInfo()
