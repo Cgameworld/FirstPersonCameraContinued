@@ -276,7 +276,7 @@ const StopStripPanel: React.FC = () => {
                 </div>
                 {showLeftArrow && (
                     <div className="fpcc-stopstrip-arrow fpcc-stopstrip-arrow-left">
-                        <svg viewBox="0 0 24 24" width="38rem" height="38rem">
+                        <svg viewBox="0 0 24 24">
                             <polygon points="17,2 5,12 17,22" fill={lineColor} stroke="none"/>
                         </svg>
                     </div>
@@ -295,7 +295,7 @@ const StopStripPanel: React.FC = () => {
                 })}
                 {showRightArrow && (
                     <div className="fpcc-stopstrip-arrow fpcc-stopstrip-arrow-right">
-                        <svg viewBox="0 0 24 24" width="38rem" height="38rem">
+                        <svg viewBox="0 0 24 24">
                             <polygon points="7,2 19,12 7,22" fill={lineColor} stroke="none"/>
                         </svg>
                     </div>

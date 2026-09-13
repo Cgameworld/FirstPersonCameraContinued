@@ -136,6 +136,7 @@ Bug Fixes:
 (INVESTIGATE CUSTOM? vehicles being too loud)
 - Fixed speed info box width padding not rendering when following after free camera entry
 - Fixed missing vanilla UI sounds
+- Fixed svg scaling issue
   </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/tDZhaMrgsQ" />
