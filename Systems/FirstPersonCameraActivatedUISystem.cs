@@ -695,12 +695,15 @@ namespace FirstPersonCameraContinued.Systems
 
             bool reverseStationOrder = !isMovingForward;
 
+            bool isAircraft = EntityManager.HasComponent<Game.Vehicles.Aircraft>(vehicleEntity);
+
             var result = BuildLineStationResult(
                 routeEntity,
                 displayedStations,
                 reverseStationOrder,
                 currentStationIdx,
-                isMetroOrTrain
+                isMetroOrTrain,
+                isAircraft
             );
 
             //log once on entry and whenever the displayed stop list changes, current stop index alone does not retrigger
@@ -917,7 +920,8 @@ namespace FirstPersonCameraContinued.Systems
             List<(string streetName, string crossStreet, float3 position, Entity stopEntity)> stations,
             bool goingInbound,
             int currentStationIdx,
-            bool isMetroOrTrain)
+            bool isMetroOrTrain,
+            bool isAircraft)
         {
             var result = new LineStationInfo
             {
@@ -957,7 +961,7 @@ namespace FirstPersonCameraContinued.Systems
                 bool useVanillaNames = Mod.FirstPersonModSettings?.UseVanillaStopNames ?? true;
                 for (int i = 0; i < stations.Count; i++)
                 {
-                    string displayName = GetMarkerStopName(stations[i].stopEntity, stations[i].streetName);
+                    string displayName = GetMarkerStopName(stations[i].stopEntity, stations[i].streetName, isAircraft);
                     if (string.IsNullOrEmpty(displayName) && useVanillaNames)
                     {
                         displayName = GetVanillaStopName(stations[i].stopEntity);
@@ -975,13 +979,28 @@ namespace FirstPersonCameraContinued.Systems
         }
 
         //marker stops sit inside a building (harbor, depot, terminal) and their address points at an internal pathway, vanilla names them by the building
-        private string GetMarkerStopName(Entity stopEntity, string streetName)
+        private string GetMarkerStopName(Entity stopEntity, string streetName, bool isAircraft = false)
         {
             //outside connections are named after their city, vanilla NameSystem skips transport-stop naming for them
             if (EntityManager.HasComponent<Game.Objects.OutsideConnection>(stopEntity))
             {
                 string connectionName = nameSystem.GetRenderedLabelName(stopEntity);
-                return !string.IsNullOrEmpty(connectionName) && !connectionName.StartsWith("Assets.") ? connectionName : null;
+                if (string.IsNullOrEmpty(connectionName) || connectionName.StartsWith("Assets."))
+                    return null;
+
+                //external air connections are the destination city's airport, append the localized airport word
+                if (isAircraft)
+                {
+                    string airportWord = GetLocalized("Assets.NAME[Airport01]");
+                    if (!string.IsNullOrEmpty(airportWord))
+                    {
+                        string localeId = GameManager.instance.localizationManager.activeLocaleId;
+                        bool noSpace = localeId == "ja-JP" || localeId == "zh-HANS" || localeId == "zh-HANT";
+                        return noSpace ? $"{connectionName}{airportWord}" : $"{connectionName} {airportWord}";
+                    }
+                }
+
+                return connectionName;
             }
 
             if (!EntityManager.HasComponent<Game.Objects.Marker>(stopEntity))
