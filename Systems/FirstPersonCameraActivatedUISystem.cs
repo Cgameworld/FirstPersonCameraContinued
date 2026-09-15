@@ -186,7 +186,10 @@ namespace FirstPersonCameraContinued.Systems
                 var lastSeenMajorMinor = string.IsNullOrEmpty(lastSeen) || lastSeen.IndexOf('.', lastSeen.IndexOf('.') + 1) < 0
                     ? lastSeen
                     : lastSeen.Substring(0, lastSeen.IndexOf('.', lastSeen.IndexOf('.') + 1));
-                showChangelog = lastSeenMajorMinor != currentMajorMinor;
+                
+                DateTime changelogWindowExpiration = new DateTime(2026, 11, 15);
+                
+                showChangelog = lastSeenMajorMinor != currentMajorMinor && DateTime.Now < changelogWindowExpiration;
                 showChangelogBinding.Update();
             }
 
