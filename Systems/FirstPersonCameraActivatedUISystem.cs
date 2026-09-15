@@ -924,6 +924,13 @@ namespace FirstPersonCameraContinued.Systems
         //marker stops sit inside a building (harbor, depot, terminal) and their address points at an internal pathway, vanilla names them by the building
         private string GetMarkerStopName(Entity stopEntity, string streetName)
         {
+            //outside connections are named after their city, vanilla NameSystem skips transport-stop naming for them
+            if (EntityManager.HasComponent<Game.Objects.OutsideConnection>(stopEntity))
+            {
+                string connectionName = nameSystem.GetRenderedLabelName(stopEntity);
+                return !string.IsNullOrEmpty(connectionName) && !connectionName.StartsWith("Assets.") ? connectionName : null;
+            }
+
             if (!EntityManager.HasComponent<Game.Objects.Marker>(stopEntity))
                 return null;
 
@@ -1096,7 +1103,7 @@ namespace FirstPersonCameraContinued.Systems
                 sb.AppendLine($"vehicle {vehicleEntity} prefab={GetPrefabNameSafe(prefabSystem, vehicleEntity)} isMetroOrTrain={isMetroOrTrain} useVanillaNames={useVanillaNames}");
                 sb.AppendLine($"showFirstHalf={showFirstHalf} reverseOrder={reverseStationOrder} currentStopIndex={result.currentStopIndex} displayed={stations.Count} transportStopsOnRoute={transportStopCount} lineColor={result.lineColor}");
                 sb.AppendLine($"baseNameCounts: {string.Join(", ", nameCount.Select(kv => $"'{kv.Key}'={kv.Value}"))}");
-                sb.AppendLine("name path: metro/train -> FormatStationName | other -> GetMarkerStopName (marker stop inside building: stop/owner custom name, else abbreviated street + building type label) then GetVanillaStopName (stop custom name, else address number+road) then FormatStationName fallback (stop custom, owner custom, base/cross when base duplicated, else AbbreviateSuffix(street))");
+                sb.AppendLine("name path: metro/train -> FormatStationName | other -> GetMarkerStopName (outside connection city name, else marker stop inside building: stop/owner custom name, else abbreviated street + building type label) then GetVanillaStopName (stop custom name, else address number+road) then FormatStationName fallback (stop custom, owner custom, base/cross when base duplicated, else AbbreviateSuffix(street))");
 
                 for (int j = 0; j < result.stations.Count; j++)
                 {
@@ -1190,7 +1197,9 @@ namespace FirstPersonCameraContinued.Systems
                     sb.AppendLine($"    streetName='{station.streetName}' base='{baseName}' baseCount={baseCount} crossStreet='{station.crossStreet}' crossBase='{GetStreetBaseName(station.crossStreet)}' -> FormatStationName='{formatted}'");
 
                     string chosen;
-                    if (!isMetroOrTrain && !string.IsNullOrEmpty(markerStopName))
+                    if (!isMetroOrTrain && EntityManager.HasComponent<Game.Objects.OutsideConnection>(stopEntity) && !string.IsNullOrEmpty(markerStopName))
+                        chosen = "GetMarkerStopName (outside connection city name)";
+                    else if (!isMetroOrTrain && !string.IsNullOrEmpty(markerStopName))
                         chosen = "GetMarkerStopName (abbreviated street + building type label)";
                     else if (!isMetroOrTrain && useVanillaNames && !string.IsNullOrEmpty(vanillaStopName))
                         chosen = stopCustomName != null ? "GetVanillaStopName stop custom name" : "GetVanillaStopName address";
