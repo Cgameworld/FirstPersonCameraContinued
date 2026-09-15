@@ -28,6 +28,7 @@ using System.Reflection;
 using System.Text;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -84,6 +85,7 @@ namespace FirstPersonCameraContinued.Systems
 
         private NameSystem nameSystem;
         private TerrainSystem terrainSystem;
+        private WaterSystem waterSystem;
         private EntityQuery namedEdgeQuery;
         private readonly Dictionary<Entity, (string name, Entity edge)> nearestNamedRoadCache = new Dictionary<Entity, (string, Entity)>();
         private readonly Dictionary<Entity, (string name, Entity edge)> connectedNamedRoadCache = new Dictionary<Entity, (string, Entity)>();
@@ -145,6 +147,7 @@ namespace FirstPersonCameraContinued.Systems
 
             nameSystem = World.GetOrCreateSystemManaged<NameSystem>();
             terrainSystem = World.GetOrCreateSystemManaged<TerrainSystem>();
+            waterSystem = World.GetOrCreateSystemManaged<WaterSystem>();
 
             namedEdgeQuery = GetEntityQuery(
                 ComponentType.ReadOnly<Aggregated>(),
@@ -442,8 +445,24 @@ namespace FirstPersonCameraContinued.Systems
         private float GetAltitudeAboveGround(float3 worldPosition)
         {
             TerrainHeightData terrainHeightData = terrainSystem.GetHeightData();
-            float terrainHeight = TerrainUtils.SampleHeight(ref terrainHeightData, worldPosition);
-            return math.max(0f, worldPosition.y - terrainHeight);
+
+            //measure from the top of the water surface when over water, not the terrain bed below it
+            float groundHeight;
+            if (waterSystem.Loaded)
+            {
+                WaterSurfaceData<SurfaceWater> waterSurfaceData = waterSystem.GetSurfaceData(out JobHandle deps);
+                deps.Complete();
+                if (waterSurfaceData.isCreated)
+                    groundHeight = WaterUtils.SampleHeight(ref waterSurfaceData, ref terrainHeightData, worldPosition);
+                else
+                    groundHeight = TerrainUtils.SampleHeight(ref terrainHeightData, worldPosition);
+            }
+            else
+            {
+                groundHeight = TerrainUtils.SampleHeight(ref terrainHeightData, worldPosition);
+            }
+
+            return math.max(0f, worldPosition.y - groundHeight);
         }
 
         public static bool TryGetDeliveryTruckCargo(
