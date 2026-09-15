@@ -132,8 +132,7 @@ Bug Fixes:
 - Fixed bottom clamping issue after following citizens
 - Fixed PIP not closing when exiting first person mode while "Show Game UI" turned on
 - Fixed issue where FOV increased with fast transition speed
-- Fixed issue where background city sounds became quieter each session?
-(INVESTIGATE CUSTOM? vehicles being too loud)
+- Fixed issue where background city sounds became quieter each session
 - Fixed speed info box width padding not rendering when following after free camera entry
 - Fixed missing vanilla UI sounds
 - Fixed svg scaling issue

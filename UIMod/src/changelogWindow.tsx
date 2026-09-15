@@ -1,10 +1,9 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { trigger } from "cs2/api";
-import dynamiclineImg from "images/dynamicline.jpg";
-import pipwindowImg from "images/pipwindow.jpg";
+import followRandomCustomImg from "images/followrandomcustomwindow.png";
 
 // ---- EDIT CHANGELOG CONTENT HERE ----
-const CHANGELOG_TITLE = "v1.6 Update!";
+const CHANGELOG_TITLE = "v1.7 Update!";
 
 interface ChangelogItem {
     text: string;
@@ -20,22 +19,25 @@ interface ChangelogSection {
 
 const CHANGELOG_HIGHLIGHTS: ChangelogSection[] = [
     { heading: "Main New Features:", items: [
-        { text: "Added dynamic strip map stop display when following transit vehicles", image: dynamiclineImg, imageWidth: '640rem', imageHeight: '77rem' },
-        { text: "Added toggleable picture-in-picture overlay (press p)", image: pipwindowImg, imageWidth: '640rem', imageHeight: '144rem' },
-        { text: "Added zoom mode (press z)" },
+        { text: "Added custom follow random mode window where you can granularly select what to follow", image: followRandomCustomImg, imageWidth: '612rem', imageHeight: '137rem' },
     ]},
 ];
 
 const CHANGELOG_FULL: ChangelogSection[] = [
     { heading: "Improvements:", items: [
-        { text: "Fixed lag when looking at ground" },
-        { text: "Free Camera view now stays above water" },
-        { text: "Follow Random Bicycle mode no longer picks parked bikes" },
+        { text: "Improved strip map stop name detection and filtering" },
+        { text: "Improved follow camera for wildlife" },
+        { text: "Improved backend random follow querying and vehicle type detection" },
+        { text: "Improved dropdown menu with submenus and optional quick open keybindings" },
     ]},
-    { heading: "Other Changes:", items: [
-        { text: "Vehicle type hidden by default in infobox" },
-        { text: "Increased transition speed factor default" },
-        { text: "Removed first person shortcut when line info panel is selected" },
+    { heading: "Bug Fixes:", items: [
+        { text: "Fixed bottom clamping issue after following citizens" },
+        { text: "Fixed PIP not closing when exiting first person mode while \"Show Game UI\" turned on" },
+        { text: "Fixed issue where FOV increased with fast transition speed" },
+        { text: "Fixed issue where background city sounds became quieter each session" },
+        { text: "Fixed speed info box width padding not rendering when following after free camera entry" },
+        { text: "Fixed missing vanilla UI sounds" },
+        { text: "Fixed svg scaling issue" },
     ]},
 ];
 // ---- END CHANGELOG CONTENT ----
@@ -47,7 +49,7 @@ const SectionList: React.FC<{ sections: ChangelogSection[] }> = ({ sections }) =
                 <p className="p_CKq" style={{ fontWeight: 'bold', marginBottom: '6rem', fontSize: '19rem' }}>{section.heading}</p>
                 {section.items.map((item, j) => (
                     <div key={j}>
-                        <p className="p_CKq" style={{ fontSize: '17rem' }}>- {item.text}</p>
+                        <p className="p_CKq" style={{ fontSize: '17rem', marginRight: '20rem' }}>- {item.text}</p>
                         {item.image && (
                             <img
                                 src={item.image}
@@ -125,7 +127,7 @@ const ChangelogWindow: React.FC = () => {
                 style={{
                     maxWidth: "100%",
                     maxHeight: "100%",
-                    width: '672rem',
+                    width: '662rem',
                     pointerEvents: "auto",
                     transform: `translate(${position.x}px, ${position.y}px)`,
                 }}
