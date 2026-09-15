@@ -188,7 +188,7 @@ const ChangelogWindow: React.FC = () => {
                                     )}
                                 </div>
                             </div>
-                            <div className="buttons-container" style={{ marginTop: '22rem', marginRight: '12rem', textAlign: 'right' }}>
+                            <div className="buttons-container" style={{ marginTop: showMore ? '-25rem' : '22rem', marginRight: '12rem', textAlign: 'right' }}>
                                 <div className="buttons_lZi row_L6K" style={{ width: '175rem' }}>
                                     <button className="button_HeP button_gJo" style={{ width: "130rem"}} onClick={onClose}>Ok</button>
                                 </div>
