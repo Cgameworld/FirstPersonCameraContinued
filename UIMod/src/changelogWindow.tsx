@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { trigger } from "cs2/api";
+import engine from 'cohtml/cohtml';
 import followRandomCustomImg from "images/followrandomcustomwindow.png";
 
 // ---- EDIT CHANGELOG CONTENT HERE ----
@@ -76,7 +77,12 @@ const ChangelogWindow: React.FC = () => {
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
 
+    const playHoverSound = () => {
+        engine.trigger("audio.playSound", "hover-item", 1);
+    };
+
     const onClose = () => {
+        engine.trigger("audio.playSound", "select-item", 1);
         setVisible(false);
         trigger("fpc", "DismissChangelog");
     };
@@ -145,7 +151,7 @@ const ChangelogWindow: React.FC = () => {
                         </div>
                         <div className="icon-space_h_f"></div>
                         <div className="title_SVH title_zQN">First Person Camera Continued</div>
-                        <button className="button_bvQ button_bvQ close-button_wKK" onClick={onClose}>
+                        <button className="button_bvQ button_bvQ close-button_wKK" onMouseEnter={playHoverSound} onClick={onClose}>
                             <div className="tinted-icon_iKo icon_PhD" style={{ maskImage: "url(Media/Glyphs/Close.svg)" }}></div>
                         </button>
                     </div>
@@ -163,7 +169,11 @@ const ChangelogWindow: React.FC = () => {
                                             <button
                                                 className="button_HeP button_gJo"
                                                 style={{ width: 'auto', padding: '5rem 14rem'}}
-                                                onClick={() => setShowMore(true)}
+                                                onMouseEnter={playHoverSound}
+                                                onClick={() => {
+                                                    engine.trigger("audio.playSound", "select-item", 1);
+                                                    setShowMore(true);
+                                                }}
                                             >
                                                 Show Full Changelog ▼
                                             </button>
@@ -176,7 +186,11 @@ const ChangelogWindow: React.FC = () => {
                                                 <button
                                                     className="button_HeP button_gJo"
                                                     style={{ width: 'auto', padding: '5rem 14rem'}}
-                                                    onClick={() => setShowMore(false)}
+                                                    onMouseEnter={playHoverSound}
+                                                    onClick={() => {
+                                                        engine.trigger("audio.playSound", "select-item", 1);
+                                                        setShowMore(false);
+                                                    }}
                                                 >
                                                     Hide Full Changelog ▲
                                                 </button>
@@ -190,7 +204,7 @@ const ChangelogWindow: React.FC = () => {
                             </div>
                             <div className="buttons-container" style={{ marginTop: showMore ? '-25rem' : '22rem', marginRight: '12rem', textAlign: 'right' }}>
                                 <div className="buttons_lZi row_L6K" style={{ width: '175rem' }}>
-                                    <button className="button_HeP button_gJo" style={{ width: "130rem"}} onClick={onClose}>Ok</button>
+                                    <button className="button_HeP button_gJo" style={{ width: "130rem"}} onMouseEnter={playHoverSound} onClick={onClose}>Ok</button>
                                 </div>
                             </div>
                         </div>
