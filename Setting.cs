@@ -100,28 +100,6 @@ namespace FirstPersonCameraContinued
         public bool ShowGameUI { get; set; }
 
 
-        [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
-        public bool ShowInfoBox {
-            get => _showInfoBox;
-            set
-            {
-                _showInfoBox = value;
-                SetUISettingsGroup();
-            }
-        }
-
-        [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
-        public Enums.InfoBoxSize InfoBoxSize
-        {
-            get => _infoBoxSize;
-            set
-            {
-                _infoBoxSize = value;
-                SetUISettingsGroup();
-            }
-        }
-
-
         [SettingsUISection(PIPSettingsTab, PIPGeneralSettingsGroup)]
         public FirstPersonCameraPIPSystem.PiPCorner PIPSnapToCorner { get; set; }
 
@@ -150,6 +128,62 @@ namespace FirstPersonCameraContinued
         [SettingsUISection(PIPSettingsTab, PIPKeybindingSettingsGroup)]
         public string PIPMultilineText => "Placeholder";
 
+        [SettingsUISection(UISettingsTab, StopStripSettingsGroup)]
+        public bool UseVanillaStopNames
+        {
+            get => _useVanillaStopNames;
+            set
+            {
+                _useVanillaStopNames = value;
+                SetUISettingsGroup();
+            }
+        }
+
+        [SettingsUISection(UISettingsTab, StopStripSettingsGroup)]
+        public Enums.ShowStopStrip ShowStopStrip
+        {
+            get => _showStopStrip;
+            set
+            {
+                _showStopStrip = value;
+                SetUISettingsGroup();
+            }
+        }
+
+        [SettingsUISection(UISettingsTab, StopStripSettingsGroup)]
+        public Enums.StopStripDisplayMode StopStripDisplayMode
+        {
+            get => _stopStripDisplayMode;
+            set
+            {
+                _stopStripDisplayMode = value;
+                SetUISettingsGroup();
+            }
+        }
+
+
+        [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
+        public bool ShowInfoBox
+        {
+            get => _showInfoBox;
+            set
+            {
+                _showInfoBox = value;
+                SetUISettingsGroup();
+            }
+        }
+
+        [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
+        public Enums.InfoBoxSize InfoBoxSize
+        {
+            get => _infoBoxSize;
+            set
+            {
+                _infoBoxSize = value;
+                SetUISettingsGroup();
+            }
+        }
+
         [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
         public Enums.ModUnits SetUnits
         {
@@ -160,6 +194,10 @@ namespace FirstPersonCameraContinued
                 SetUISettingsGroup();
             }
         }
+
+        [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
+        public Enums.ShowAltitude ShowAltitude { get; set; }
+
 
         [SettingsUISection(UISettingsTab, InfoBoxSettingsGroup)]
         public bool ShowSpeed
@@ -193,39 +231,7 @@ namespace FirstPersonCameraContinued
                 SetUISettingsGroup();
             }
         }
-
-        [SettingsUISection(UISettingsTab, StopStripSettingsGroup)]
-        public Enums.ShowStopStrip ShowStopStrip
-        {
-            get => _showStopStrip;
-            set
-            {
-                _showStopStrip = value;
-                SetUISettingsGroup();
-            }
-        }
-
-        [SettingsUISection(UISettingsTab, StopStripSettingsGroup)]
-        public Enums.StopStripDisplayMode StopStripDisplayMode
-        {
-            get => _stopStripDisplayMode;
-            set
-            {
-                _stopStripDisplayMode = value;
-                SetUISettingsGroup();
-            }
-        }
-
-        [SettingsUISection(UISettingsTab, StopStripSettingsGroup)]
-        public bool UseVanillaStopNames
-        {
-            get => _useVanillaStopNames;
-            set
-            {
-                _useVanillaStopNames = value;
-                SetUISettingsGroup();
-            }
-        }
+     
 
         private void SetUISettingsGroup()
         {
@@ -254,6 +260,7 @@ namespace FirstPersonCameraContinued
             ShowSpeed = true;
             ShowVehicleType = false;
             ShowExtraInfo = true;
+            ShowAltitude = Enums.ShowAltitude.Aircraft;
             InfoBoxSize = Enums.InfoBoxSize.Default;
             PIPSnapToCorner = FirstPersonCameraPIPSystem.PiPCorner.TopRight;
             PIPAspectRatio = 0.9f;

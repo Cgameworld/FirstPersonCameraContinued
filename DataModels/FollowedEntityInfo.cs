@@ -12,6 +12,7 @@ namespace FirstPersonCameraContinued.DataModels
         public int unitsSystem;
         public int passengers;
         public float resources;
+        public float altitude;
         public string? vehicleType;
         public string? citizenName;
         public string? citizenAction;

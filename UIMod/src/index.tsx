@@ -75,6 +75,7 @@ const register: ModRegistrar = (moduleRegistry) => {
         const uiTextFollowedVehiclePanel = {
             nameLabel: translate("FirstPersonCameraContinued.NameLabel"),
             speedLabel: translate("FirstPersonCameraContinued.SpeedLabel"),
+            altitudeLabel: translate("FirstPersonCameraContinued.AltitudeLabel"),
             vehicleTypeLabel: translate("FirstPersonCameraContinued.VehicleTypeLabel"),
             resourcesLabel: translate("FirstPersonCameraContinued.ResourceLabel"),
             actionLabel: translate("FirstPersonCameraContinued.ActionLabel"),

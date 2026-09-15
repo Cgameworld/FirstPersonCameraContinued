@@ -8,6 +8,7 @@ const ShowCrosshair$ = bindValue<boolean>('fpc', 'ShowCrosshair');
 interface TranslationProps {
     nameLabel: string | null;
     speedLabel: string | null;
+    altitudeLabel: string | null;
     vehicleTypeLabel: string | null;
     resourcesLabel: string | null;
     actionLabel: string | null;
@@ -37,6 +38,7 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
     const setUnits = parsedSettings.SetUnits;
 
     const parsedSpeed = JSON.parse(followedEntityInfo).currentSpeed;
+    const parsedAltitude = JSON.parse(followedEntityInfo).altitude;
     const parsedUnits = JSON.parse(followedEntityInfo).unitsSystem;
     const parsedPassengers = JSON.parse(followedEntityInfo).passengers;
     const parsedResources = JSON.parse(followedEntityInfo).resources;
@@ -58,6 +60,21 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
     }
     else {
         formattedSpeed = toKmh(parsedSpeed)
+    }
+
+    let formattedAltitude: string;
+
+    const toFeet = (a: number) => Math.round(a * 3.28) + " ft";
+    const toMeters = (a: number) => Math.round(a) + " m";
+
+    if (setUnits === 0) {
+        formattedAltitude = parsedUnits === 1 ? toFeet(parsedAltitude) : toMeters(parsedAltitude);
+    }
+    else if (setUnits === 2) {
+        formattedAltitude = toFeet(parsedAltitude)
+    }
+    else {
+        formattedAltitude = toMeters(parsedAltitude)
     }
 
     let formattedResources = Math.round(parsedResources*100) + "%";
@@ -113,6 +130,12 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
                 >
                     <div className={`fpcc-info-label ${infoBoxSizeClass}`}>{translation.speedLabel}</div>
                     <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{formattedSpeed}</div>
+                </div>
+            )}
+            {parsedAltitude !== -1 && (
+                <div className={`fpcc-info-group ${infoBoxSizeClass}`}>
+                    <div className={`fpcc-info-label ${infoBoxSizeClass}`}>{translation.altitudeLabel}</div>
+                    <div className={`fpcc-info-data ${infoBoxSizeClass}`}>{formattedAltitude}</div>
                 </div>
             )}
             {vehicleType !== null && showVehicleType && (

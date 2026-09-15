@@ -16,6 +16,7 @@ using Game.Prefabs;
 using Game.Rendering;
 using Game.Routes;
 using Game.SceneFlow;
+using Game.Simulation;
 using Game.UI;
 using Game.UI.InGame;
 using Game.Vehicles;
@@ -82,6 +83,7 @@ namespace FirstPersonCameraContinued.Systems
         private bool showUpcomingRouteOnActivation = false;
 
         private NameSystem nameSystem;
+        private TerrainSystem terrainSystem;
         private EntityQuery namedEdgeQuery;
         private readonly Dictionary<Entity, (string name, Entity edge)> nearestNamedRoadCache = new Dictionary<Entity, (string, Entity)>();
         private readonly Dictionary<Entity, (string name, Entity edge)> connectedNamedRoadCache = new Dictionary<Entity, (string, Entity)>();
@@ -142,6 +144,7 @@ namespace FirstPersonCameraContinued.Systems
             }));
 
             nameSystem = World.GetOrCreateSystemManaged<NameSystem>();
+            terrainSystem = World.GetOrCreateSystemManaged<TerrainSystem>();
 
             namedEdgeQuery = GetEntityQuery(
                 ComponentType.ReadOnly<Aggregated>(),
@@ -220,7 +223,16 @@ namespace FirstPersonCameraContinued.Systems
                             passengers = -1,
                             currentSpeed = -1,
                             resources = -1,
+                            altitude = -1,
                         };
+
+                        //free camera altitude above ground, uses the camera position directly
+                        Enums.ShowAltitude showAltitudeFree = Mod.FirstPersonModSettings.ShowAltitude;
+                        if (showAltitudeFree == Enums.ShowAltitude.AircraftAndFreeMode || showAltitudeFree == Enums.ShowAltitude.All)
+                        {
+                            followedEntityInfo.altitude = GetAltitudeAboveGround(CameraController.transform.position);
+                            followedEntityInfo.unitsSystem = (int)GameManager.instance.settings.userInterface.unitSystem;
+                        }
 
                         this.followedEntityInfo = JsonConvert.SerializeObject(followedEntityInfo);
                         followedEntityInfoBinding.Update();
@@ -406,10 +418,32 @@ namespace FirstPersonCameraContinued.Systems
                 followedEntityInfo.vehicleType = translatedVehicleType;
             }
 
+            //altitude above ground, aircraft (planes/helicopters carry the Aircraft component) always, every followed entity when set to All
+            followedEntityInfo.altitude = -1;
+            Enums.ShowAltitude showAltitude = Mod.FirstPersonModSettings.ShowAltitude;
+            bool isAircraft = EntityManager.HasComponent<Game.Vehicles.Aircraft>(currentEntity);
+            if (showAltitude != Enums.ShowAltitude.Disabled && (isAircraft || showAltitude == Enums.ShowAltitude.All))
+            {
+                float3 entityPosition = float3.zero;
+                if (EntityManager.TryGetComponent<Game.Objects.Transform>(currentEntity, out var entityTransform))
+                    entityPosition = entityTransform.m_Position;
+                else if (EntityManager.TryGetComponent<InterpolatedTransform>(currentEntity, out var entityInterpolated))
+                    entityPosition = entityInterpolated.m_Position;
+
+                followedEntityInfo.altitude = GetAltitudeAboveGround(entityPosition);
+            }
+
             followedEntityInfo.unitsSystem = (int)GameManager.instance.settings.userInterface.unitSystem;
 
             this.followedEntityInfo = JsonConvert.SerializeObject(followedEntityInfo);
             followedEntityInfoBinding.Update();
+        }
+
+        private float GetAltitudeAboveGround(float3 worldPosition)
+        {
+            TerrainHeightData terrainHeightData = terrainSystem.GetHeightData();
+            float terrainHeight = TerrainUtils.SampleHeight(ref terrainHeightData, worldPosition);
+            return math.max(0f, worldPosition.y - terrainHeight);
         }
 
         public static bool TryGetDeliveryTruckCargo(

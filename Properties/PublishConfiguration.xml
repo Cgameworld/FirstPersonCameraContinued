@@ -119,13 +119,15 @@ If you like this mod be sure to leave an upvote! Thanks
 # v1.7
 Main New Features:
 - Added custom follow random mode window where you can granularly select what to follow
- 
+- Added altitude information in infobox for aircraft
+
 Improvements:
 
 - Improved strip map stop name detection and filtering
 - Improved follow camera for wildlife
 - Improved backend random follow querying and vehicle type detection
 - Improved dropdown menu with submenus and optional quick open keybindings
+- Improved UI tab setting ordering
 
 Bug Fixes: 
 

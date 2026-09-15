@@ -20,6 +20,7 @@ interface ChangelogSection {
 const CHANGELOG_HIGHLIGHTS: ChangelogSection[] = [
     { heading: "Main New Features:", items: [
         { text: "Added custom follow random mode window where you can granularly select what to follow", image: followRandomCustomImg, imageWidth: '612rem', imageHeight: '137rem' },
+        { text: "Added altitude information in infobox for aircraft"}
     ]},
 ];
 
@@ -29,6 +30,7 @@ const CHANGELOG_FULL: ChangelogSection[] = [
         { text: "Improved follow camera for wildlife" },
         { text: "Improved backend random follow querying and vehicle type detection" },
         { text: "Improved dropdown menu with submenus and optional quick open keybindings" },
+        { text: "Improved UI tab setting ordering" },
     ]},
     { heading: "Bug Fixes:", items: [
         { text: "Fixed bottom clamping issue after following citizens" },
