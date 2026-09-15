@@ -266,6 +266,7 @@ const StopStripPanel: React.FC = () => {
         showLeftArrow ? 'has-left-arrow' : '',
         showRightArrow ? 'has-right-arrow' : '',
         visibleStations.length > 10 ? 'many-stations' : '',
+        visibleStations.length <= 4 ? 'few-stations' : '',
     ].filter(Boolean).join(' ');
 
     return (
