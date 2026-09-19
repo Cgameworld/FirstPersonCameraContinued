@@ -395,7 +395,7 @@ const register: ModRegistrar = (moduleRegistry) => {
             const texts = menuItems.map(item => item.label);
             const submenuTexts = menuItems.flatMap(item => item.submenu ? item.submenu.map(sub => sub.label) : []);
 
-            const isAsian = (t: string | null) => t && /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/.test(t);
+            const isAsian = (t: string | null) => t && /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf\uac00-\ud7a3\u1100-\u11ff\u3130-\u318f]/.test(t);
 
             if (!texts.some(isAsian)) {
                 const longestText = Math.max(
