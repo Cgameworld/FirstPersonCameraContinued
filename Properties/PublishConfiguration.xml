@@ -128,8 +128,9 @@ Improvements:
 - Improved backend random follow querying and vehicle type detection
 - Improved dropdown menu with submenus and optional quick open keybindings
 - Improved UI tab setting ordering
+- Changed cim to citizen in UI text for vanilla consistency
 
-Bug Fixes: 
+Bug Fixes:
 
 - Fixed bottom clamping issue after following citizens
 - Fixed PIP not closing when exiting first person mode while "Show Game UI" turned on
