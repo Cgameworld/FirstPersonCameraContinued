@@ -31,6 +31,7 @@ function initSelections(categories: Category[]): Record<string, boolean> {
 }
 
 interface RandomFollowTranslation {
+    title: string | null;
     selectAll: string | null;
     deselectAll: string | null;
     start: string | null;
@@ -160,7 +161,7 @@ const RandomFollowWindow: React.FC<{ onClose: () => void, translation: RandomFol
                             <img className="iconImg_ThV" src="coui://uil/Standard/VideoCamera.svg" />
                         </div>
                         <div className="icon-space_h_f"></div>
-                        <div className="title_SVH title_zQN">Follow Random</div>
+                        <div className="title_SVH title_zQN">{translation.title}</div>
                         <Button variant="round" className="close-button_wKK" src="Media/Glyphs/Close.svg" tinted onSelect={onClose} />
                     </div>
                 </div>

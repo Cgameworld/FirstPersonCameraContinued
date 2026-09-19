@@ -14,7 +14,7 @@ To enter free camera first person mode, click on the video camera icon near the 
 
 To move around use WASD, use SHIFT to walk faster and R/F keys to increase/decrease the camera height.
 
-To enter follow mode, right click on an object in free camera first person mode or click on the video camera button in the info panel for the object. Alternatively, choose the "Follow Random Cim" or "Follow Random Vehicle" options in the dropdown that appears after clicking the main mod button to find a random cim/vehicle in your city to follow.
+To enter follow mode, right click on an object in free camera first person mode or click on the video camera button in the info panel for the object. Alternatively, open the "Follow Random" submenu in the dropdown that appears after clicking the main mod button and choose Citizen, Vehicle, or Transit to follow a random one of that type in your city, or Custom to open a window where you can mix and match exactly which vehicle or creature type(s) to include.
 
 To shift the camera forwards or backwards in follow mode press the UP ARROW and DOWN ARROW keys
 
@@ -27,7 +27,7 @@ Several loaded parameters can also be configured from the main game settings, ta
 - FOV
 - Walking Speed
 - Running Speed
-- Cim Height
+- Citizen Height
 - Transition Speed
 - Free Camera Toggle Keyboard Shortcut
 

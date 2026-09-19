@@ -83,6 +83,7 @@ const register: ModRegistrar = (moduleRegistry) => {
         };
 
         const uiTextRandomFollowWindow = {
+            title: uiTextFollowRandom,
             selectAll: translate("FirstPersonCameraContinued.RandomFollow.SelectAll"),
             deselectAll: translate("FirstPersonCameraContinued.RandomFollow.DeselectAll"),
             start: translate("FirstPersonCameraContinued.RandomFollow.Start"),

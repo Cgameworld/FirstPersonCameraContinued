@@ -31,6 +31,7 @@
 	  <None Remove="l10n\en-US.csv" />
 	  <None Remove="l10n\es-ES.csv" />
 	  <None Remove="l10n\fr-FR.csv" />
+	  <None Remove="l10n\it-IT.csv" />
 	  <None Remove="l10n\ja-JP.csv" />
 	  <None Remove="l10n\ko-KR.csv" />
 	  <None Remove="l10n\pl-PL.csv" />
@@ -45,6 +46,7 @@
 	  <EmbeddedResource Include="l10n\en-US.csv" />
 	  <EmbeddedResource Include="l10n\es-ES.csv" />
 	  <EmbeddedResource Include="l10n\fr-FR.csv" />
+	  <EmbeddedResource Include="l10n\it-IT.csv" />
 	  <EmbeddedResource Include="l10n\ja-JP.csv" />
 	  <EmbeddedResource Include="l10n\ko-KR.csv" />
 	  <EmbeddedResource Include="l10n\pl-PL.csv" />

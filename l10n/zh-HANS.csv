@@ -89,7 +89,7 @@
 "Options.OPTION:ShowPIPMarker","显示跟随标记"
 "Options.OPTION_DESCRIPTION:ShowPIPMarker","在跟随模式下，在 市民/车辆上方显示跟随标记"
 "Options.OPTION:ShowPIPUndergroundView","显示地下隧道叠层图像"
-"Options.OPTION_DESCRIPTION:ShowPIPUndergroundView","检查以显示车辆/乘客在隧道内时的地下隧道视图"
+"Options.OPTION_DESCRIPTION:ShowPIPUndergroundView","检查以显示车辆/市民在隧道内时的地下隧道视图"
 "Options.GROUP:PIPKeybindingSettingsGroup","快捷键"
 "Options.OPTION:PIPMultilineText","画中画模式专用键盘快捷键：\n滚轮 - 放大/缩小视图\nCtrl + 滚轮 - 增大/缩小画中画窗口大小"
 "Options.OPTION:SetUnits","单位"
