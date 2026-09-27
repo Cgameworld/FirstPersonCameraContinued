@@ -105,11 +105,12 @@ const register: ModRegistrar = (moduleRegistry) => {
         selectedEntity$.subscribe((entity) => {
             if (!entity.index) {
                 currentEntity = null;
-
+                cleanupInjectedButton();
                 return entity
             }
             if (currentEntity != entity.index) {
                 currentEntity = entity.index
+                cleanupInjectedButton();
             }
             observeAndAppend();
             return entity;
@@ -249,6 +250,33 @@ const register: ModRegistrar = (moduleRegistry) => {
     const middleSections$ = selectedInfo.middleSections$;
     const titleSection$ = selectedInfo.titleSection$;
 
+    let injectedButtonRoot: HTMLDivElement | null = null;
+
+    //fallback if unmount leaves a stuck balloon, remove only the orphaned follow camera tooltip after react has settled
+    const clearOrphanedTooltip = (): void => {
+        requestAnimationFrame(() => {
+            if (!tooltipDescriptionFollowCamera) return;
+            const balloons: NodeListOf<Element> = document.querySelectorAll('[class*="balloon"]');
+            balloons.forEach((balloon: Element) => {
+                if (balloon.textContent?.includes(tooltipDescriptionFollowCamera as string)) {
+                    balloon.parentNode?.removeChild(balloon);
+                }
+            });
+        });
+    };
+
+    //unmount the injected follow button so its vanilla tooltip clears when the info window closes
+    const cleanupInjectedButton = (): void => {
+        if (injectedButtonRoot) {
+            ReactDOM.unmountComponentAtNode(injectedButtonRoot);
+            if (injectedButtonRoot.parentNode) {
+                injectedButtonRoot.parentNode.removeChild(injectedButtonRoot);
+            }
+            injectedButtonRoot = null;
+            clearOrphanedTooltip();
+        }
+    };
+
     //inject the item into the DOM manually, can't figure out how to put the button in the same row in the official UI system
     const observeAndAppend = (): void => {
         // Clear any existing interval
@@ -282,6 +310,8 @@ const register: ModRegistrar = (moduleRegistry) => {
                     } else {
                         element.appendChild(div);
                     }
+
+                    injectedButtonRoot = div;
 
                     console.log('New div appended:', div);
                     // Clear interval after successful injection

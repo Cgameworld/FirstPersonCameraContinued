@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { trigger } from "cs2/api";
+import { Scrollable } from "cs2/ui";
 import engine from 'cohtml/cohtml';
 import followRandomCustomImg from "images/followrandomcustomwindow.png";
 
@@ -36,24 +37,25 @@ const CHANGELOG_FULL: ChangelogSection[] = [
     ]},
     { heading: "Bug Fixes:", items: [
         { text: "Fixed bottom clamping issue after following citizens" },
-        { text: "Fixed PIP not closing when exiting first person mode while \"Show Game UI\" turned on" },
+        { text: "Fixed PIP view not closing when exiting first person mode while \"Show Game UI\" turned on" },
         { text: "Fixed issue where FOV increased with fast transition speed" },
         { text: "Fixed issue where background city sounds became quieter each session" },
         { text: "Fixed speed info box width padding not rendering when following after free camera entry" },
+        { text: "Fixed tooltip lingering on screen after entering follow mode from an entity info window" },
         { text: "Fixed missing vanilla UI sounds" },
         { text: "Fixed svg scaling issue" },
     ]},
 ];
 // ---- END CHANGELOG CONTENT ----
 
-const SectionList: React.FC<{ sections: ChangelogSection[] }> = ({ sections }) => (
+const SectionList: React.FC<{ sections: ChangelogSection[]; itemMarginRight?: string }> = ({ sections, itemMarginRight = '20rem' }) => (
     <>
         {sections.map((section, i) => (
             <div key={i} style={i > 0 ? { marginTop: '12rem' } : {}}>
                 <p className="p_CKq" style={{ fontWeight: 'bold', marginBottom: '6rem', fontSize: '19rem' }}>{section.heading}</p>
                 {section.items.map((item, j) => (
                     <div key={j}>
-                        <p className="p_CKq" style={{ fontSize: '17rem', marginRight: '20rem' }}>- {item.text}</p>
+                        <p className="p_CKq" style={{ fontSize: '17rem', marginRight: itemMarginRight }}>- {item.text}</p>
                         {item.image && (
                             <img
                                 src={item.image}
@@ -116,6 +118,8 @@ const ChangelogWindow: React.FC = () => {
 
     if (!visible) return null;
 
+    const itemMargin = showMore ? '25rem' : '20rem';
+
     return (
         <div
             style={{
@@ -136,7 +140,7 @@ const ChangelogWindow: React.FC = () => {
                 style={{
                     maxWidth: "100%",
                     maxHeight: "100%",
-                    width: '662rem',
+                    width: showMore ? '672rem' : '662rem',
                     pointerEvents: "auto",
                     transform: `translate(${position.x}px, ${position.y}px)`,
                 }}
@@ -161,49 +165,34 @@ const ChangelogWindow: React.FC = () => {
                     <div className="icon-layout_cZT row_L6K">
                         <div className="main-column_Jzk">
                             <div className="error-message_r4_" style={{marginTop: '-4rem'}}>
-                                <div className="paragraphs_nbD" style={{ padding: '8rem' }}>
+                                <div className="paragraphs_nbD" style={{ padding: '8rem', marginRight: showMore ? '-15rem' : '0rem' }}>
+                                    <Scrollable vertical trackVisibility="scrollable" style={{ maxHeight: '710rem', marginRight: '-15rem' }}>
                                     <p className="p_CKq" style={{ fontSize: '21rem', fontWeight: 'bold', marginBottom: '12rem' }}>{CHANGELOG_TITLE}</p>
-                                    <SectionList sections={CHANGELOG_HIGHLIGHTS} />
+                                    <SectionList sections={CHANGELOG_HIGHLIGHTS} itemMarginRight={itemMargin} />
 
-                                    {!showMore && (
-                                        <div style={{ marginTop: '14rem' }}>
-                                            <button
-                                                className="button_HeP button_gJo"
-                                                style={{ width: 'auto', padding: '5rem 14rem'}}
-                                                onMouseEnter={playHoverSound}
-                                                onClick={() => {
-                                                    engine.trigger("audio.playSound", "select-item", 1);
-                                                    setShowMore(true);
-                                                }}
-                                            >
-                                                Show Full Changelog ▼
-                                            </button>
-                                        </div>
-                                    )}
+                                    <div style={{ marginTop: '14rem', marginRight: itemMargin }}>
+                                        <button
+                                            className="button_HeP button_gJo"
+                                            style={{ width: 'auto', padding: '5rem 14rem'}}
+                                            onMouseEnter={playHoverSound}
+                                            onClick={() => {
+                                                engine.trigger("audio.playSound", "select-item", 1);
+                                                setShowMore(!showMore);
+                                            }}
+                                        >
+                                            {showMore ? 'Hide Full Changelog ▲' : 'Show Full Changelog ▼'}
+                                        </button>
+                                    </div>
 
                                     {showMore && (
-                                        <>
-                                            <div style={{ marginTop: '14rem' }}>
-                                                <button
-                                                    className="button_HeP button_gJo"
-                                                    style={{ width: 'auto', padding: '5rem 14rem'}}
-                                                    onMouseEnter={playHoverSound}
-                                                    onClick={() => {
-                                                        engine.trigger("audio.playSound", "select-item", 1);
-                                                        setShowMore(false);
-                                                    }}
-                                                >
-                                                    Hide Full Changelog ▲
-                                                </button>
-                                            </div>
-                                            <div style={{ marginTop: '12rem' }}>
-                                                <SectionList sections={CHANGELOG_FULL} />
-                                            </div>
-                                        </>
+                                        <div style={{ marginTop: '12rem' }}>
+                                            <SectionList sections={CHANGELOG_FULL} itemMarginRight={itemMargin} />
+                                        </div>
                                     )}
+                                    </Scrollable>
                                 </div>
                             </div>
-                            <div className="buttons-container" style={{ marginTop: showMore ? '-25rem' : '22rem', marginRight: '12rem', textAlign: 'right' }}>
+                            <div className="buttons-container" style={{ marginTop: '22rem', marginRight: '12rem', textAlign: 'right' }}>
                                 <div className="buttons_lZi row_L6K" style={{ width: '175rem' }}>
                                     <button className="button_HeP button_gJo" style={{ width: "130rem"}} onMouseEnter={playHoverSound} onClick={onClose}>Ok</button>
                                 </div>
