@@ -3,6 +3,7 @@ import { trigger } from "cs2/api";
 import { Scrollable } from "cs2/ui";
 import engine from 'cohtml/cohtml';
 import followRandomCustomImg from "images/followrandomcustomwindow.png";
+import 'style/ChangelogWindow.scss';
 
 // ---- EDIT CHANGELOG CONTENT HERE ----
 const CHANGELOG_TITLE = "v1.7 Update!";
@@ -48,14 +49,14 @@ const CHANGELOG_FULL: ChangelogSection[] = [
 ];
 // ---- END CHANGELOG CONTENT ----
 
-const SectionList: React.FC<{ sections: ChangelogSection[]; itemMarginRight?: string }> = ({ sections, itemMarginRight = '20rem' }) => (
+const SectionList: React.FC<{ sections: ChangelogSection[] }> = ({ sections }) => (
     <>
         {sections.map((section, i) => (
             <div key={i} style={i > 0 ? { marginTop: '12rem' } : {}}>
                 <p className="p_CKq" style={{ fontWeight: 'bold', marginBottom: '6rem', fontSize: '19rem' }}>{section.heading}</p>
                 {section.items.map((item, j) => (
                     <div key={j}>
-                        <p className="p_CKq" style={{ fontSize: '17rem', marginRight: itemMarginRight }}>- {item.text}</p>
+                        <p className="p_CKq" style={{ fontSize: '17rem', marginRight: '20rem' }}>- {item.text}</p>
                         {item.image && (
                             <img
                                 src={item.image}
@@ -118,8 +119,6 @@ const ChangelogWindow: React.FC = () => {
 
     if (!visible) return null;
 
-    const itemMargin = showMore ? '25rem' : '20rem';
-
     return (
         <div
             style={{
@@ -140,7 +139,7 @@ const ChangelogWindow: React.FC = () => {
                 style={{
                     maxWidth: "100%",
                     maxHeight: "100%",
-                    width: showMore ? '672rem' : '662rem',
+                    width: '662rem',
                     pointerEvents: "auto",
                     transform: `translate(${position.x}px, ${position.y}px)`,
                 }}
@@ -164,13 +163,13 @@ const ChangelogWindow: React.FC = () => {
                 <div className="content_VBF content_AD7 child-opacity-transition_nkS">
                     <div className="icon-layout_cZT row_L6K">
                         <div className="main-column_Jzk">
-                            <div className="error-message_r4_" style={{marginTop: '-4rem'}}>
-                                <div className="paragraphs_nbD" style={{ padding: '8rem', marginRight: showMore ? '-15rem' : '0rem' }}>
-                                    <Scrollable vertical trackVisibility="scrollable" style={{ maxHeight: '710rem', marginRight: '-15rem' }}>
+                            <div className="error-message_r4_" style={{marginTop: '-4rem', marginRight: '-12rem'}}>
+                                <div className="paragraphs_nbD" style={{ padding: '8rem' }}>
+                                    <Scrollable vertical trackVisibility="scrollable" className="fpc-changelog-scrollable" style={{ marginRight: '-3rem' }}>
                                     <p className="p_CKq" style={{ fontSize: '21rem', fontWeight: 'bold', marginBottom: '12rem' }}>{CHANGELOG_TITLE}</p>
-                                    <SectionList sections={CHANGELOG_HIGHLIGHTS} itemMarginRight={itemMargin} />
+                                    <SectionList sections={CHANGELOG_HIGHLIGHTS} />
 
-                                    <div style={{ marginTop: '14rem', marginRight: itemMargin }}>
+                                    <div style={{ marginTop: '14rem', marginRight: '20rem' }}>
                                         <button
                                             className="button_HeP button_gJo"
                                             style={{ width: 'auto', padding: '5rem 14rem'}}
@@ -186,7 +185,7 @@ const ChangelogWindow: React.FC = () => {
 
                                     {showMore && (
                                         <div style={{ marginTop: '12rem' }}>
-                                            <SectionList sections={CHANGELOG_FULL} itemMarginRight={itemMargin} />
+                                            <SectionList sections={CHANGELOG_FULL} />
                                         </div>
                                     )}
                                     </Scrollable>

@@ -193,7 +193,7 @@ namespace FirstPersonCameraContinued.Systems
                     ? lastSeen
                     : lastSeen.Substring(0, lastSeen.IndexOf('.', lastSeen.IndexOf('.') + 1));
                 
-                DateTime changelogWindowExpiration = new DateTime(2026, 11, 15);
+                DateTime changelogWindowExpiration = new DateTime(2026, 11, 31);
                 
                 showChangelog = lastSeenMajorMinor != currentMajorMinor && DateTime.Now < changelogWindowExpiration;
                 showChangelogBinding.Update();
