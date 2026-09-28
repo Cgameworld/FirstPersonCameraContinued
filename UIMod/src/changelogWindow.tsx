@@ -39,7 +39,7 @@ const CHANGELOG_FULL: ChangelogSection[] = [
     ]},
     { heading: "Bug Fixes:", items: [
         { text: "Fixed bottom clamping issue after following citizens" },
-        { text: "Fixed PIP view not closing when exiting first person mode while \"Show Game UI\" turned on" },
+        { text: "Fixed PIP view not closing when exiting first person mode while \"Show Game UI\" is turned on" },
         { text: "Fixed issue where FOV increased with fast transition speed" },
         { text: "Fixed issue where background city sounds became quieter each session" },
         { text: "Fixed speed info box width padding not rendering when following after free camera entry" },
