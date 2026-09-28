@@ -111,7 +111,6 @@
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.STOPSTRIPDISPLAYMODE[AlwaysShow]","常に表示"
 "Options.OPTION:UseVanillaStopNames","バニラの停留所名を使用"
 "Options.OPTION_DESCRIPTION:UseVanillaStopNames","ユーザー定義の名前が見つからない場合、Modが生成した名前の代わりに、ゲームが住所に基づいて生成した停留所名（利用可能な場合）を使用する"
-"FirstPersonCameraContinued.StopStripBuildingStopFormat","{STREET} {BUILDING}"
 "FirstPersonCameraContinued.StopStripStationFormat","{TYPE}駅"
 "FirstPersonCameraContinued.FollowRandom","ランダムに追跡"
 "FirstPersonCameraContinued.FollowRandom.Citizen","市民"

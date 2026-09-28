@@ -111,7 +111,6 @@
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.STOPSTRIPDISPLAYMODE[AlwaysShow]","總是顯示"
 "Options.OPTION:UseVanillaStopNames","使用原版站點名稱"
 "Options.OPTION_DESCRIPTION:UseVanillaStopNames","當找不到使用者自訂的名稱時，改用遊戲依地址產生的站點名稱（若可用），而非模組產生的名稱"
-"FirstPersonCameraContinued.StopStripBuildingStopFormat","{STREET} {BUILDING}"
 "FirstPersonCameraContinued.StopStripStationFormat","{TYPE}站"
 "FirstPersonCameraContinued.FollowRandom","隨機跟隨"
 "FirstPersonCameraContinued.FollowRandom.Citizen","市民"

@@ -193,7 +193,7 @@ namespace FirstPersonCameraContinued.Systems
                     ? lastSeen
                     : lastSeen.Substring(0, lastSeen.IndexOf('.', lastSeen.IndexOf('.') + 1));
                 
-                DateTime changelogWindowExpiration = new DateTime(2026, 11, 31);
+                DateTime changelogWindowExpiration = new DateTime(2026, 11, 30);
                 
                 showChangelog = lastSeenMajorMinor != currentMajorMinor && DateTime.Now < changelogWindowExpiration;
                 showChangelogBinding.Update();
@@ -993,11 +993,7 @@ namespace FirstPersonCameraContinued.Systems
                 {
                     string airportWord = GetLocalized("Assets.NAME[Airport01]");
                     if (!string.IsNullOrEmpty(airportWord))
-                    {
-                        string localeId = GameManager.instance.localizationManager.activeLocaleId;
-                        bool noSpace = localeId == "ja-JP" || localeId == "zh-HANS" || localeId == "zh-HANT";
-                        return noSpace ? $"{connectionName}{airportWord}" : $"{connectionName} {airportWord}";
-                    }
+                        return JoinLocalized(connectionName, airportWord);
                 }
 
                 return connectionName;
@@ -1030,10 +1026,14 @@ namespace FirstPersonCameraContinued.Systems
             if (string.IsNullOrEmpty(streetPart) || streetPart == "Stop")
                 return buildingName;
 
-            string format = GameManager.instance.localizationManager.activeDictionary.TryGetValue("FirstPersonCameraContinued.StopStripBuildingStopFormat", out string localizedFormat)
-                ? localizedFormat
-                : "{STREET} {BUILDING}";
-            return format.Replace("{STREET}", streetPart).Replace("{BUILDING}", buildingName);
+            return JoinLocalized(streetPart, buildingName);
+        }
+
+        private static string JoinLocalized(string first, string second)
+        {
+            string localeId = GameManager.instance.localizationManager.activeLocaleId;
+            bool noSpace = localeId == "ja-JP" || localeId == "zh-HANS" || localeId == "zh-HANT";
+            return noSpace ? $"{first}{second}" : $"{first} {second}";
         }
 
         //generic label for the building a marker stop sits in, transit type words come from the same vanilla keys the info box uses

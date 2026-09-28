@@ -35,6 +35,7 @@ const CHANGELOG_FULL: ChangelogSection[] = [
         { text: "Improved dropdown menu with submenus and optional quick open keybindings" },
         { text: "Improved UI tab setting ordering" },
         { text: "Changed cim to citizen in UI text for vanilla consistency" },
+        { text: "Updated translations" },
     ]},
     { heading: "Bug Fixes:", items: [
         { text: "Fixed bottom clamping issue after following citizens" },

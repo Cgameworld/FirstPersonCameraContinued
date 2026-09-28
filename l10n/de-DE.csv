@@ -111,7 +111,6 @@
 "Options.FirstPersonCameraContinued.FirstPersonCameraContinued.Mod.STOPSTRIPDISPLAYMODE[AlwaysShow]","Immer anzeigen"
 "Options.OPTION:UseVanillaStopNames","Vanilla-Haltestellennamen verwenden"
 "Options.OPTION_DESCRIPTION:UseVanillaStopNames","Wenn keine benutzerdefinierten Namen gefunden werden, die vom Spiel aus Adressen generierten Haltestellennamen (falls verfügbar) anstelle der vom Mod generierten Namen verwenden"
-"FirstPersonCameraContinued.StopStripBuildingStopFormat","{STREET} {BUILDING}"
 "FirstPersonCameraContinued.StopStripStationFormat","{TYPE}-Station"
 "FirstPersonCameraContinued.FollowRandom","Zufällig folgen"
 "FirstPersonCameraContinued.FollowRandom.Citizen","Bürger"
