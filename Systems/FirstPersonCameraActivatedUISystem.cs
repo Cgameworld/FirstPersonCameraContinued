@@ -707,12 +707,14 @@ namespace FirstPersonCameraContinued.Systems
             );
 
             //log once on entry and whenever the displayed stop list changes, current stop index alone does not retrigger
+            /*
             string stripMapDebugKey = string.Join("|", result.stations.Select(s => s.name));
             if (lineStationInfo.Length == 0 || stripMapDebugKey != lastStripMapDebugKey)
             {
                 lastStripMapDebugKey = stripMapDebugKey;
                 LogStripMapDebug(routeEntity, vehicleEntity, displayedStations, allWaypoints.Count, result, showFirstHalf, reverseStationOrder, isMetroOrTrain);
             }
+            */
 
             lineStationInfo = JsonConvert.SerializeObject(result);
             lineStationInfoBinding.Update();

@@ -93,7 +93,7 @@ const FollowedVehicleInfoPanel: React.FC<FollowedVehicleInfoPanelProps> = ({ tra
             }
             if (speedDivRef.current) {
                 const width = speedDivRef.current.offsetWidth;
-                console.log("speedDivRef:", width);
+                //console.log("speedDivRef:", width);
                 if (width > 0) {
                     setSpeedWidth(width / (window.innerWidth / 1920) + 40 + 5);
                     return;
